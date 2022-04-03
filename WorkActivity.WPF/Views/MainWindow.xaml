@@ -3,53 +3,84 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:WorkActivity.WPF"
         xmlns:controls="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        Title="Work reporter" Height="450" Width="800" WindowStyle="None" Margin="0" Padding="0" WindowStartupLocation="CenterScreen" MouseDown="WindowMouseDown" Loaded="WindowLoaded">
+        Title="Work reporter"
+        Height="600"
+        Width="800"
+        WindowStyle="None"
+        Margin="0"
+        Padding="0"
+        WindowStartupLocation="CenterScreen"
+        MouseDown="WindowMouseDown"
+        Loaded="WindowLoaded">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid Grid.Row="0">
-            <Border BorderBrush="#673ab7" BorderThickness="0 0 0 1">
+            <Border BorderBrush="#673ab7"
+                    BorderThickness="0 0 0 1">
                 <Grid>
-                    <TextBlock
-                        Margin="10 10"
-                        Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-                        Foreground="#673ab7"
-                        Text="Work reporter"/>
-                    <Button Width="30" Height="30" Margin="10" HorizontalAlignment="Right" Padding="0" Style="{DynamicResource MaterialDesignFlatButton}" Command="{Binding CloseCommand}">
-                        <controls:PackIcon Kind="Close"/>
+                    <TextBlock Margin="10 10"
+                               Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                               Foreground="#673ab7"
+                               Text="Work reporter" />
+                    <Button Width="30"
+                            Height="30"
+                            Margin="10"
+                            HorizontalAlignment="Right"
+                            Padding="0"
+                            Style="{DynamicResource MaterialDesignFlatButton}"
+                            Command="{Binding CloseCommand}">
+                        <controls:PackIcon Kind="Close" />
                     </Button>
                 </Grid>
             </Border>
         </Grid>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <Border Grid.Column="0" BorderThickness="0 0 1 0" BorderBrush="#673ab7">
+            <Border Grid.Column="0"
+                    BorderThickness="0 0 1 0"
+                    BorderBrush="#673ab7">
                 <Grid Grid.Column="0">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
-                    <Button Margin="5" Grid.Row="0" Content="Tasks" Style="{DynamicResource MaterialDesignFlatButton}" Command="{Binding TaskListCommand}"/>
-                    <Button Margin="5" Grid.Row="1" Content="Works" Style="{DynamicResource MaterialDesignFlatButton}" Command="{Binding WorkListCommand}"/>
-                    <Button Margin="5" Grid.Row="2" Content="Daily Work" Style="{DynamicResource MaterialDesignFlatButton}" Command="{Binding DailyWorkListCommand}"/>
+                    <Button Margin="5"
+                            Grid.Row="0"
+                            Content="Tasks"
+                            HorizontalContentAlignment="Left"
+                            Style="{DynamicResource MaterialDesignFlatButton}"
+                            Command="{Binding TaskListCommand}" />
+                    <Button Margin="5"
+                            Grid.Row="1"
+                            Content="Works"
+                            HorizontalContentAlignment="Left"
+                            Style="{DynamicResource MaterialDesignFlatButton}"
+                            Command="{Binding WorkListCommand}" />
+                    <Button Margin="5"
+                            Grid.Row="2"
+                            Content="Daily Work"
+                            HorizontalContentAlignment="Left"
+                            Style="{DynamicResource MaterialDesignFlatButton}"
+                            Command="{Binding DailyWorkListCommand}" />
                 </Grid>
             </Border>
             <Grid Grid.Column="2">
-                <ContentControl Content="{Binding CurrentViewModel}"/>
-                <controls:Snackbar MessageQueue="{Binding SnakbarMessageQueue}" Background="{DynamicResource PrimaryHueMidBrush}" Margin="0 0 0 10" />
+                <ContentControl Content="{Binding CurrentViewModel}" />
+                <controls:Snackbar MessageQueue="{Binding SnakbarMessageQueue}"
+                                   Background="{DynamicResource PrimaryHueMidBrush}"
+                                   Margin="0 0 0 10" />
             </Grid>
         </Grid>
     </Grid>
-    
 </Window>

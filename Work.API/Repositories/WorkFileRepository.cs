@@ -9,10 +9,10 @@ namespace Work.API.Repositories
 {
     public class WorkFileRepository : IWorkRepository
     {
-        private readonly IFileService<Core.DTOs.WorkDTO> _fileWorkService;
+        private readonly IFileService<Core.DTOs.Work> _fileWorkService;
         private readonly IFileService<Core.Models.Task> _fileTaskService;
 
-        public WorkFileRepository(IFileService<Core.DTOs.WorkDTO> fileWorkService, IFileService<Core.Models.Task> fileTaskService)
+        public WorkFileRepository(IFileService<Core.DTOs.Work> fileWorkService, IFileService<Core.Models.Task> fileTaskService)
         {
             _fileWorkService = fileWorkService;
             _fileTaskService = fileTaskService;
@@ -73,7 +73,7 @@ namespace Work.API.Repositories
             var result = new ServiceResult<IEnumerable<Core.Models.Work>>();
             try
             {
-                var works = await _fileWorkService.Create(new Core.DTOs.WorkDTO()
+                var works = await _fileWorkService.Create(new Core.DTOs.Work()
                 {
                     Date = entity.Date,
                     Hours = entity.Hours,
@@ -95,7 +95,7 @@ namespace Work.API.Repositories
             var result = new ServiceResult<Core.Models.Work>();
             try
             {
-                var work = await _fileWorkService.Update(new Core.DTOs.WorkDTO()
+                var work = await _fileWorkService.Update(new Core.DTOs.Work()
                 {
                     Id = entity.Id,
                     Date = entity.Date,

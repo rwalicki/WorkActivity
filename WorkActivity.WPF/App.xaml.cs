@@ -19,10 +19,10 @@ namespace WorkActivity.WPF
             _host = Host.CreateDefaultBuilder().ConfigureServices(services =>
             {
                 services.AddSingleton<ITaskRepository, TaskFileRepository>();
-                services.AddSingleton<IFileService<Work.Core.Models.Task>>(new FileRepository<Work.Core.Models.Task>("tasks.json"));
+                services.AddSingleton<IFileService<Work.Core.Models.Task>>(new FileRepository<Work.Core.Models.Task>());
 
                 services.AddSingleton<IWorkRepository, WorkFileRepository>();
-                services.AddSingleton<IFileService<Work.Core.DTOs.WorkDTO>>(new FileRepository<Work.Core.DTOs.WorkDTO>("works.json"));
+                services.AddSingleton<IFileService<Work.Core.DTOs.Work>>(new FileRepository<Work.Core.DTOs.Work>());
 
                 services.AddSingleton<IDailyWorkService, DailyWorkService>();
 

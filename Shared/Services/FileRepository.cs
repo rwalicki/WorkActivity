@@ -12,9 +12,9 @@ namespace Shared.Services
     {
         private readonly string _filePath;
 
-        public FileRepository(string filePath)
+        public FileRepository()
         {
-            _filePath = filePath;
+            _filePath = $"{typeof(T).Name}.json".ToLower();
 
             if (!File.Exists(_filePath))
             {
@@ -36,7 +36,7 @@ namespace Shared.Services
         public async Task<IEnumerable<T>> Create(T entity)
         {
             var entities = (await Read()).ToList();
-            
+
             var id = 0;
             if (entities.Any())
             {
@@ -103,7 +103,7 @@ namespace Shared.Services
                     var content = stream.ReadToEnd();
                     var entities = JsonConvert.DeserializeObject<IEnumerable<T>>(content);
                     entities = entities?.OrderBy(x => x.Id);
-                    return entities?? new List<T>();
+                    return entities ?? new List<T>();
                 }
             });
         }

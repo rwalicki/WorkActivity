@@ -38,23 +38,6 @@ namespace WorkActivity.WPF.ViewModels
                 DailyWorks = (await _dailyWorkService.GetAll()).ToList();
             });
 
-            OnSelectItem = new RelayCommand(async(obj) =>
-            {
-                var dailyWork = obj as DailyWork;
-                if (dailyWork != null)
-                {
-                    var works = new List<Work.Core.Models.Work>();
-                    foreach (var id in dailyWork.WorkIds)
-                    {
-                        var result = await _workService.Get(id);
-                        if (result.Success)
-                        {
-                            works.Add(result.Data);
-                        }
-                    }
-                    _mainWindowViewModel.CurrentViewModel = new DailyWorkDetailsListViewModel(_workService, works);
-                }
-            });
             OnShowDetailsCommand = new RelayCommand(async (obj) =>
             {
                 var dailyWork = obj as DailyWork;
