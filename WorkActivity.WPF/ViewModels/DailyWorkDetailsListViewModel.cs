@@ -11,6 +11,8 @@ namespace WorkActivity.WPF.ViewModels
     {
         private readonly IWorkRepository _workService;
 
+        private List<Work.Core.Models.Work> _dailyWorks;
+
         private ObservableCollection<Work.Core.Models.Work> _works;
         public ObservableCollection<Work.Core.Models.Work> Works
         {
@@ -23,11 +25,17 @@ namespace WorkActivity.WPF.ViewModels
         }
 
         public ICommand OnDeleteCommand { get; set; }
+        public ICommand OnLoadCommand { get; set; }
 
         public DailyWorkDetailsListViewModel(IWorkRepository workService, List<Work.Core.Models.Work> works)
         {
             _workService = workService;
-            Works = new ObservableCollection<Work.Core.Models.Work>(works);
+            _dailyWorks = works;
+
+            OnLoadCommand = new RelayCommand((obj) =>
+            {
+                Works = new ObservableCollection<Work.Core.Models.Work>(_dailyWorks);
+            });
 
             OnDeleteCommand = new RelayCommand(async (obj) =>
             {

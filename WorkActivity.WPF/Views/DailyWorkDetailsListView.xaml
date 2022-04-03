@@ -31,18 +31,12 @@
                        Text="Daily Work Details" />
         </Grid>
 
-        <DataGrid Grid.Row="2"
+        <DataGrid Grid.Row="1"
                   ItemsSource="{Binding Works}"
                   CanUserAddRows="False"
                   AutoGenerateColumns="False"
                   IsReadOnly="True"
                   Background="White">
-            <i:Interaction.Triggers>
-                <i:EventTrigger EventName="MouseDoubleClick">
-                    <i:InvokeCommandAction Command="{Binding OnAddWorkItem}"
-                                           CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource FindAncestor, AncestorType=DataGrid}}" />
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
             <DataGrid.Resources>
                 <Style TargetType="ScrollBar"
                        BasedOn="{StaticResource MaterialDesignScrollBarMinimal}" />
@@ -73,9 +67,6 @@
                 <DataGridTextColumn Binding="{Binding Hours}"
                                     Header="Hours"
                                     Width="Auto" />
-                <DataGridTextColumn Binding="{Binding Date, StringFormat='dd.MM.yyyy HH.mm'}"
-                                    Header="Date"
-                                    Width="Auto" />
                 <DataGridTemplateColumn Header=""
                                         Width="Auto">
                     <DataGridTemplateColumn.CellTemplate>
@@ -85,7 +76,7 @@
                                     Padding="0"
                                     Margin="0"
                                     Style="{DynamicResource MaterialDesignIconButton}"
-                                    Command="{Binding DataContext.OnDeleteCommand, RelativeSource={RelativeSource AncestorType=local:WorkListView}}"
+                                    Command="{Binding DataContext.OnDeleteCommand, RelativeSource={RelativeSource AncestorType=local:DailyWorkDetailsListView}}"
                                     CommandParameter="{Binding .}">
                                 <controls:PackIcon Kind="Delete" />
                             </Button>

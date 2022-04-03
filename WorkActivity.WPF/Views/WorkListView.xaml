@@ -66,12 +66,6 @@
                   AutoGenerateColumns="False"
                   IsReadOnly="True"
                   Background="White">
-            <i:Interaction.Triggers>
-                <i:EventTrigger EventName="MouseDoubleClick">
-                    <i:InvokeCommandAction Command="{Binding OnAddWorkItem}"
-                                           CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource FindAncestor, AncestorType=DataGrid}}" />
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
             <DataGrid.Resources>
                 <Style TargetType="ScrollBar"
                        BasedOn="{StaticResource MaterialDesignScrollBarMinimal}" />

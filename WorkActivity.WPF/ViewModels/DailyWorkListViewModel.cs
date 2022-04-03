@@ -53,6 +53,7 @@ namespace WorkActivity.WPF.ViewModels
                         }
                     }
                     _mainWindowViewModel.CurrentViewModel = new DailyWorkDetailsListViewModel(_workService, works);
+                    (_mainWindowViewModel.CurrentViewModel as DailyWorkDetailsListViewModel)?.OnLoadCommand.Execute(null);
                 }
             });
         }
