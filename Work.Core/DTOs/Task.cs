@@ -2,18 +2,13 @@
 using System;
 using System.Collections.Generic;
 
-namespace Work.Core.Models
+namespace Work.Core.DTOs
 {
     public class Task : BaseEntity
     {
         public int Number { get; set; }
         public string Title { get; set; }
         public DateTime Date { get; set; }
-        public List<Sprint> Sprints { get; set; }
-
-        public Task()
-        {
-            Sprints = new List<Sprint>();
-        }
+        public List<int> SprintIds { get; set; }
     }
 }

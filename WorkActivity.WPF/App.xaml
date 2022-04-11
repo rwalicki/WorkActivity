@@ -18,6 +18,9 @@
             <DataTemplate DataType="{x:Type viewModels:AddTaskViewModel}">
                 <views:AddTaskView/>
             </DataTemplate>
+            <DataTemplate DataType="{x:Type viewModels:AddSprintViewModel}">
+                <views:AddSprintView/>
+            </DataTemplate>
             <DataTemplate DataType="{x:Type viewModels:AddWorkViewModel}">
                 <views:AddWorkView/>
             </DataTemplate>
@@ -26,6 +29,9 @@
             </DataTemplate>
             <DataTemplate DataType="{x:Type viewModels:TaskListViewModel}">
                 <views:TaskListView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type viewModels:SprintListViewModel}">
+                <views:SprintListView/>
             </DataTemplate>
             <DataTemplate DataType="{x:Type viewModels:DailyWorkListViewModel}">
                 <views:DailyWorkListView/>

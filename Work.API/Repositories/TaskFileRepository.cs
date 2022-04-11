@@ -10,11 +10,13 @@ namespace Work.API.Repositories
 {
     public class TaskFileRepository : ITaskRepository
     {
-        private readonly IFileService<Core.Models.Task> _fileRepository;
+        private readonly IFileService<Core.DTOs.Task> _fileRepository;
+        private readonly ISprintService _sprintService;
 
-        public TaskFileRepository(IFileService<Core.Models.Task> fileRepository)
+        public TaskFileRepository(IFileService<Core.DTOs.Task> fileRepository, ISprintService sprintService)
         {
             _fileRepository = fileRepository;
+            _sprintService = sprintService;
         }
 
         public async Task<ServiceResult<IEnumerable<Core.Models.Task>>> GetAll()
@@ -22,7 +24,26 @@ namespace Work.API.Repositories
             var result = new ServiceResult<IEnumerable<Core.Models.Task>>();
             try
             {
-                var tasks = await _fileRepository.GetAll();
+                var taskDTOs = await _fileRepository.GetAll();
+                var tasks = new List<Core.Models.Task>();
+
+                foreach(var task in taskDTOs)
+                {
+                    var sprints = task.SprintIds
+                        .Select(async x => (await _sprintService.Get(x)).Data)
+                        .Select(x=>x.Result)
+                        .ToList();
+
+                    tasks.Add(new Core.Models.Task()
+                    {
+                        Id = task.Id,
+                        Date = task.Date,
+                        Number = task.Number,
+                        Title = task.Title,
+                        Sprints = sprints
+                    });
+                }
+
                 result.Data = tasks;
             }
             catch (Exception ex)
@@ -38,7 +59,20 @@ namespace Work.API.Repositories
             var result = new ServiceResult<Core.Models.Task>();
             try
             {
-                var task = await _fileRepository.Get(id);
+                var taskDTO = await _fileRepository.Get(id);
+                var sprints = taskDTO.SprintIds
+                        .Select(async x => (await _sprintService.Get(x)).Data)
+                        .Select(x => x.Result)
+                        .ToList();
+
+                var task = new Core.Models.Task()
+                {
+                    Id = taskDTO.Id,
+                    Date = taskDTO.Date,
+                    Number = taskDTO.Number,
+                    Title = taskDTO.Title,
+                    Sprints = sprints
+                };
                 result.Data = task;
             }
             catch (Exception ex)
@@ -63,7 +97,34 @@ namespace Work.API.Repositories
                 }
                 else
                 {
-                    var tasks = await _fileRepository.Create(entity);
+                    var task = new Core.DTOs.Task()
+                    {
+                        Id = entity.Id,
+                        Date = entity.Date,
+                        Number = entity.Number,
+                        Title = entity.Title,
+                        SprintIds = entity.Sprints.Select(x => x.Id).ToList()
+                    };
+                    var taskDTOs = await _fileRepository.Create(task);
+                    
+                    var tasks = new List<Core.Models.Task>();
+
+                    foreach (var taskDTO in taskDTOs)
+                    {
+                        var sprints = taskDTO.SprintIds
+                            .Select(async x => (await _sprintService.Get(x)).Data)
+                            .Select(x => x.Result)
+                            .ToList();
+
+                        tasks.Add(new Core.Models.Task()
+                        {
+                            Id = taskDTO.Id,
+                            Date = taskDTO.Date,
+                            Number = taskDTO.Number,
+                            Title = taskDTO.Title,
+                            Sprints = sprints
+                        });
+                    }
                     result.Data = tasks;
                 }
             }
@@ -80,7 +141,29 @@ namespace Work.API.Repositories
             var result = new ServiceResult<Core.Models.Task>();
             try
             {
-                var task = await _fileRepository.Update(entity);
+                var taskDTO = new Core.DTOs.Task()
+                {
+                    Id = entity.Id,
+                    Date = entity.Date,
+                    Number = entity.Number,
+                    Title = entity.Title,
+                    SprintIds = entity.Sprints.Select(x => x.Id).ToList()
+                };
+                
+                taskDTO = await _fileRepository.Update(taskDTO);
+                var sprints = taskDTO.SprintIds
+                        .Select(async x => (await _sprintService.Get(x)).Data)
+                        .Select(x => x.Result)
+                        .ToList();
+
+                var task = new Core.Models.Task()
+                {
+                    Id = taskDTO.Id,
+                    Date = taskDTO.Date,
+                    Number = taskDTO.Number,
+                    Title = taskDTO.Title,
+                    Sprints = sprints
+                };
                 result.Data = task;
             }
             catch (Exception ex)
@@ -97,7 +180,14 @@ namespace Work.API.Repositories
             var result = new ServiceResult<Core.Models.Task>();
             try
             {
-                var task = await _fileRepository.Delete(id);
+                var taskDTO = await _fileRepository.Delete(id);
+                var task = new Core.Models.Task()
+                {
+                    Id = taskDTO.Id,
+                    Date = taskDTO.Date,
+                    Number = taskDTO.Number,
+                    Title = taskDTO.Title
+                };
                 result.Data = task;
             }
             catch (Exception ex)

@@ -45,6 +45,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Page Update="Views\AddSprintView.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
     <Page Update="Views\AddWorkView.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>
@@ -56,6 +59,9 @@
     <Page Update="Views\DailyWorkListView.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\SprintListView.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
     <Page Update="Views\WorkListView.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>

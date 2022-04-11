@@ -24,6 +24,9 @@ namespace WorkActivity.WPF
                 services.AddSingleton<IWorkRepository, WorkFileRepository>();
                 services.AddSingleton<IFileService<Work.Core.DTOs.Work>>(new FileRepository<Work.Core.DTOs.Work>());
 
+                services.AddSingleton<ISprintService, SprintService>();
+                services.AddSingleton<IFileService<Work.Core.Models.Sprint>>(new FileRepository<Work.Core.Models.Sprint>());
+
                 services.AddSingleton<IDailyWorkService, DailyWorkService>();
 
                 services.AddSingleton<MainWindowViewModel>();
