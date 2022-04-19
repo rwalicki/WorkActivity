@@ -1,16 +1,23 @@
 ﻿<UserControl x:Class="WorkActivity.WPF.Views.AddTaskView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:local="clr-namespace:WorkActivity.WPF.Views"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:cnv="clr-namespace:WorkActivity.WPF.Converters"
              mc:Ignorable="d"
              d:DesignHeight="450"
              d:DesignWidth="500"
              MaxWidth="400">
+    <UserControl.Resources>
+        <cnv:BoxConverter x:Key="BoxConverter"/>
+    </UserControl.Resources>
     <Grid Grid.IsSharedSizeScope="True"
           Margin="10"
           Background="White">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -54,7 +61,45 @@
                      Margin="5"
                      Text="{Binding Title}" />
         </Grid>
-        <Grid Grid.Row="3"
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"
+                                  SharedSizeGroup="A" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Style="{DynamicResource MaterialDesignTextBlock}"
+                       Grid.Column="0"
+                       Margin="5"
+                       VerticalAlignment="Center"
+                       Text="Sprints"
+                       Foreground="{DynamicResource MaterialDesignBody}" />
+            <ComboBox Grid.Column="1"
+                      Margin="5"
+                      ItemsSource="{Binding Sprints}"
+                      SelectedItem="{Binding Task}"
+                      SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <CheckBox Name="ch" Margin="0 0 10 0"
+                                      Command="{Binding DataContext.SelectSprintCommand, RelativeSource={RelativeSource AncestorType=ComboBox}}">
+                                <CheckBox.CommandParameter>
+                                    <MultiBinding Converter="{StaticResource BoxConverter}">
+                                        <Binding Path="IsChecked"
+                                                 ElementName="ch" />
+                                        <Binding Path=".Id" />
+                                        <Binding RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=local:AddTaskView}"/>
+                                    </MultiBinding>
+                                </CheckBox.CommandParameter>
+                                <!--CommandParameter="{Binding .Id}" >-->
+                            </CheckBox>
+                            <TextBlock Text="{Binding Name}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+        </Grid>
+        <Grid Grid.Row="4"
               Grid.Column="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />

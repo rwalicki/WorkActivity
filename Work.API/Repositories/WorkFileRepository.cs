@@ -10,12 +10,12 @@ namespace Work.API.Repositories
     public class WorkFileRepository : IWorkRepository
     {
         private readonly IFileService<Core.DTOs.Work> _fileWorkService;
-        private readonly IFileService<Core.Models.Task> _fileTaskService;
+        private readonly ITaskRepository _taskService;
 
-        public WorkFileRepository(IFileService<Core.DTOs.Work> fileWorkService, IFileService<Core.Models.Task> fileTaskService)
+        public WorkFileRepository(IFileService<Core.DTOs.Work> fileWorkService, ITaskRepository taskService)
         {
             _fileWorkService = fileWorkService;
-            _fileTaskService = fileTaskService;
+            _taskService = taskService;
         }
 
         public async Task<ServiceResult<IEnumerable<Core.Models.Work>>> GetAll()
@@ -32,7 +32,7 @@ namespace Work.API.Repositories
                         Id = work.Id,
                         Date = work.Date,
                         Hours = work.Hours,
-                        Task = await _fileTaskService.Get(work.TaskId)
+                        Task = (await _taskService.Get(work.TaskId)).Data
                     });
                 }
                 result.Data = works;
@@ -51,7 +51,7 @@ namespace Work.API.Repositories
             try
             {
                 var work = await _fileWorkService.Get(id);
-                var task = await _fileTaskService.Get(work.TaskId);
+                var task = (await _taskService.Get(work.TaskId)).Data;
                 result.Data = new Core.Models.Work()
                 {
                     Id = work.Id,

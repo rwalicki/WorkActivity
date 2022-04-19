@@ -45,7 +45,7 @@ namespace WorkActivity.WPF.ViewModels
             _dailyWorkService = dailyWorkService;
             _sprintService = sprintService;
 
-            CurrentViewModel = new TaskListViewModel(_taskService, _workService, this);
+            CurrentViewModel = new TaskListViewModel(_taskService, _workService, _sprintService, this);
 
             SprintListCommand = new RelayCommand((obj) =>
             {
@@ -61,7 +61,7 @@ namespace WorkActivity.WPF.ViewModels
 
             TaskListCommand = new RelayCommand((obj) =>
             {
-                CurrentViewModel = new TaskListViewModel(_taskService, _workService, this);
+                CurrentViewModel = new TaskListViewModel(_taskService, _workService, _sprintService, this);
                 (CurrentViewModel as TaskListViewModel)?.OnLoadCommand.Execute(null);
             });
 

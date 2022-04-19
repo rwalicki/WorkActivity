@@ -14,6 +14,7 @@ namespace WorkActivity.WPF.ViewModels
     {
         private readonly ITaskRepository _taskService;
         private readonly IWorkRepository _workService;
+        private readonly ISprintService _sprintService;
         private readonly MainWindowViewModel _mainWindowViewModel;
 
         private List<Work.Core.Models.Task> _tasks;
@@ -37,10 +38,11 @@ namespace WorkActivity.WPF.ViewModels
         public ICommand OnAddWorkItem { get; set; }
 
 
-        public TaskListViewModel(ITaskRepository taskService, IWorkRepository workService, MainWindowViewModel mainWindowViewModel)
+        public TaskListViewModel(ITaskRepository taskService, IWorkRepository workService, ISprintService sprintService, MainWindowViewModel mainWindowViewModel)
         {
             _taskService = taskService;
             _workService = workService;
+            _sprintService = sprintService;
             _mainWindowViewModel = mainWindowViewModel;
 
             OnLoadCommand = new RelayCommand(async (obj) =>
@@ -56,9 +58,10 @@ namespace WorkActivity.WPF.ViewModels
                 }
             });
 
-            AddTaskCommand = new RelayCommand((obj) =>
+            AddTaskCommand = new RelayCommand(async (obj) =>
             {
-                _mainWindowViewModel.CurrentViewModel = new AddTaskViewModel(_taskService, _workService, _mainWindowViewModel);
+                var sprints = (await _sprintService.GetAll()).Data.ToList();
+                _mainWindowViewModel.CurrentViewModel = new AddTaskViewModel(_taskService, _workService, _sprintService, _mainWindowViewModel, sprints);
             });
 
             OnDeleteCommand = new RelayCommand(async (obj) =>

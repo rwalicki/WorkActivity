@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 using Work.Core.Interfaces;
+using Work.Core.Models;
 
 namespace Work.API.Repositories
 {
@@ -29,10 +30,15 @@ namespace Work.API.Repositories
 
                 foreach(var task in taskDTOs)
                 {
-                    var sprints = task.SprintIds
-                        .Select(async x => (await _sprintService.Get(x)).Data)
-                        .Select(x=>x.Result)
-                        .ToList();
+                    var sprints = new List<Sprint>();
+                    if (task.SprintIds != null)
+                    {
+                        foreach (var sprintId in task.SprintIds)
+                        {
+                            var sprint = (await _sprintService.Get(sprintId)).Data;
+                            sprints.Add(sprint);
+                        }
+                    }
 
                     tasks.Add(new Core.Models.Task()
                     {
@@ -60,7 +66,7 @@ namespace Work.API.Repositories
             try
             {
                 var taskDTO = await _fileRepository.Get(id);
-                var sprints = taskDTO.SprintIds
+                var sprints = taskDTO.SprintIds?
                         .Select(async x => (await _sprintService.Get(x)).Data)
                         .Select(x => x.Result)
                         .ToList();
@@ -111,10 +117,15 @@ namespace Work.API.Repositories
 
                     foreach (var taskDTO in taskDTOs)
                     {
-                        var sprints = taskDTO.SprintIds
-                            .Select(async x => (await _sprintService.Get(x)).Data)
-                            .Select(x => x.Result)
-                            .ToList();
+                        var sprints = new List<Sprint>();
+                        if (taskDTO.SprintIds != null)
+                        {
+                            foreach (var sprintId in taskDTO.SprintIds)
+                            {
+                                var sprint = (await _sprintService.Get(sprintId)).Data;
+                                sprints.Add(sprint);
+                            }
+                        }
 
                         tasks.Add(new Core.Models.Task()
                         {
