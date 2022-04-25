@@ -11,7 +11,7 @@ namespace WorkActivity.WPF.ViewModels
     {
         private ITaskRepository _taskService;
         private IWorkRepository _workService;
-        private ISprintService _sprintService;
+        private ISprintRepository _sprintService;
         private MainWindowViewModel _mainWindowViewModel;
 
         public List<Work.Core.Models.Sprint> Sprints { get; set; }
@@ -44,7 +44,7 @@ namespace WorkActivity.WPF.ViewModels
         public ICommand SelectSprintCommand { get; set; }
 
 
-        public AddTaskViewModel(ITaskRepository taskService, IWorkRepository workService, ISprintService sprintService, MainWindowViewModel mainWindowViewModel, List<Sprint> sprints)
+        public AddTaskViewModel(ITaskRepository taskService, IWorkRepository workService, ISprintRepository sprintService, MainWindowViewModel mainWindowViewModel, List<Sprint> sprints)
         {
             SelectedSprints = new HashSet<int>();
             Sprints = sprints;

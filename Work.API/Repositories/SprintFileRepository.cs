@@ -9,11 +9,11 @@ using Work.Core.Models;
 
 namespace Work.API.Repositories
 {
-    public class SprintService : ISprintService
+    public class SprintFileRepository : ISprintRepository
     {
         private readonly IFileService<Sprint> _fileRepository;
 
-        public SprintService(IFileService<Sprint> fileRepository)
+        public SprintFileRepository(IFileService<Sprint> fileRepository)
         {
             _fileRepository = fileRepository;
         }
@@ -44,8 +44,16 @@ namespace Work.API.Repositories
             try
             {
                 var sprint = await _fileRepository.Get(id);
-                sprint.IsActive = sprint.StartDate < DateTime.Now && sprint.EndDate > DateTime.Now;
-                result.Data = sprint;
+                if (sprint == null)
+                {
+                    result.Message = "Sprint does not exist.";
+                    result.Success = false;
+                }
+                else
+                {
+                    sprint.IsActive = sprint.StartDate < DateTime.Now && sprint.EndDate > DateTime.Now;
+                    result.Data = sprint;
+                }
             }
             catch (Exception ex)
             {

@@ -10,12 +10,12 @@ namespace Work.API.Repositories
     public class WorkFileRepository : IWorkRepository
     {
         private readonly IFileService<Core.DTOs.Work> _fileWorkService;
-        private readonly ITaskRepository _taskService;
+        private readonly ITaskRepository _taskRepository;
 
-        public WorkFileRepository(IFileService<Core.DTOs.Work> fileWorkService, ITaskRepository taskService)
+        public WorkFileRepository(IFileService<Core.DTOs.Work> fileWorkService, ITaskRepository taskRepository)
         {
             _fileWorkService = fileWorkService;
-            _taskService = taskService;
+            _taskRepository = taskRepository;
         }
 
         public async Task<ServiceResult<IEnumerable<Core.Models.Work>>> GetAll()
@@ -27,12 +27,13 @@ namespace Work.API.Repositories
                 var workDTOs = await _fileWorkService.GetAll();
                 foreach (var work in workDTOs)
                 {
+                    var task = (await _taskRepository.Get(work.TaskId)).Data;
                     works.Add(new Core.Models.Work()
                     {
                         Id = work.Id,
                         Date = work.Date,
                         Hours = work.Hours,
-                        Task = (await _taskService.Get(work.TaskId)).Data
+                        Task = task
                     });
                 }
                 result.Data = works;
@@ -51,7 +52,7 @@ namespace Work.API.Repositories
             try
             {
                 var work = await _fileWorkService.Get(id);
-                var task = (await _taskService.Get(work.TaskId)).Data;
+                var task = (await _taskRepository.Get(work.TaskId)).Data;
                 result.Data = new Core.Models.Work()
                 {
                     Id = work.Id,
@@ -119,11 +120,13 @@ namespace Work.API.Repositories
             try
             {
                 var work = await _fileWorkService.Delete(id);
+                var task = (await _taskRepository.Get(work.TaskId)).Data;
                 result.Data = new Core.Models.Work()
                 {
                     Id = work.Id,
                     Date = work.Date,
-                    Hours = work.Hours
+                    Hours = work.Hours,
+                    Task = task
                 };
             }
             catch (Exception ex)

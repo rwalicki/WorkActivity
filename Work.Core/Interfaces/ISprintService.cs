@@ -2,8 +2,7 @@
 
 namespace Work.Core.Interfaces
 {
-    public interface ISprintService : IRepository<Core.Models.Sprint>
+    public interface ISprintRepository : IRepository<Core.Models.Sprint>
     {
-
     }
 }

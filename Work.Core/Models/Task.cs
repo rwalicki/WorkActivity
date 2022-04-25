@@ -10,10 +10,5 @@ namespace Work.Core.Models
         public string Title { get; set; }
         public DateTime Date { get; set; }
         public List<Sprint> Sprints { get; set; }
-
-        public Task()
-        {
-            Sprints = new List<Sprint>();
-        }
     }
 }

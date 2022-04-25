@@ -12,7 +12,7 @@ namespace WorkActivity.WPF.ViewModels
         private ITaskRepository _taskService;
         private IWorkRepository _workService;
         private IDailyWorkService _dailyWorkService;
-        private ISprintService _sprintService;
+        private ISprintRepository _sprintService;
 
         private ViewModelBase _currentViewModel;
 
@@ -36,7 +36,7 @@ namespace WorkActivity.WPF.ViewModels
         public ICommand DailyWorkListCommand { get; set; }
         public ICommand CloseCommand { get; set; }
 
-        public MainWindowViewModel(ITaskRepository taskService, IWorkRepository workService, IDailyWorkService dailyWorkService, ISprintService sprintService)
+        public MainWindowViewModel(ITaskRepository taskService, IWorkRepository workService, IDailyWorkService dailyWorkService, ISprintRepository sprintService)
         {
             SnakbarMessageQueue = new SnackbarMessageQueue();
 

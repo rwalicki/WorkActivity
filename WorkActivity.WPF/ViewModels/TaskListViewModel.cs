@@ -14,7 +14,7 @@ namespace WorkActivity.WPF.ViewModels
     {
         private readonly ITaskRepository _taskService;
         private readonly IWorkRepository _workService;
-        private readonly ISprintService _sprintService;
+        private readonly ISprintRepository _sprintService;
         private readonly MainWindowViewModel _mainWindowViewModel;
 
         private List<Work.Core.Models.Task> _tasks;
@@ -38,7 +38,7 @@ namespace WorkActivity.WPF.ViewModels
         public ICommand OnAddWorkItem { get; set; }
 
 
-        public TaskListViewModel(ITaskRepository taskService, IWorkRepository workService, ISprintService sprintService, MainWindowViewModel mainWindowViewModel)
+        public TaskListViewModel(ITaskRepository taskService, IWorkRepository workService, ISprintRepository sprintService, MainWindowViewModel mainWindowViewModel)
         {
             _taskService = taskService;
             _workService = workService;

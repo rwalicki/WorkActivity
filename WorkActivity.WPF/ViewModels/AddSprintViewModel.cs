@@ -7,7 +7,7 @@ namespace WorkActivity.WPF.ViewModels
 {
     public class AddSprintViewModel : ViewModelBase
     {
-        private ISprintService _sprintService;
+        private ISprintRepository _sprintService;
         private MainWindowViewModel _mainWindowViewModel;
 
         private string _name;
@@ -46,7 +46,7 @@ namespace WorkActivity.WPF.ViewModels
 
         public ICommand AddSprintCommand { get; set; }
 
-        public AddSprintViewModel(ISprintService sprintService, MainWindowViewModel mainWindowViewModel)
+        public AddSprintViewModel(ISprintRepository sprintService, MainWindowViewModel mainWindowViewModel)
         {
             _sprintService = sprintService;
             _mainWindowViewModel = mainWindowViewModel;

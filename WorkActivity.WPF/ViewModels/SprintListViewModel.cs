@@ -10,7 +10,7 @@ namespace WorkActivity.WPF.ViewModels
 {
     public class SprintListViewModel : ViewModelBase
     {
-        private ISprintService _sprintService;
+        private ISprintRepository _sprintService;
         private MainWindowViewModel _mainWindowViewModel;
 
         private ObservableCollection<Sprint> _sprints;
@@ -28,7 +28,7 @@ namespace WorkActivity.WPF.ViewModels
         public ICommand AddSprintCommand { get; set; }
         public ICommand OnDeleteCommand { get; set; }
 
-        public SprintListViewModel(ISprintService sprintService, MainWindowViewModel mainWindowViewModel)
+        public SprintListViewModel(ISprintRepository sprintService, MainWindowViewModel mainWindowViewModel)
         {
             _sprintService = sprintService;
             _mainWindowViewModel = mainWindowViewModel;
