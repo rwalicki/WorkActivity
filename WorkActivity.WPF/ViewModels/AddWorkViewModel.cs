@@ -40,7 +40,7 @@ namespace WorkActivity.WPF.ViewModels
             }
         }
 
-        public float _hours = 1;
+        public float _hours = 1.0f;
         public float Hours
         {
             get { return _hours; }

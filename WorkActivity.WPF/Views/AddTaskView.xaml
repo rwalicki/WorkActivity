@@ -5,14 +5,11 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-             xmlns:cnv="clr-namespace:WorkActivity.WPF.Converters"
+             xmlns:vm="clr-namespace:WorkActivity.WPF.ViewModels"
              mc:Ignorable="d"
              d:DesignHeight="450"
              d:DesignWidth="500"
              MaxWidth="400">
-    <UserControl.Resources>
-        <cnv:BoxConverter x:Key="BoxConverter"/>
-    </UserControl.Resources>
     <Grid Grid.IsSharedSizeScope="True"
           Margin="10"
           Background="White">
@@ -73,31 +70,50 @@
                        VerticalAlignment="Center"
                        Text="Sprints"
                        Foreground="{DynamicResource MaterialDesignBody}" />
-            <ComboBox Grid.Column="1"
-                      Margin="5"
-                      ItemsSource="{Binding Sprints}"
-                      SelectedItem="{Binding Task}"
-                      SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}">
-                <ComboBox.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Orientation="Horizontal">
-                            <CheckBox Name="ch" Margin="0 0 10 0"
-                                      Command="{Binding DataContext.SelectSprintCommand, RelativeSource={RelativeSource AncestorType=ComboBox}}">
-                                <CheckBox.CommandParameter>
-                                    <MultiBinding Converter="{StaticResource BoxConverter}">
-                                        <Binding Path="IsChecked"
-                                                 ElementName="ch" />
-                                        <Binding Path=".Id" />
-                                        <Binding RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=local:AddTaskView}"/>
-                                    </MultiBinding>
-                                </CheckBox.CommandParameter>
-                                <!--CommandParameter="{Binding .Id}" >-->
-                            </CheckBox>
-                            <TextBlock Text="{Binding Name}" />
-                        </StackPanel>
-                    </DataTemplate>
-                </ComboBox.ItemTemplate>
-            </ComboBox>
+
+            <ScrollViewer Grid.Column="1"
+                          Height="110"
+                          Margin="5"
+                          VerticalScrollBarVisibility="Auto">
+                <ScrollViewer.Resources>
+                        <Style TargetType="ScrollBar"
+                               BasedOn="{StaticResource MaterialDesignScrollBarMinimal}" />
+                </ScrollViewer.Resources>
+                <ItemsControl
+                    ItemsSource="{Binding Sprints}"
+                    Grid.IsSharedSizeScope="True"
+                    Margin="5">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type vm:SprintViewModel}">
+                            <Border x:Name="Border"
+                                    Padding="8">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition SharedSizeGroup="Checkbox" />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+                                    <CheckBox VerticalAlignment="Center"
+                                              IsChecked="{Binding IsSelected}" />
+                                    <StackPanel Margin="8 0 0 0"
+                                                Grid.Column="1">
+                                        <TextBlock Text="{Binding Name}"
+                                                   FontWeight="Bold" />
+                                        <TextBlock Text="{Binding Date}" />
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                            <DataTemplate.Triggers>
+                                <DataTrigger Binding="{Binding IsSelected}"
+                                             Value="True">
+                                    <Setter TargetName="Border"
+                                            Property="Background"
+                                            Value="{DynamicResource MaterialDesignSelection}" />
+                                </DataTrigger>
+                            </DataTemplate.Triggers>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
         </Grid>
         <Grid Grid.Row="4"
               Grid.Column="2">
@@ -108,7 +124,7 @@
             </Grid.ColumnDefinitions>
             <Button Grid.Column="1"
                     Content="Add"
-                    Margin="5"
+                    Margin="0 20 0 0"
                     Width="100"
                     Command="{Binding AddTaskCommand}" />
         </Grid>

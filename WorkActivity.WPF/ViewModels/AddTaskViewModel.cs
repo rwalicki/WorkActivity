@@ -1,9 +1,10 @@
-﻿using System.Windows.Input;
-using Work.Core.Interfaces;
-using WorkActivity.WPF.Commands;
-using System.Collections.Generic;
-using Work.Core.Models;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows.Input;
+using Work.Core.Interfaces;
+using Work.Core.Models;
+using WorkActivity.WPF.Commands;
 
 namespace WorkActivity.WPF.ViewModels
 {
@@ -14,7 +15,7 @@ namespace WorkActivity.WPF.ViewModels
         private ISprintRepository _sprintService;
         private MainWindowViewModel _mainWindowViewModel;
 
-        public List<Work.Core.Models.Sprint> Sprints { get; set; }
+        public ObservableCollection<SprintViewModel> Sprints { get; set; }
 
         public string _number;
         public string Number
@@ -38,28 +39,29 @@ namespace WorkActivity.WPF.ViewModels
             }
         }
 
-        public HashSet<int> SelectedSprints { get; set; }
-
         public ICommand AddTaskCommand { get; set; }
         public ICommand SelectSprintCommand { get; set; }
 
-
         public AddTaskViewModel(ITaskRepository taskService, IWorkRepository workService, ISprintRepository sprintService, MainWindowViewModel mainWindowViewModel, List<Sprint> sprints)
         {
-            SelectedSprints = new HashSet<int>();
-            Sprints = sprints;
+            Sprints = new ObservableCollection<SprintViewModel>();
+            foreach (var sprint in sprints)
+            {
+                Sprints.Add(new SprintViewModel(sprint));
+            }
+
             _sprintService = sprintService;
             _taskService = taskService;
             _workService = workService;
             _mainWindowViewModel = mainWindowViewModel;
-            AddTaskCommand = new RelayCommand(async(obj) =>
+            AddTaskCommand = new RelayCommand(async (obj) =>
             {
-                var result = await _taskService.Create(new Work.Core.Models.Task() 
-                { 
-                    Number = int.Parse(Number), 
-                    Title = Title, 
+                var result = await _taskService.Create(new Work.Core.Models.Task()
+                {
+                    Number = int.Parse(Number),
+                    Title = Title,
                     Date = System.DateTime.Now,
-                    Sprints = Sprints.Where(x=> SelectedSprints.Contains(x.Id)).ToList()
+                    Sprints = Sprints.Where(x => x.IsSelected).Select(x => x.Sprint).ToList()
                 });
                 if (result.Success)
                 {
