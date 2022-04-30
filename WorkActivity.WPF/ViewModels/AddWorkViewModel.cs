@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Windows.Input;
 using Work.Core.Interfaces;
@@ -40,8 +41,8 @@ namespace WorkActivity.WPF.ViewModels
             }
         }
 
-        public float _hours = 1.0f;
-        public float Hours
+        public string _hours = "1";
+        public string Hours
         {
             get { return _hours; }
             set
@@ -80,7 +81,7 @@ namespace WorkActivity.WPF.ViewModels
             _mainWindowViewModel = mainWindowViewModel;
             AddTaskCommand = new RelayCommand(async (obj) =>
             {
-                await _workService.Create(new Work.Core.Models.Work() { Task = Task, Hours = Hours, Date = Date });
+                await _workService.Create(new Work.Core.Models.Work() { Task = Task, Hours = float.Parse(Hours.Replace('.',',')), Date = Date });
                 _mainWindowViewModel.CurrentViewModel = new WorkListViewModel(_workService, _taskService, _mainWindowViewModel);
             });
         }
