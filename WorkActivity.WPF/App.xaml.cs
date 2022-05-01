@@ -58,6 +58,7 @@ namespace WorkActivity.WPF
         protected override void OnStartup(StartupEventArgs e)
         {
             _host.Start();
+            _host.Services.GetRequiredService<NavigationService<TaskListViewModel>>().Navigate();
             var mainWindow = _host.Services.GetRequiredService<MainWindow>();
             mainWindow.Show();
         }
