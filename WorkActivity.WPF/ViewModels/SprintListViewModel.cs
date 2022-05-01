@@ -37,9 +37,7 @@ namespace WorkActivity.WPF.ViewModels
             _addSprintNavigationService = addSprintNavigationService;
 
             OnLoadCommand = new RelayCommand(Load);
-
             AddSprintCommand = new RelayCommand(AddSprintNavigate);
-
             DeleteCommand = new RelayCommand(Delete);
         }
 

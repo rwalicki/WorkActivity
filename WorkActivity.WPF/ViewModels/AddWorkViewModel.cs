@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Windows.Input;
 using Work.Core.Interfaces;
 using WorkActivity.WPF.Commands;
 using WorkActivity.WPF.Services;
-using WorkActivity.WPF.Stores;
 
 namespace WorkActivity.WPF.ViewModels
 {
@@ -68,30 +66,20 @@ namespace WorkActivity.WPF.ViewModels
         public ICommand AddTaskCommand { get; set; }
         public ICommand OnLoadCommand { get; set; }
 
-
-        public AddWorkViewModel(IWorkRepository workService, 
-            ITaskRepository taskService, 
-            NavigationService<WorkListViewModel> workListNavigationService)
+        public AddWorkViewModel(IWorkRepository workService,
+            ITaskRepository taskService,
+            NavigationService<WorkListViewModel> workListNavigationService,
+            object task)
         {
             Tasks = new List<Work.Core.Models.Task>();
-            //Task = task;
-            //if (Task != null)
-            //{
-            //    var foundTask = Tasks.FirstOrDefault(x => x.Id == task.Id);
-            //    var index = Tasks.IndexOf(foundTask);
-            //    SelectedIndex = index;
-            //}
+            Task = task as Work.Core.Models.Task;
+
             _workService = workService;
             _taskService = taskService;
             _workListNavigationService = workListNavigationService;
+
             OnLoadCommand = new RelayCommand(Load);
             AddTaskCommand = new RelayCommand(AddWork);
-        }
-
-        private async void AddWork(object obj)
-        {
-            await _workService.Create(new Work.Core.Models.Work() { Task = Task, Hours = float.Parse(Hours.Replace('.', ',')), Date = Date });
-            _workListNavigationService.Navigate();
         }
 
         private async void Load(object obj)
@@ -99,12 +87,27 @@ namespace WorkActivity.WPF.ViewModels
             var result = await _taskService.GetAll();
             if (result.Success)
             {
-                foreach(var task in result.Data)
+                var tasks = result.Data.OrderByDescending(x => x.Date).ToList();
+                foreach (var task in tasks)
                 {
                     Tasks.Add(task);
                 }
+
+                if (Task != null)
+                {
+                    var foundTask = Tasks.FirstOrDefault(x => x.Id == Task.Id);
+                    var index = Tasks.IndexOf(foundTask);
+                    SelectedIndex = index;
+                }
+
                 OnPropertyChanged(nameof(Tasks));
             }
+        }
+
+        private async void AddWork(object obj)
+        {
+            await _workService.Create(new Work.Core.Models.Work() { Task = Task, Hours = float.Parse(Hours.Replace('.', ',')), Date = Date });
+            _workListNavigationService.Navigate();
         }
     }
 }

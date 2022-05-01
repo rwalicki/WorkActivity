@@ -1,12 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
 using Work.Core.Interfaces;
-using Work.Core.Models;
 using WorkActivity.WPF.Commands;
 using WorkActivity.WPF.Services;
-using WorkActivity.WPF.Stores;
 
 namespace WorkActivity.WPF.ViewModels
 {
@@ -45,8 +42,8 @@ namespace WorkActivity.WPF.ViewModels
         public ICommand AddTaskCommand { get; set; }
 
         public AddTaskViewModel(ISnackbarService snackbarService,
-            ITaskRepository taskService, 
-            ISprintRepository sprintService, 
+            ITaskRepository taskService,
+            ISprintRepository sprintService,
             NavigationService<TaskListViewModel> taskListNavigationService)
         {
             Sprints = new ObservableCollection<SprintViewModel>();
@@ -57,25 +54,7 @@ namespace WorkActivity.WPF.ViewModels
             _taskListNavigationService = taskListNavigationService;
 
             OnLoadCommand = new RelayCommand(Load);
-
-            AddTaskCommand = new RelayCommand(async (obj) =>
-            {
-                var result = await _taskService.Create(new Work.Core.Models.Task()
-                {
-                    Number = int.Parse(Number),
-                    Title = Title,
-                    Date = System.DateTime.Now,
-                    Sprints = Sprints.Where(x => x.IsSelected).Select(x => x.Sprint).ToList()
-                });
-                if (result.Success)
-                {
-                    _taskListNavigationService.Navigate();
-                }
-                else
-                {
-                    _snackbarService.ShowMessage(result.Message);
-                }
-            });
+            AddTaskCommand = new RelayCommand(AddTask);
         }
 
         private async void Load(object sender)
@@ -87,6 +66,26 @@ namespace WorkActivity.WPF.ViewModels
                 {
                     Sprints.Add(new SprintViewModel(sprint));
                 }
+            }
+        }
+
+        private async void AddTask(object sender)
+        {
+            var result = await _taskService.Create(new Work.Core.Models.Task()
+            {
+                Number = int.Parse(Number),
+                Title = Title,
+                Date = System.DateTime.Now,
+                Sprints = Sprints.Where(x => x.IsSelected).Select(x => x.Sprint).ToList()
+            });
+
+            if (result.Success)
+            {
+                _taskListNavigationService.Navigate();
+            }
+            else
+            {
+                _snackbarService.ShowMessage(result.Message);
             }
         }
     }

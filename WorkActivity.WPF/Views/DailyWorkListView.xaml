@@ -34,7 +34,7 @@
                   Background="White">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="MouseDoubleClick">
-                    <i:InvokeCommandAction Command="{Binding OnShowDetailsCommand}"
+                    <i:InvokeCommandAction Command="{Binding ShowDetailsCommand}"
                                            CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource FindAncestor, AncestorType=DataGrid}}" />
                 </i:EventTrigger>
             </i:Interaction.Triggers>
@@ -74,7 +74,7 @@
                                     Padding="0"
                                     Margin="0"
                                     Style="{DynamicResource MaterialDesignIconButton}"
-                                    Command="{Binding DataContext.OnShowDetailsCommand, RelativeSource={RelativeSource AncestorType=local:DailyWorkListView}}"
+                                    Command="{Binding DataContext.ShowDetailsCommand, RelativeSource={RelativeSource AncestorType=local:DailyWorkListView}}"
                                     CommandParameter="{Binding .}">
                                 <controls:PackIcon Kind="DotsHorizontal" />
                             </Button>

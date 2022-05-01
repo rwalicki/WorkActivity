@@ -24,28 +24,31 @@ namespace WorkActivity.WPF.ViewModels
             }
         }
 
-        public ICommand OnDeleteCommand { get; set; }
         public ICommand OnLoadCommand { get; set; }
+        public ICommand DeleteCommand { get; set; }
 
-        public DailyWorkDetailsListViewModel(IWorkRepository workService, List<Work.Core.Models.Work> works)
+        public DailyWorkDetailsListViewModel(IWorkRepository workService, object dailyWorks)
         {
             _workService = workService;
-            _dailyWorks = works;
+            _dailyWorks = dailyWorks as List<Work.Core.Models.Work>;
 
-            OnLoadCommand = new RelayCommand((obj) =>
-            {
-                Works = new ObservableCollection<Work.Core.Models.Work>(_dailyWorks);
-            });
+            OnLoadCommand = new RelayCommand(Load);
+            DeleteCommand = new RelayCommand(Delete);
+        }
 
-            OnDeleteCommand = new RelayCommand(async (obj) =>
+        private void Load(object obj)
+        {
+            Works = new ObservableCollection<Work.Core.Models.Work>(_dailyWorks);
+        }
+
+        private async void Delete(object sender)
+        {
+            var work = sender as Work.Core.Models.Work;
+            var result = await _workService.Delete(work.Id);
+            if (result.Success)
             {
-                var work = obj as Work.Core.Models.Work;
-                var result = await _workService.Delete(work.Id);
-                if (result.Success)
-                {
-                    Works.Remove(Works.Where(x => x.Id == result.Data.Id).First());
-                }
-            });
+                Works.Remove(Works.Where(x => x.Id == result.Data.Id).First());
+            }
         }
     }
 }

@@ -15,6 +15,7 @@ namespace WorkActivity.WPF.ViewModels
         private readonly ISnackbarService _snackbarService;
         private readonly ITaskRepository _taskRepository;
         private readonly NavigationService<AddTaskViewModel> _addTaskNavigationService;
+        private readonly ParameterNavigationService<object, AddWorkViewModel> _addWorkNavigationService;
 
 
         private List<Work.Core.Models.Task> _tasks;
@@ -38,24 +39,20 @@ namespace WorkActivity.WPF.ViewModels
         public ICommand OnAddWorkItem { get; set; }
 
 
-        public TaskListViewModel(ISnackbarService snackbarService, ITaskRepository taskRepository, NavigationService<AddTaskViewModel> addTaskNavigationService)
+        public TaskListViewModel(ISnackbarService snackbarService,
+            ITaskRepository taskRepository,
+            NavigationService<AddTaskViewModel> addTaskNavigationService,
+            ParameterNavigationService<object, AddWorkViewModel> addWorkNavigationService)
         {
             _taskRepository = taskRepository;
             _snackbarService = snackbarService;
             _addTaskNavigationService = addTaskNavigationService;
+            _addWorkNavigationService = addWorkNavigationService;
 
             OnLoadCommand = new RelayCommand(Load);
-
             AddTaskCommand = new RelayCommand(AddTaskNavigate);
-
             DeleteCommand = new RelayCommand(Delete);
-
-            //TODO
-            //OnAddWorkItem = new RelayCommand(async (obj) =>
-            //{
-            //    var tasks = (await _taskService.GetAll()).Data.OrderByDescending(x => x.Date).ToList();
-            //    _navigationStore.CurrentViewModel = new AddWorkViewModel(_workService, _taskService, _mainWindowViewModel, tasks, obj as Work.Core.Models.Task, _navigationStore);
-            //});
+            OnAddWorkItem = new RelayCommand(AddWorkItem);
         }
 
         private bool Filter(object sender)
@@ -105,6 +102,11 @@ namespace WorkActivity.WPF.ViewModels
                     Load(sender);
                 }
             }
+        }
+
+        private void AddWorkItem(object sender)
+        {
+            _addWorkNavigationService.Navigate(sender);
         }
     }
 }
