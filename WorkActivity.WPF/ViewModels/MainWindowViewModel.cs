@@ -2,33 +2,26 @@
 using Shared.Interfaces;
 using System;
 using System.Windows.Input;
-using Work.Core.Interfaces;
 using WorkActivity.WPF.Commands;
+using WorkActivity.WPF.Services;
+using WorkActivity.WPF.Stores;
 
 namespace WorkActivity.WPF.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase, ICloseWindow
     {
-        private ITaskRepository _taskService;
-        private IWorkRepository _workService;
-        private IDailyWorkService _dailyWorkService;
-        private ISprintRepository _sprintService;
+        private readonly ISnackbarService _snackbarService;
+        private readonly NavigationStore _navigationStore;
 
-        private ViewModelBase _currentViewModel;
+        private readonly NavigationService<SprintListViewModel> _sprintListNavigationService;
+        private readonly NavigationService<TaskListViewModel> _taskListNavigationService;
+        private readonly NavigationService<WorkListViewModel> _workListNavigationService;
+        private readonly NavigationService<DailyWorkListViewModel> _dailyWorkListNavigationService;
+
+        public ViewModelBase CurrentViewModel => _navigationStore.CurrentViewModel;
+        public SnackbarMessageQueue SnakbarMessageQueue => _snackbarService.GetSnackbar();
 
         public event Action Close;
-
-        public ViewModelBase CurrentViewModel
-        {
-            get { return _currentViewModel; }
-            set
-            {
-                _currentViewModel = value;
-                OnPropertyChanged(nameof(CurrentViewModel));
-            }
-        }
-
-        public SnackbarMessageQueue SnakbarMessageQueue { get; set; }
 
         public ICommand SprintListCommand { get; set; }
         public ICommand TaskListCommand { get; set; }
@@ -36,45 +29,29 @@ namespace WorkActivity.WPF.ViewModels
         public ICommand DailyWorkListCommand { get; set; }
         public ICommand CloseCommand { get; set; }
 
-        public MainWindowViewModel(ITaskRepository taskService, IWorkRepository workService, IDailyWorkService dailyWorkService, ISprintRepository sprintService)
+        public MainWindowViewModel(NavigationStore navigationStore,
+            ISnackbarService snackbarService,
+            NavigationService<SprintListViewModel> sprintListNavigationService,
+            NavigationService<TaskListViewModel> taskListNavigationService,
+            NavigationService<WorkListViewModel> workListNavigationService,
+            NavigationService<DailyWorkListViewModel> dailyWorkListNavigationService)
         {
-            SnakbarMessageQueue = new SnackbarMessageQueue();
+            _navigationStore = navigationStore;
+            _navigationStore.CurrentViewModelChanged += () => OnPropertyChanged(nameof(CurrentViewModel));
 
-            _taskService = taskService;
-            _workService = workService;
-            _dailyWorkService = dailyWorkService;
-            _sprintService = sprintService;
+            _snackbarService = snackbarService;
 
-            CurrentViewModel = new TaskListViewModel(_taskService, _workService, _sprintService, this);
+            _sprintListNavigationService = sprintListNavigationService;
+            _taskListNavigationService = taskListNavigationService;
+            _workListNavigationService = workListNavigationService;
+            _dailyWorkListNavigationService = dailyWorkListNavigationService;
 
-            SprintListCommand = new RelayCommand((obj) =>
-            {
-                CurrentViewModel = new SprintListViewModel(_sprintService, this);
-                (CurrentViewModel as SprintListViewModel)?.OnLoadCommand.Execute(null);
-            });
+            SprintListCommand = new NavigateCommand(_sprintListNavigationService);
+            TaskListCommand = new NavigateCommand(_taskListNavigationService);
+            WorkListCommand = new NavigateCommand(_workListNavigationService);
+            DailyWorkListCommand = new NavigateCommand(_dailyWorkListNavigationService);
 
-            WorkListCommand = new RelayCommand((obj) =>
-            {
-                CurrentViewModel = new WorkListViewModel(_workService, _taskService, this);
-                (CurrentViewModel as WorkListViewModel)?.OnLoadCommand.Execute(null);
-            });
-
-            TaskListCommand = new RelayCommand((obj) =>
-            {
-                CurrentViewModel = new TaskListViewModel(_taskService, _workService, _sprintService, this);
-                (CurrentViewModel as TaskListViewModel)?.OnLoadCommand.Execute(null);
-            });
-
-            DailyWorkListCommand = new RelayCommand((obj) =>
-            {
-                CurrentViewModel = new DailyWorkListViewModel(_dailyWorkService, workService, this);
-                (CurrentViewModel as DailyWorkListViewModel)?.OnLoadCommand.Execute(null);
-            });
-
-            CloseCommand = new RelayCommand((obj) =>
-            {
-                Close?.Invoke();
-            });
+            CloseCommand = new RelayCommand((obj) => Close?.Invoke());
         }
     }
 }

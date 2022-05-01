@@ -4,12 +4,17 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:vm="clr-namespace:WorkActivity.WPF.ViewModels"
              mc:Ignorable="d"
              d:DesignHeight="450"
              d:DesignWidth="500"
              MaxWidth="400">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding OnLoadCommand}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
     <Grid Grid.IsSharedSizeScope="True"
           Margin="10"
           Background="White">

@@ -2,13 +2,15 @@
 using System.Windows.Input;
 using Work.Core.Interfaces;
 using WorkActivity.WPF.Commands;
+using WorkActivity.WPF.Services;
 
 namespace WorkActivity.WPF.ViewModels
 {
     public class AddSprintViewModel : ViewModelBase
     {
-        private ISprintRepository _sprintService;
-        private MainWindowViewModel _mainWindowViewModel;
+        private readonly ISnackbarService _snackbarService;
+        private readonly ISprintRepository _sprintRepository;
+        private readonly NavigationService<SprintListViewModel> _sprintListNavigationService;
 
         private string _name;
         public string Name
@@ -46,22 +48,28 @@ namespace WorkActivity.WPF.ViewModels
 
         public ICommand AddSprintCommand { get; set; }
 
-        public AddSprintViewModel(ISprintRepository sprintService, MainWindowViewModel mainWindowViewModel)
+        public AddSprintViewModel(ISnackbarService snackbarService,
+            ISprintRepository sprintRepository,
+            NavigationService<SprintListViewModel> sprintListNavigationService)
         {
-            _sprintService = sprintService;
-            _mainWindowViewModel = mainWindowViewModel;
-            AddSprintCommand = new RelayCommand(async (obj) =>
+            _snackbarService = snackbarService;
+            _sprintRepository = sprintRepository;
+            _sprintListNavigationService = sprintListNavigationService;
+
+            AddSprintCommand = new RelayCommand(AddSprint);
+        }
+
+        private async void AddSprint(object sender)
+        {
+            var result = await _sprintRepository.Create(new Work.Core.Models.Sprint() { Name = Name, StartDate = StartDate, EndDate = EndDate });
+            if (result.Success)
             {
-                var result = await _sprintService.Create(new Work.Core.Models.Sprint() { Name = Name, StartDate = StartDate, EndDate = EndDate });
-                if (result.Success)
-                {
-                    _mainWindowViewModel.CurrentViewModel = new SprintListViewModel(_sprintService, _mainWindowViewModel);
-                }
-                else
-                {
-                    _mainWindowViewModel.SnakbarMessageQueue.Enqueue(result.Message);
-                }
-            });
+                _sprintListNavigationService.Navigate();
+            }
+            else
+            {
+                _snackbarService.ShowMessage(result.Message);
+            }
         }
     }
 }

@@ -8,19 +8,17 @@ namespace Work.API.Repositories
 {
     public class DailyWorkService : IDailyWorkService
     {
-        private readonly ITaskRepository _taskService;
-        private readonly IWorkRepository _workService;
+        private readonly IWorkRepository _workRepository;
 
         public DailyWorkService(ITaskRepository taskService, IWorkRepository workService)
         {
-            _taskService = taskService;
-            _workService = workService;
+            _workRepository = workService;
         }
 
         public async Task<IEnumerable<DailyWork>> GetAll()
         {
             var dailyWorks = new List<DailyWork>();
-            var works = await _workService.GetAll();
+            var works = await _workRepository.GetAll();
             if (works.Success)
             {
                 foreach (var work in works.Data)

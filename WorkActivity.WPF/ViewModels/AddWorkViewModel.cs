@@ -5,14 +5,16 @@ using System.Linq;
 using System.Windows.Input;
 using Work.Core.Interfaces;
 using WorkActivity.WPF.Commands;
+using WorkActivity.WPF.Services;
+using WorkActivity.WPF.Stores;
 
 namespace WorkActivity.WPF.ViewModels
 {
     public class AddWorkViewModel : ViewModelBase
     {
-        private IWorkRepository _workService;
-        private ITaskRepository _taskService;
-        private MainWindowViewModel _mainWindowViewModel;
+        private readonly IWorkRepository _workService;
+        private readonly ITaskRepository _taskService;
+        private readonly NavigationService<WorkListViewModel> _workListNavigationService;
 
         public List<Work.Core.Models.Task> Tasks { get; set; }
 
@@ -64,26 +66,45 @@ namespace WorkActivity.WPF.ViewModels
         }
 
         public ICommand AddTaskCommand { get; set; }
+        public ICommand OnLoadCommand { get; set; }
 
 
-        public AddWorkViewModel(IWorkRepository workService, ITaskRepository taskService, MainWindowViewModel mainWindowViewModel, List<Work.Core.Models.Task> tasks, Work.Core.Models.Task task)
+        public AddWorkViewModel(IWorkRepository workService, 
+            ITaskRepository taskService, 
+            NavigationService<WorkListViewModel> workListNavigationService)
         {
-            Tasks = tasks;
-            Task = task;
-            if (Task != null)
-            {
-                var foundTask = Tasks.FirstOrDefault(x=>x.Id == task.Id);
-                var index = Tasks.IndexOf(foundTask);
-                SelectedIndex = index;
-            }
+            Tasks = new List<Work.Core.Models.Task>();
+            //Task = task;
+            //if (Task != null)
+            //{
+            //    var foundTask = Tasks.FirstOrDefault(x => x.Id == task.Id);
+            //    var index = Tasks.IndexOf(foundTask);
+            //    SelectedIndex = index;
+            //}
             _workService = workService;
             _taskService = taskService;
-            _mainWindowViewModel = mainWindowViewModel;
-            AddTaskCommand = new RelayCommand(async (obj) =>
+            _workListNavigationService = workListNavigationService;
+            OnLoadCommand = new RelayCommand(Load);
+            AddTaskCommand = new RelayCommand(AddWork);
+        }
+
+        private async void AddWork(object obj)
+        {
+            await _workService.Create(new Work.Core.Models.Work() { Task = Task, Hours = float.Parse(Hours.Replace('.', ',')), Date = Date });
+            _workListNavigationService.Navigate();
+        }
+
+        private async void Load(object obj)
+        {
+            var result = await _taskService.GetAll();
+            if (result.Success)
             {
-                await _workService.Create(new Work.Core.Models.Work() { Task = Task, Hours = float.Parse(Hours.Replace('.',',')), Date = Date });
-                _mainWindowViewModel.CurrentViewModel = new WorkListViewModel(_workService, _taskService, _mainWindowViewModel);
-            });
+                foreach(var task in result.Data)
+                {
+                    Tasks.Add(task);
+                }
+                OnPropertyChanged(nameof(Tasks));
+            }
         }
     }
 }

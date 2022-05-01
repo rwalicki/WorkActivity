@@ -2,19 +2,19 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
 using Work.Core.Interfaces;
 using WorkActivity.WPF.Commands;
+using WorkActivity.WPF.Services;
 
 namespace WorkActivity.WPF.ViewModels
 {
     public class WorkListViewModel : ViewModelBase
     {
-        private readonly IWorkRepository _workService;
-        private readonly ITaskRepository _taskService;
-        private readonly MainWindowViewModel _mainWindowViewModel;
+        private readonly ISnackbarService _snackbarService;
+        private readonly IWorkRepository _workRepository;
+        private readonly NavigationService<AddWorkViewModel> _addWorkNavigationService;
 
         private List<Work.Core.Models.Work> _works;
 
@@ -34,46 +34,51 @@ namespace WorkActivity.WPF.ViewModels
 
         public ICommand OnLoadCommand { get; set; }
         public ICommand AddWorkCommand { get; set; }
-        public ICommand OnDeleteCommand { get; set; }
+        public ICommand DeleteCommand { get; set; }
 
-        public WorkListViewModel(IWorkRepository workService, ITaskRepository taskService, MainWindowViewModel mainWindowViewModel)
+        public WorkListViewModel(ISnackbarService snackbarService,
+            IWorkRepository workRepository,
+            NavigationService<AddWorkViewModel> addWorkNavigationService)
         {
-            _workService = workService;
-            _taskService = taskService;
-            _mainWindowViewModel = mainWindowViewModel;
+            _snackbarService = snackbarService;
+            _workRepository = workRepository;
+            _addWorkNavigationService = addWorkNavigationService;
 
-            OnLoadCommand = new RelayCommand(async (obj) =>
+            OnLoadCommand = new RelayCommand(Load);
+            AddWorkCommand = new RelayCommand(AddWorkNavigate);
+            DeleteCommand = new RelayCommand(Delete);
+        }
+
+        private async void Delete(object sender)
+        {
+            var work = sender as Work.Core.Models.Work;
+            if (work != null)
             {
-                var result = await _workService.GetAll();
+                var result = await _workRepository.Delete(work.Id);
                 if (result.Success)
                 {
-                    _works = result.Data.OrderByDescending(x=>x.Date).ToList();
-                    ItemView = CollectionViewSource.GetDefaultView(_works);
-                    ItemView.Filter = Filter;
-                    ItemView.Refresh();
-                    OnPropertyChanged(nameof(ItemView));
+                    _snackbarService.ShowMessage($"Work id {result.Data.Id} removed.");
+                    OnLoadCommand.Execute(null);
                 }
-            });
+            }
+        }
 
-            AddWorkCommand = new RelayCommand(async (obj) =>
-            {
-                var tasks = (await _taskService.GetAll()).Data.OrderByDescending(x => x.Date).ToList();
-                _mainWindowViewModel.CurrentViewModel = new AddWorkViewModel(_workService, _taskService, _mainWindowViewModel, tasks, null);
-            });
+        private void AddWorkNavigate(object sender)
+        {
+            _addWorkNavigationService.Navigate();
+        }
 
-            OnDeleteCommand = new RelayCommand(async (obj) =>
+        private async void Load(object obj)
+        {
+            var result = await _workRepository.GetAll();
+            if (result.Success)
             {
-                var work = obj as Work.Core.Models.Work;
-                if (work != null)
-                {
-                    var result = await _workService.Delete(work.Id);
-                    if (result.Success)
-                    {
-                        _mainWindowViewModel.SnakbarMessageQueue.Enqueue($"Work id {result.Data.Id} removed.");
-                        OnLoadCommand.Execute(null);
-                    }
-                }
-            });
+                _works = result.Data.OrderByDescending(x => x.Date).ToList();
+                ItemView = CollectionViewSource.GetDefaultView(_works);
+                ItemView.Filter = Filter;
+                ItemView.Refresh();
+                OnPropertyChanged(nameof(ItemView));
+            }
         }
 
         private bool Filter(object sender)
@@ -86,7 +91,7 @@ namespace WorkActivity.WPF.ViewModels
             var work = sender as Work.Core.Models.Work;
             if (work != null)
             {
-                return work.Date.ToString().Contains(SearchText, StringComparison.InvariantCultureIgnoreCase) || 
+                return work.Date.ToString().Contains(SearchText, StringComparison.InvariantCultureIgnoreCase) ||
                     work.Task.Title.Contains(SearchText, StringComparison.InvariantCultureIgnoreCase) ||
                     work.Task.Number.ToString().Contains(SearchText, StringComparison.InvariantCultureIgnoreCase);
             }

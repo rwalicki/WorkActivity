@@ -5,15 +5,17 @@ using System.Windows.Input;
 using Work.Core.Interfaces;
 using Work.Core.Models;
 using WorkActivity.WPF.Commands;
+using WorkActivity.WPF.Services;
+using WorkActivity.WPF.Stores;
 
 namespace WorkActivity.WPF.ViewModels
 {
     public class AddTaskViewModel : ViewModelBase
     {
-        private ITaskRepository _taskService;
-        private IWorkRepository _workService;
-        private ISprintRepository _sprintService;
-        private MainWindowViewModel _mainWindowViewModel;
+        private readonly ISnackbarService _snackbarService;
+        private readonly ITaskRepository _taskService;
+        private readonly ISprintRepository _sprintService;
+        private readonly NavigationService<TaskListViewModel> _taskListNavigationService;
 
         public ObservableCollection<SprintViewModel> Sprints { get; set; }
 
@@ -39,21 +41,23 @@ namespace WorkActivity.WPF.ViewModels
             }
         }
 
+        public ICommand OnLoadCommand { get; set; }
         public ICommand AddTaskCommand { get; set; }
-        public ICommand SelectSprintCommand { get; set; }
 
-        public AddTaskViewModel(ITaskRepository taskService, IWorkRepository workService, ISprintRepository sprintService, MainWindowViewModel mainWindowViewModel, List<Sprint> sprints)
+        public AddTaskViewModel(ISnackbarService snackbarService,
+            ITaskRepository taskService, 
+            ISprintRepository sprintService, 
+            NavigationService<TaskListViewModel> taskListNavigationService)
         {
             Sprints = new ObservableCollection<SprintViewModel>();
-            foreach (var sprint in sprints)
-            {
-                Sprints.Add(new SprintViewModel(sprint));
-            }
 
-            _sprintService = sprintService;
+            _snackbarService = snackbarService;
             _taskService = taskService;
-            _workService = workService;
-            _mainWindowViewModel = mainWindowViewModel;
+            _sprintService = sprintService;
+            _taskListNavigationService = taskListNavigationService;
+
+            OnLoadCommand = new RelayCommand(Load);
+
             AddTaskCommand = new RelayCommand(async (obj) =>
             {
                 var result = await _taskService.Create(new Work.Core.Models.Task()
@@ -65,13 +69,25 @@ namespace WorkActivity.WPF.ViewModels
                 });
                 if (result.Success)
                 {
-                    _mainWindowViewModel.CurrentViewModel = new TaskListViewModel(_taskService, _workService, _sprintService, _mainWindowViewModel);
+                    _taskListNavigationService.Navigate();
                 }
                 else
                 {
-                    _mainWindowViewModel.SnakbarMessageQueue.Enqueue(result.Message);
+                    _snackbarService.ShowMessage(result.Message);
                 }
             });
+        }
+
+        private async void Load(object sender)
+        {
+            var result = await _sprintService.GetAll();
+            if (result.Success)
+            {
+                foreach (var sprint in result.Data)
+                {
+                    Sprints.Add(new SprintViewModel(sprint));
+                }
+            }
         }
     }
 }

@@ -108,7 +108,7 @@
                                     Padding="0"
                                     Margin="0"
                                     Style="{DynamicResource MaterialDesignIconButton}"
-                                    Command="{Binding DataContext.OnDeleteCommand, RelativeSource={RelativeSource AncestorType=local:TaskListView}}"
+                                    Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=local:TaskListView}}"
                                     CommandParameter="{Binding .}">
                                 <controls:PackIcon Kind="Delete" />
                             </Button>

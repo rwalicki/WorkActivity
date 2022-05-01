@@ -2,20 +2,20 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
 using Work.Core.Interfaces;
 using WorkActivity.WPF.Commands;
+using WorkActivity.WPF.Services;
 
 namespace WorkActivity.WPF.ViewModels
 {
     public class TaskListViewModel : ViewModelBase
     {
-        private readonly ITaskRepository _taskService;
-        private readonly IWorkRepository _workService;
-        private readonly ISprintRepository _sprintService;
-        private readonly MainWindowViewModel _mainWindowViewModel;
+        private readonly ISnackbarService _snackbarService;
+        private readonly ITaskRepository _taskRepository;
+        private readonly NavigationService<AddTaskViewModel> _addTaskNavigationService;
+
 
         private List<Work.Core.Models.Task> _tasks;
         private string _searchText = string.Empty;
@@ -34,55 +34,28 @@ namespace WorkActivity.WPF.ViewModels
 
         public ICommand OnLoadCommand { get; set; }
         public ICommand AddTaskCommand { get; set; }
-        public ICommand OnDeleteCommand { get; set; }
+        public ICommand DeleteCommand { get; set; }
         public ICommand OnAddWorkItem { get; set; }
 
 
-        public TaskListViewModel(ITaskRepository taskService, IWorkRepository workService, ISprintRepository sprintService, MainWindowViewModel mainWindowViewModel)
+        public TaskListViewModel(ISnackbarService snackbarService, ITaskRepository taskRepository, NavigationService<AddTaskViewModel> addTaskNavigationService)
         {
-            _taskService = taskService;
-            _workService = workService;
-            _sprintService = sprintService;
-            _mainWindowViewModel = mainWindowViewModel;
+            _taskRepository = taskRepository;
+            _snackbarService = snackbarService;
+            _addTaskNavigationService = addTaskNavigationService;
 
-            OnLoadCommand = new RelayCommand(async (obj) =>
-            {
-                var result = await _taskService.GetAll();
-                if (result.Success)
-                {
-                    _tasks = result.Data.OrderByDescending(x => x.Date).ToList();
-                    ItemView = CollectionViewSource.GetDefaultView(_tasks);
-                    ItemView.Filter = Filter;
-                    ItemView.Refresh();
-                    OnPropertyChanged(nameof(ItemView));
-                }
-            });
+            OnLoadCommand = new RelayCommand(Load);
 
-            AddTaskCommand = new RelayCommand(async (obj) =>
-            {
-                var sprints = (await _sprintService.GetAll()).Data.ToList();
-                _mainWindowViewModel.CurrentViewModel = new AddTaskViewModel(_taskService, _workService, _sprintService, _mainWindowViewModel, sprints);
-            });
+            AddTaskCommand = new RelayCommand(AddTaskNavigate);
 
-            OnDeleteCommand = new RelayCommand(async (obj) =>
-            {
-                var task = obj as Work.Core.Models.Task;
-                if (task != null)
-                {
-                    var result = await _taskService.Delete(task.Id);
-                    if (result.Success)
-                    {
-                        _mainWindowViewModel.SnakbarMessageQueue.Enqueue($"Task number {result.Data.Number} removed.");
-                        OnLoadCommand.Execute(null);
-                    }
-                }
-            });
+            DeleteCommand = new RelayCommand(Delete);
 
-            OnAddWorkItem = new RelayCommand(async (obj) =>
-            {
-                var tasks = (await _taskService.GetAll()).Data.OrderByDescending(x => x.Date).ToList();
-                _mainWindowViewModel.CurrentViewModel = new AddWorkViewModel(_workService, _taskService, _mainWindowViewModel, tasks, obj as Work.Core.Models.Task);
-            });
+            //TODO
+            //OnAddWorkItem = new RelayCommand(async (obj) =>
+            //{
+            //    var tasks = (await _taskService.GetAll()).Data.OrderByDescending(x => x.Date).ToList();
+            //    _navigationStore.CurrentViewModel = new AddWorkViewModel(_workService, _taskService, _mainWindowViewModel, tasks, obj as Work.Core.Models.Task, _navigationStore);
+            //});
         }
 
         private bool Filter(object sender)
@@ -100,6 +73,38 @@ namespace WorkActivity.WPF.ViewModels
                     task.Number.ToString().Contains(SearchText, StringComparison.InvariantCultureIgnoreCase);
             }
             return false;
+        }
+
+        private async void Load(object sender)
+        {
+            var result = await _taskRepository.GetAll();
+            if (result.Success)
+            {
+                _tasks = result.Data.OrderByDescending(x => x.Date).ToList();
+                ItemView = CollectionViewSource.GetDefaultView(_tasks);
+                ItemView.Filter = Filter;
+                ItemView.Refresh();
+                OnPropertyChanged(nameof(ItemView));
+            }
+        }
+
+        private void AddTaskNavigate(object sender)
+        {
+            _addTaskNavigationService.Navigate();
+        }
+
+        private async void Delete(object sender)
+        {
+            var task = sender as Work.Core.Models.Task;
+            if (task != null)
+            {
+                var result = await _taskRepository.Delete(task.Id);
+                if (result.Success)
+                {
+                    _snackbarService.ShowMessage($"Task number {result.Data.Number} removed.");
+                    Load(sender);
+                }
+            }
         }
     }
 }
