@@ -62,7 +62,10 @@
                             Value="0" />
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding IsActive}" Value="True">
-                            <Setter Property="Background" Value="{DynamicResource PrimaryHueLightBrush}"></Setter>
+                            <Setter Property="Background"
+                                    Value="{DynamicResource PrimaryHueLightBrush}"></Setter>
+                            <Setter Property="Foreground"
+                                    Value="{DynamicResource PrimaryHueDarkForegroundBrush}"></Setter>
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>

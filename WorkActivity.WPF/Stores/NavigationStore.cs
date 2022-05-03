@@ -11,8 +11,11 @@ namespace WorkActivity.WPF.Stores
             get => _currentViewModel;
             set
             {
-                _currentViewModel = value;
-                OnCurrentViewModelChanged();
+                if (!_currentViewModel?.GetType().Equals(value.GetType()) ?? true)
+                {
+                    _currentViewModel = value;
+                    OnCurrentViewModelChanged();
+                }
             }
         }
 

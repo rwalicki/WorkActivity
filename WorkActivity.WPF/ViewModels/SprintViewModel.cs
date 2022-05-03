@@ -45,6 +45,7 @@ namespace WorkActivity.WPF.ViewModels
         public SprintViewModel(Sprint sprint)
         {
             _sprint = sprint;
+            IsSelected = _sprint.IsActive;
         }
     }
 }
