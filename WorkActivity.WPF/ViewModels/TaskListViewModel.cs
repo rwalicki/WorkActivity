@@ -17,6 +17,7 @@ namespace WorkActivity.WPF.ViewModels
         private readonly ISnackbarService _snackbarService;
         private readonly ITaskRepository _taskRepository;
         private readonly ISprintRepository _sprintRepository;
+        private readonly IWorkRepository _workRepository;
         private readonly IFilterService<TaskViewModel> _filterService;
         private readonly NavigationService<AddTaskViewModel> _addTaskNavigationService;
         private readonly ParameterNavigationService<object, AddWorkViewModel> _addWorkNavigationService;
@@ -53,10 +54,10 @@ namespace WorkActivity.WPF.ViewModels
         public ICommand DeleteCommand { get; set; }
         public ICommand OnAddWorkItem { get; set; }
 
-
         public TaskListViewModel(ISnackbarService snackbarService,
             ITaskRepository taskRepository,
             ISprintRepository sprintRepository,
+            IWorkRepository workRepository,
             IFilterService<TaskViewModel> filterService,
             NavigationService<AddTaskViewModel> addTaskNavigationService,
             ParameterNavigationService<object, AddWorkViewModel> addWorkNavigationService)
@@ -64,6 +65,7 @@ namespace WorkActivity.WPF.ViewModels
             _snackbarService = snackbarService;
             _taskRepository = taskRepository;
             _sprintRepository = sprintRepository;
+            _workRepository = workRepository;
             _filterService = filterService;
             _addTaskNavigationService = addTaskNavigationService;
             _addWorkNavigationService = addWorkNavigationService;
@@ -135,6 +137,16 @@ namespace WorkActivity.WPF.ViewModels
             var task = sender as TaskViewModel;
             if (task != null)
             {
+                var workResult = await _workRepository.GetAll();
+                if (workResult.Success)
+                {
+                    if (workResult.Data.Any(x => x.Task.Id.Equals(task.Id)))
+                    {
+                        _snackbarService.ShowMessage($"Cannot remove task {task.Number}. It has works attached.");
+                        return;
+                    }
+                }
+
                 var result = await _taskRepository.Delete(task.Id);
                 if (result.Success)
                 {

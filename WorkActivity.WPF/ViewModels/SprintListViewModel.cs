@@ -69,7 +69,7 @@ namespace WorkActivity.WPF.ViewModels
                 {
                     if (taskResult.Data.Any(x => x.Sprints.Exists(x => x?.Id.Equals(sprint.Id) ?? false)))
                     {
-                        _snackbarService.ShowMessage($"Connot remove {sprint.Name}. It has attached tasks.");
+                        _snackbarService.ShowMessage($"Cannot remove {sprint.Name}. It has tasks attached.");
                         return;
                     }
                 }

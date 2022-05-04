@@ -131,6 +131,7 @@ namespace WorkActivity.WPF
             return new TaskListViewModel(serviceProvider.GetRequiredService<ISnackbarService>(),
                 serviceProvider.GetRequiredService<ITaskRepository>(),
                 serviceProvider.GetRequiredService<ISprintRepository>(),
+                serviceProvider.GetRequiredService<IWorkRepository>(),
                 serviceProvider.GetRequiredService<IFilterService<TaskViewModel>>(),
                 CreateAddTaskNavigationService(serviceProvider),
                 CreateAddWorkNavigationService(serviceProvider));
