@@ -29,6 +29,7 @@ namespace WorkActivity.WPF.ViewModels
             }
             set
             {
+
                 _sprint.Name = value;
                 OnPropertyChanged(nameof(Name));
             }

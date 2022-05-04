@@ -26,7 +26,7 @@ namespace Work.API.Repositories
                 var sprints = await _fileRepository.GetAll();
                 foreach (var sprint in sprints)
                 {
-                    sprint.IsActive = sprint.StartDate < DateTime.Now && sprint.EndDate > DateTime.Now;
+                    sprint.IsActive = sprint.StartDate <= DateTime.Today && sprint.EndDate >= DateTime.Today;
                 }
                 result.Data = sprints;
             }
@@ -51,7 +51,7 @@ namespace Work.API.Repositories
                 }
                 else
                 {
-                    sprint.IsActive = sprint.StartDate < DateTime.Now && sprint.EndDate > DateTime.Now;
+                    sprint.IsActive = sprint.StartDate <= DateTime.Today && sprint.EndDate >= DateTime.Today;
                     result.Data = sprint;
                 }
             }
