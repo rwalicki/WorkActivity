@@ -35,6 +35,8 @@ namespace WorkActivity.WPF
                 services.AddSingleton<NavigationStore>();
                 services.AddSingleton<ISnackbarService, SnackbarService>();
 
+                services.AddSingleton<IFilterService<TaskViewModel>, FilterTaskService>();
+
                 services.AddTransient<NavigationService<SprintListViewModel>>((s) => CreateSprintListNavigationService(s));
                 services.AddTransient<NavigationService<AddSprintViewModel>>((s) => CreateAddSprintNavigationService(s));
                 services.AddTransient<NavigationService<TaskListViewModel>>((s) => CreateTaskListNavigationService(s));
@@ -113,7 +115,10 @@ namespace WorkActivity.WPF
 
         private SprintListViewModel CreateSprintListViewModel(IServiceProvider serviceProvider)
         {
-            return new SprintListViewModel(serviceProvider.GetRequiredService<ISnackbarService>(), serviceProvider.GetRequiredService<ISprintRepository>(), CreateAddSprintNavigationService(serviceProvider));
+            return new SprintListViewModel(serviceProvider.GetRequiredService<ISnackbarService>(),
+                serviceProvider.GetRequiredService<ISprintRepository>(),
+                serviceProvider.GetRequiredService<ITaskRepository>(),
+                CreateAddSprintNavigationService(serviceProvider));
         }
 
         private AddSprintViewModel CreateAddSprintViewModel(IServiceProvider serviceProvider)
@@ -123,9 +128,10 @@ namespace WorkActivity.WPF
 
         private TaskListViewModel CreateTaskListViewModel(IServiceProvider serviceProvider)
         {
-            return new TaskListViewModel(serviceProvider.GetRequiredService<ISnackbarService>(), 
-                serviceProvider.GetRequiredService<ITaskRepository>(), 
+            return new TaskListViewModel(serviceProvider.GetRequiredService<ISnackbarService>(),
+                serviceProvider.GetRequiredService<ITaskRepository>(),
                 serviceProvider.GetRequiredService<ISprintRepository>(),
+                serviceProvider.GetRequiredService<IFilterService<TaskViewModel>>(),
                 CreateAddTaskNavigationService(serviceProvider),
                 CreateAddWorkNavigationService(serviceProvider));
         }

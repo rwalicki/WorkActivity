@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows.Input;
 using Work.Core.Interfaces;
 using Work.Core.Models;
@@ -11,6 +12,7 @@ namespace WorkActivity.WPF.ViewModels
     {
         private readonly ISnackbarService _snackbarService;
         private readonly ISprintRepository _sprintRepository;
+        private readonly ITaskRepository _taskRepository;
         private readonly NavigationService<AddSprintViewModel> _addSprintNavigationService;
 
         private ObservableCollection<Sprint> _sprints;
@@ -30,10 +32,12 @@ namespace WorkActivity.WPF.ViewModels
 
         public SprintListViewModel(ISnackbarService snackbarService,
             ISprintRepository sprintRepository,
+            ITaskRepository taskRepository,
             NavigationService<AddSprintViewModel> addSprintNavigationService)
         {
             _snackbarService = snackbarService;
             _sprintRepository = sprintRepository;
+            _taskRepository = taskRepository;
             _addSprintNavigationService = addSprintNavigationService;
 
             OnLoadCommand = new RelayCommand(Load);
@@ -60,6 +64,16 @@ namespace WorkActivity.WPF.ViewModels
             var sprint = sender as Work.Core.Models.Sprint;
             if (sprint != null)
             {
+                var taskResult = await _taskRepository.GetAll();
+                if (taskResult.Success)
+                {
+                    if (taskResult.Data.Any(x => x.Sprints.Exists(x => x?.Id.Equals(sprint.Id) ?? false)))
+                    {
+                        _snackbarService.ShowMessage($"Connot remove {sprint.Name}. It has attached tasks.");
+                        return;
+                    }
+                }
+
                 var result = await _sprintRepository.Delete(sprint.Id);
                 if (result.Success)
                 {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
 using Work.Core.Interfaces;
@@ -16,6 +17,7 @@ namespace WorkActivity.WPF.ViewModels
         private readonly ISnackbarService _snackbarService;
         private readonly ITaskRepository _taskRepository;
         private readonly ISprintRepository _sprintRepository;
+        private readonly IFilterService<TaskViewModel> _filterService;
         private readonly NavigationService<AddTaskViewModel> _addTaskNavigationService;
         private readonly ParameterNavigationService<object, AddWorkViewModel> _addWorkNavigationService;
 
@@ -31,7 +33,6 @@ namespace WorkActivity.WPF.ViewModels
                 ItemView?.Refresh();
             }
         }
-        public int SelectedSprintIndex { get; set; }
 
         private string _searchText = string.Empty;
         public string SearchText
@@ -56,18 +57,20 @@ namespace WorkActivity.WPF.ViewModels
         public TaskListViewModel(ISnackbarService snackbarService,
             ITaskRepository taskRepository,
             ISprintRepository sprintRepository,
+            IFilterService<TaskViewModel> filterService,
             NavigationService<AddTaskViewModel> addTaskNavigationService,
             ParameterNavigationService<object, AddWorkViewModel> addWorkNavigationService)
         {
             _snackbarService = snackbarService;
             _taskRepository = taskRepository;
             _sprintRepository = sprintRepository;
+            _filterService = filterService;
             _addTaskNavigationService = addTaskNavigationService;
             _addWorkNavigationService = addWorkNavigationService;
 
             OnLoadCommand = new RelayCommand(Load);
             AddTaskCommand = new RelayCommand(AddTaskNavigate);
-            DeleteCommand = new RelayCommand(Delete);
+            DeleteCommand = new RelayCommand(async (obj) => await Delete(obj));
             OnAddWorkItem = new RelayCommand(AddWorkItem);
 
             Sprints = new ObservableCollection<SprintViewModel>();
@@ -75,26 +78,22 @@ namespace WorkActivity.WPF.ViewModels
 
         private bool Filter(object sender)
         {
-            if (string.IsNullOrEmpty(SearchText) && SelectedSprint.Name=="All")
-            {
-                return true;
-            }
-
-            var task = sender as Work.Core.Models.Task;
-            if (task != null)
-            {
-                return (task.Date.ToString().Contains(SearchText, StringComparison.InvariantCultureIgnoreCase) ||
-                    task.Title.Contains(SearchText, StringComparison.InvariantCultureIgnoreCase) ||
-                    task.Number.ToString().Contains(SearchText, StringComparison.InvariantCultureIgnoreCase)) && (task.Sprints.Exists(x=>x?.Id == SelectedSprint.Sprint.Id));
-            }
-            return false;
+            var conditionsService = new TaskListConditionsService(SearchText, SelectedSprint?.Sprint.Id ?? -1);
+            return _filterService.Filter(sender as TaskViewModel, conditionsService);
         }
 
         private async void Load(object sender)
         {
+            await LoadSprints();
+            await LoadTasks(sender);
+        }
+
+        private async Task LoadSprints()
+        {
             var sprintResult = await _sprintRepository.GetAll();
             if (sprintResult.Success)
             {
+                Sprints.Clear();
                 var minDate = DateTime.Now;
                 var maxDate = DateTime.Now;
                 if (sprintResult.Data.Any())
@@ -102,20 +101,24 @@ namespace WorkActivity.WPF.ViewModels
                     minDate = sprintResult.Data.Min(x => x.StartDate);
                     maxDate = sprintResult.Data.Max(x => x.EndDate);
                 }
-                
-                SelectedSprint = new SprintViewModel(new Work.Core.Models.Sprint() { Name = "All", StartDate = minDate, EndDate = maxDate });
+
+                SelectedSprint = new SprintViewModel(new Work.Core.Models.Sprint() { Id = -1, Name = "All", StartDate = minDate, EndDate = maxDate });
                 Sprints.Add(SelectedSprint);
 
-                foreach(var sprint in sprintResult.Data)
+                foreach (var sprint in sprintResult.Data)
                 {
                     Sprints.Add(new SprintViewModel(sprint));
                 }
             }
+        }
 
+        private async Task LoadTasks(object sender)
+        {
             var result = await _taskRepository.GetAll();
             if (result.Success)
             {
-                ItemView = CollectionViewSource.GetDefaultView(result.Data.OrderByDescending(x => x.Date).ToList());
+                var tasks = result.Data.OrderByDescending(x => x.Date).ToList().Select(x => new TaskViewModel(x));
+                ItemView = CollectionViewSource.GetDefaultView(tasks);
                 ItemView.Filter = Filter;
                 ItemView.Refresh();
                 OnPropertyChanged(nameof(ItemView));
@@ -127,16 +130,16 @@ namespace WorkActivity.WPF.ViewModels
             _addTaskNavigationService.Navigate();
         }
 
-        private async void Delete(object sender)
+        private async Task Delete(object sender)
         {
-            var task = sender as Work.Core.Models.Task;
+            var task = sender as TaskViewModel;
             if (task != null)
             {
                 var result = await _taskRepository.Delete(task.Id);
                 if (result.Success)
                 {
                     _snackbarService.ShowMessage($"Task number {result.Data.Number} removed.");
-                    Load(sender);
+                    await LoadTasks(sender);
                 }
             }
         }
