@@ -114,6 +114,11 @@ namespace WorkActivity.WPF
             return new ParameterNavigationService<object, DailyWorkDetailsListViewModel>(serviceProvider.GetRequiredService<NavigationStore>(), (parameter) => CreateDailyWorkDetailsViewModel(serviceProvider, parameter));
         }
 
+        private ParameterNavigationService<object, AttachedWorkListViewModel> CreateAttachedWorkListNavigationService(IServiceProvider serviceProvider)
+        {
+            return new ParameterNavigationService<object, AttachedWorkListViewModel>(serviceProvider.GetRequiredService<NavigationStore>(), (parameter) => CreateAttachedWorkListViewModel(serviceProvider, parameter));
+        }
+
         private SprintListViewModel CreateSprintListViewModel(IServiceProvider serviceProvider)
         {
             return new SprintListViewModel(serviceProvider.GetRequiredService<ISnackbarService>(),
@@ -136,7 +141,8 @@ namespace WorkActivity.WPF
                 serviceProvider.GetRequiredService<IFilterService<TaskViewModel>>(),
                 serviceProvider.GetRequiredService<TaskListViewStore>(),
                 CreateAddTaskNavigationService(serviceProvider),
-                CreateAddWorkNavigationService(serviceProvider));
+                CreateAddWorkNavigationService(serviceProvider),
+                CreateAttachedWorkListNavigationService(serviceProvider));
         }
 
         private AddTaskViewModel CreateAddTaskViewModel(IServiceProvider serviceProvider)
@@ -165,6 +171,11 @@ namespace WorkActivity.WPF
         private DailyWorkDetailsListViewModel CreateDailyWorkDetailsViewModel(IServiceProvider serviceProvider, object parameter)
         {
             return new DailyWorkDetailsListViewModel(serviceProvider.GetRequiredService<IWorkRepository>(), parameter);
+        }
+
+        private AttachedWorkListViewModel CreateAttachedWorkListViewModel(IServiceProvider serviceProvider, object parameter)
+        {
+            return new AttachedWorkListViewModel(serviceProvider.GetRequiredService<ISnackbarService>(), serviceProvider.GetRequiredService<IWorkRepository>(), CreateAddWorkNavigationService(serviceProvider), parameter);
         }
     }
 }

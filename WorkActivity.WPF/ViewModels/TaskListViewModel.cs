@@ -23,6 +23,7 @@ namespace WorkActivity.WPF.ViewModels
         private readonly TaskListViewStore _taskListViewStore;
         private readonly NavigationService<AddTaskViewModel> _addTaskNavigationService;
         private readonly ParameterNavigationService<object, AddWorkViewModel> _addWorkNavigationService;
+        private readonly ParameterNavigationService<object, AttachedWorkListViewModel> _attachedWorkListNavigationService;
 
         public ObservableCollection<SprintViewModel> Sprints { get; set; }
         private SprintViewModel _selectedSprint;
@@ -56,6 +57,7 @@ namespace WorkActivity.WPF.ViewModels
         public ICommand AddTaskCommand { get; set; }
         public ICommand DeleteCommand { get; set; }
         public ICommand OnAddWorkItem { get; set; }
+        public ICommand ShowWorksCommand { get; set; }
 
         public TaskListViewModel(ISnackbarService snackbarService,
             ITaskRepository taskRepository,
@@ -64,7 +66,8 @@ namespace WorkActivity.WPF.ViewModels
             IFilterService<TaskViewModel> filterService,
             TaskListViewStore taskListViewStore,
             NavigationService<AddTaskViewModel> addTaskNavigationService,
-            ParameterNavigationService<object, AddWorkViewModel> addWorkNavigationService)
+            ParameterNavigationService<object, AddWorkViewModel> addWorkNavigationService,
+            ParameterNavigationService<object, AttachedWorkListViewModel> attachedWorkListNavigationService)
         {
             _snackbarService = snackbarService;
             _taskRepository = taskRepository;
@@ -74,11 +77,13 @@ namespace WorkActivity.WPF.ViewModels
             _taskListViewStore = taskListViewStore;
             _addTaskNavigationService = addTaskNavigationService;
             _addWorkNavigationService = addWorkNavigationService;
+            _attachedWorkListNavigationService = attachedWorkListNavigationService;
 
             OnLoadCommand = new RelayCommand(Load);
             AddTaskCommand = new RelayCommand(AddTaskNavigate);
             DeleteCommand = new RelayCommand(async (obj) => await Delete(obj));
             OnAddWorkItem = new RelayCommand(AddWorkItem);
+            ShowWorksCommand = new RelayCommand(ShowWorks);
 
             Sprints = new ObservableCollection<SprintViewModel>();
         }
@@ -164,6 +169,11 @@ namespace WorkActivity.WPF.ViewModels
         private void AddWorkItem(object sender)
         {
             _addWorkNavigationService.Navigate(sender);
+        }
+
+        private void ShowWorks(object sender)
+        {
+            _attachedWorkListNavigationService.Navigate(sender);
         }
 
         private void SelectActiveSprint()

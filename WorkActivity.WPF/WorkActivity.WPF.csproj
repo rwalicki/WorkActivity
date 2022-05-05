@@ -39,6 +39,9 @@
     <Compile Update="Views\DailyWorkListView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Views\AttachedWorkListView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Views\WorkListView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -62,6 +65,10 @@
     </Page>
     <Page Update="Views\SprintListView.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Views\AttachedWorkListView.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\WorkListView.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>

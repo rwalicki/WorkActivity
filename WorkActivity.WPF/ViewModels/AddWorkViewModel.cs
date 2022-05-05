@@ -72,7 +72,7 @@ namespace WorkActivity.WPF.ViewModels
             object task)
         {
             Tasks = new List<Work.Core.Models.Task>();
-            Task = (task as TaskViewModel).Task;
+            Task = (task as TaskViewModel)?.Task;
 
             _workService = workService;
             _taskService = taskService;
