@@ -9,6 +9,7 @@ using System.Windows.Input;
 using Work.Core.Interfaces;
 using WorkActivity.WPF.Commands;
 using WorkActivity.WPF.Services;
+using WorkActivity.WPF.Stores;
 
 namespace WorkActivity.WPF.ViewModels
 {
@@ -19,6 +20,7 @@ namespace WorkActivity.WPF.ViewModels
         private readonly ISprintRepository _sprintRepository;
         private readonly IWorkRepository _workRepository;
         private readonly IFilterService<TaskViewModel> _filterService;
+        private readonly TaskListViewStore _taskListViewStore;
         private readonly NavigationService<AddTaskViewModel> _addTaskNavigationService;
         private readonly ParameterNavigationService<object, AddWorkViewModel> _addWorkNavigationService;
 
@@ -30,6 +32,7 @@ namespace WorkActivity.WPF.ViewModels
             set
             {
                 _selectedSprint = value;
+                _taskListViewStore.SelectedSprintId = value?.Sprint.Id ?? -1;
                 OnPropertyChanged(nameof(SelectedSprint));
                 ItemView?.Refresh();
             }
@@ -59,6 +62,7 @@ namespace WorkActivity.WPF.ViewModels
             ISprintRepository sprintRepository,
             IWorkRepository workRepository,
             IFilterService<TaskViewModel> filterService,
+            TaskListViewStore taskListViewStore,
             NavigationService<AddTaskViewModel> addTaskNavigationService,
             ParameterNavigationService<object, AddWorkViewModel> addWorkNavigationService)
         {
@@ -67,6 +71,7 @@ namespace WorkActivity.WPF.ViewModels
             _sprintRepository = sprintRepository;
             _workRepository = workRepository;
             _filterService = filterService;
+            _taskListViewStore = taskListViewStore;
             _addTaskNavigationService = addTaskNavigationService;
             _addWorkNavigationService = addWorkNavigationService;
 
@@ -87,6 +92,7 @@ namespace WorkActivity.WPF.ViewModels
         private async void Load(object sender)
         {
             await LoadSprints();
+            SelectActiveSprint();
             await LoadTasks(sender);
         }
 
@@ -95,7 +101,6 @@ namespace WorkActivity.WPF.ViewModels
             var sprintResult = await _sprintRepository.GetAll();
             if (sprintResult.Success)
             {
-                Sprints.Clear();
                 var minDate = DateTime.Now;
                 var maxDate = DateTime.Now;
                 if (sprintResult.Data.Any())
@@ -104,8 +109,8 @@ namespace WorkActivity.WPF.ViewModels
                     maxDate = sprintResult.Data.Max(x => x.EndDate);
                 }
 
-                SelectedSprint = new SprintViewModel(new Work.Core.Models.Sprint() { Id = -1, Name = "All", StartDate = minDate, EndDate = maxDate });
-                Sprints.Add(SelectedSprint);
+                var allOption = new SprintViewModel(new Work.Core.Models.Sprint() { Id = -1, Name = "All", StartDate = minDate, EndDate = maxDate });
+                Sprints.Add(allOption);
 
                 foreach (var sprint in sprintResult.Data)
                 {
@@ -159,6 +164,19 @@ namespace WorkActivity.WPF.ViewModels
         private void AddWorkItem(object sender)
         {
             _addWorkNavigationService.Navigate(sender);
+        }
+
+        private void SelectActiveSprint()
+        {
+            var activeSprint = Sprints.FirstOrDefault(x => x.Sprint.Id == _taskListViewStore.SelectedSprintId);
+            if (activeSprint != null)
+            {
+                SelectedSprint = activeSprint;
+            }
+            else
+            {
+                SelectedSprint = Sprints.First();
+            }
         }
     }
 }

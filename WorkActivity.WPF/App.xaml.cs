@@ -36,6 +36,7 @@ namespace WorkActivity.WPF
                 services.AddSingleton<ISnackbarService, SnackbarService>();
 
                 services.AddSingleton<IFilterService<TaskViewModel>, FilterTaskService>();
+                services.AddSingleton<TaskListViewStore>();
 
                 services.AddTransient<NavigationService<SprintListViewModel>>((s) => CreateSprintListNavigationService(s));
                 services.AddTransient<NavigationService<AddSprintViewModel>>((s) => CreateAddSprintNavigationService(s));
@@ -133,6 +134,7 @@ namespace WorkActivity.WPF
                 serviceProvider.GetRequiredService<ISprintRepository>(),
                 serviceProvider.GetRequiredService<IWorkRepository>(),
                 serviceProvider.GetRequiredService<IFilterService<TaskViewModel>>(),
+                serviceProvider.GetRequiredService<TaskListViewStore>(),
                 CreateAddTaskNavigationService(serviceProvider),
                 CreateAddWorkNavigationService(serviceProvider));
         }
