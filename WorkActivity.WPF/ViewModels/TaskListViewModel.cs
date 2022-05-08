@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -23,6 +22,7 @@ namespace WorkActivity.WPF.ViewModels
         private readonly TaskListViewStore _taskListViewStore;
         private readonly NavigationService<AddTaskViewModel> _addTaskNavigationService;
         private readonly ParameterNavigationService<object, AddWorkViewModel> _addWorkNavigationService;
+        private readonly ParameterNavigationService<object, EditTaskViewModel> _editTaskNavigationService;
         private readonly ParameterNavigationService<object, AttachedWorkListViewModel> _attachedWorkListNavigationService;
 
         public ObservableCollection<SprintViewModel> Sprints { get; set; }
@@ -55,8 +55,9 @@ namespace WorkActivity.WPF.ViewModels
 
         public ICommand OnLoadCommand { get; set; }
         public ICommand AddTaskCommand { get; set; }
+        public ICommand EditTaskCommand { get; set; }
         public ICommand DeleteCommand { get; set; }
-        public ICommand OnAddWorkItem { get; set; }
+        public ICommand AddWorkCommand { get; set; }
         public ICommand ShowWorksCommand { get; set; }
 
         public TaskListViewModel(ISnackbarService snackbarService,
@@ -67,6 +68,7 @@ namespace WorkActivity.WPF.ViewModels
             TaskListViewStore taskListViewStore,
             NavigationService<AddTaskViewModel> addTaskNavigationService,
             ParameterNavigationService<object, AddWorkViewModel> addWorkNavigationService,
+            ParameterNavigationService<object, EditTaskViewModel> editTaskNavigationService,
             ParameterNavigationService<object, AttachedWorkListViewModel> attachedWorkListNavigationService)
         {
             _snackbarService = snackbarService;
@@ -76,13 +78,15 @@ namespace WorkActivity.WPF.ViewModels
             _filterService = filterService;
             _taskListViewStore = taskListViewStore;
             _addTaskNavigationService = addTaskNavigationService;
+            _editTaskNavigationService = editTaskNavigationService;
             _addWorkNavigationService = addWorkNavigationService;
             _attachedWorkListNavigationService = attachedWorkListNavigationService;
 
             OnLoadCommand = new RelayCommand(Load);
             AddTaskCommand = new RelayCommand(AddTaskNavigate);
+            EditTaskCommand = new RelayCommand(EditTaskNavigate);
             DeleteCommand = new RelayCommand(async (obj) => await Delete(obj));
-            OnAddWorkItem = new RelayCommand(AddWorkItem);
+            AddWorkCommand = new RelayCommand(AddWork);
             ShowWorksCommand = new RelayCommand(ShowWorks);
 
             Sprints = new ObservableCollection<SprintViewModel>();
@@ -142,6 +146,11 @@ namespace WorkActivity.WPF.ViewModels
             _addTaskNavigationService.Navigate();
         }
 
+        private void EditTaskNavigate(object sender)
+        {
+            _editTaskNavigationService.Navigate(sender);
+        }
+
         private async Task Delete(object sender)
         {
             var task = sender as TaskViewModel;
@@ -166,7 +175,7 @@ namespace WorkActivity.WPF.ViewModels
             }
         }
 
-        private void AddWorkItem(object sender)
+        private void AddWork(object sender)
         {
             _addWorkNavigationService.Navigate(sender);
         }

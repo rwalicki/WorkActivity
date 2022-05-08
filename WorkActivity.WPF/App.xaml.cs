@@ -109,6 +109,11 @@ namespace WorkActivity.WPF
             return new ParameterNavigationService<object, AddWorkViewModel>(serviceProvider.GetRequiredService<NavigationStore>(), (parameter) => CreateAddWorkViewModel(serviceProvider, parameter));
         }
 
+        private ParameterNavigationService<object, EditTaskViewModel> CreateEditTaskNavigationService(IServiceProvider serviceProvider)
+        {
+            return new ParameterNavigationService<object, EditTaskViewModel>(serviceProvider.GetRequiredService<NavigationStore>(), (parameter) => CreateEditTaskViewModel(serviceProvider, parameter));
+        }
+
         private ParameterNavigationService<object, DailyWorkDetailsListViewModel> CreateDailyWorkDetailsNavigationService(IServiceProvider serviceProvider)
         {
             return new ParameterNavigationService<object, DailyWorkDetailsListViewModel>(serviceProvider.GetRequiredService<NavigationStore>(), (parameter) => CreateDailyWorkDetailsViewModel(serviceProvider, parameter));
@@ -142,6 +147,7 @@ namespace WorkActivity.WPF
                 serviceProvider.GetRequiredService<TaskListViewStore>(),
                 CreateAddTaskNavigationService(serviceProvider),
                 CreateAddWorkNavigationService(serviceProvider),
+                CreateEditTaskNavigationService(serviceProvider),
                 CreateAttachedWorkListNavigationService(serviceProvider));
         }
 
@@ -151,6 +157,15 @@ namespace WorkActivity.WPF
                 serviceProvider.GetRequiredService<ITaskRepository>(),
                 serviceProvider.GetRequiredService<ISprintRepository>(),
                 CreateTaskListNavigationService(serviceProvider));
+        }
+
+        private EditTaskViewModel CreateEditTaskViewModel(IServiceProvider serviceProvider, object parameter)
+        {
+            return new EditTaskViewModel(serviceProvider.GetRequiredService<ISnackbarService>(),
+                serviceProvider.GetRequiredService<ITaskRepository>(),
+                serviceProvider.GetRequiredService<ISprintRepository>(),
+                CreateTaskListNavigationService(serviceProvider),
+                parameter);
         }
 
         private WorkListViewModel CreateWorkListViewModel(IServiceProvider serviceProvider)

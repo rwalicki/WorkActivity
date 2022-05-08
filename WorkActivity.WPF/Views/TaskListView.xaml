@@ -87,7 +87,7 @@
                   Background="White">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="MouseDoubleClick">
-                    <i:InvokeCommandAction Command="{Binding OnAddWorkItem}"
+                    <i:InvokeCommandAction Command="{Binding AddWorkCommand}"
                                            CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource FindAncestor, AncestorType=DataGrid}}" />
                 </i:EventTrigger>
             </i:Interaction.Triggers>
@@ -125,31 +125,105 @@
                                         Width="Auto">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Button Width="30"
-                                    Height="30"
-                                    Padding="0"
-                                    Margin="0"
-                                    Style="{DynamicResource MaterialDesignIconButton}"
-                                    Command="{Binding DataContext.ShowWorksCommand, RelativeSource={RelativeSource AncestorType=local:TaskListView}}"
-                                    CommandParameter="{Binding .}">
-                                <controls:PackIcon Kind="FormatListBulletedSquare" />
-                            </Button>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header=""
-                                        Width="Auto">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <Button Width="30"
-                                    Height="30"
-                                    Padding="0"
-                                    Margin="0"
-                                    Style="{DynamicResource MaterialDesignIconButton}"
-                                    Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=local:TaskListView}}"
-                                    CommandParameter="{Binding .}">
-                                <controls:PackIcon Kind="Delete" />
-                            </Button>
+                            <controls:PopupBox PlacementMode="BottomAndAlignRightEdges"
+                                               Foreground="{DynamicResource PrimaryHueMidBrush}">
+                                <ListBox>
+                                    <ListBoxItem>
+                                        <ListBoxItem.ContentTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <controls:PackIcon Kind="FormatListBulletedSquare"
+                                                                       VerticalAlignment="Center"
+                                                                       Padding="0"
+                                                                       Width="20"
+                                                                       Height="20"
+                                                                       Foreground="{DynamicResource PrimaryHueMidBrush}" />
+                                                    <TextBlock Margin="5 0"
+                                                               VerticalAlignment="Center"
+                                                               Text="Show Attached Works" />
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </ListBoxItem.ContentTemplate>
+                                        
+                                        <i:Interaction.Triggers>
+                                            <i:EventTrigger EventName="PreviewMouseDown">
+                                                <i:InvokeCommandAction Command="{Binding DataContext.ShowWorksCommand, RelativeSource={RelativeSource AncestorType=local:TaskListView}}"
+                                                                       CommandParameter="{Binding .}" />
+                                            </i:EventTrigger>
+                                        </i:Interaction.Triggers>
+                                    </ListBoxItem>
+                                    <ListBoxItem>
+                                        <ListBoxItem.ContentTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <controls:PackIcon Kind="Add"
+                                                                       VerticalAlignment="Center"
+                                                                       Padding="0"
+                                                                       Width="20"
+                                                                       Height="20"
+                                                                       Foreground="{DynamicResource PrimaryHueMidBrush}" />
+                                                    <TextBlock Margin="5 0" VerticalAlignment="Center" Text="Add Work To Task" />
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </ListBoxItem.ContentTemplate>
+                                        
+                                        <i:Interaction.Triggers>
+                                            <i:EventTrigger EventName="PreviewMouseDown">
+                                                <i:InvokeCommandAction Command="{Binding DataContext.AddWorkCommand, RelativeSource={RelativeSource AncestorType=local:TaskListView}}"
+                                                                       CommandParameter="{Binding .}" />
+                                            </i:EventTrigger>
+                                        </i:Interaction.Triggers>
+                                    </ListBoxItem>
+                                    <ListBoxItem>
+                                        <ListBoxItem.ContentTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <controls:PackIcon Kind="Pencil"
+                                                                       VerticalAlignment="Center"
+                                                                       Padding="0"
+                                                                       Width="20"
+                                                                       Height="20"
+                                                                       Foreground="{DynamicResource PrimaryHueMidBrush}" />
+                                                    <TextBlock Margin="5 0"
+                                                               VerticalAlignment="Center"
+                                                               Text="Edit Task" />
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </ListBoxItem.ContentTemplate>
+                                        
+                                        <i:Interaction.Triggers>
+                                            <i:EventTrigger EventName="PreviewMouseDown">
+                                                <i:InvokeCommandAction Command="{Binding DataContext.EditTaskCommand, RelativeSource={RelativeSource AncestorType=local:TaskListView}}"
+                                                                       CommandParameter="{Binding .}" />
+                                            </i:EventTrigger>
+                                        </i:Interaction.Triggers>
+                                    </ListBoxItem>
+                                    <ListBoxItem>
+                                        <ListBoxItem.ContentTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <controls:PackIcon Kind="Delete"
+                                                                       VerticalAlignment="Center"
+                                                                       Padding="0"
+                                                                       Width="20"
+                                                                       Height="20"
+                                                                       Foreground="{DynamicResource PrimaryHueMidBrush}" />
+                                                    <TextBlock Margin="5 0"
+                                                               VerticalAlignment="Center"
+                                                               Text="Delete Task" />
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </ListBoxItem.ContentTemplate>
+                                        
+                                        <i:Interaction.Triggers>
+                                            <i:EventTrigger EventName="PreviewMouseDown">
+                                                <i:InvokeCommandAction Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=local:TaskListView}}"
+                                                                       CommandParameter="{Binding .}" />
+                                            </i:EventTrigger>
+                                        </i:Interaction.Triggers>
+                                    </ListBoxItem>
+                                </ListBox>
+                            </controls:PopupBox>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>

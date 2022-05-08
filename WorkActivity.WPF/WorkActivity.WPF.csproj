@@ -30,6 +30,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Views\EditTaskView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Views\AddWorkView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -50,6 +53,10 @@
   <ItemGroup>
     <Page Update="Views\AddSprintView.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Views\EditTaskView.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\AddWorkView.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
