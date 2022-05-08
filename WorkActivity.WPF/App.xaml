@@ -45,6 +45,9 @@
             <DataTemplate DataType="{x:Type viewModels:AttachedWorkListViewModel}">
                 <views:AttachedWorkListView />
             </DataTemplate>
+            <DataTemplate DataType="{x:Type viewModels:ReportsViewModel}">
+                <views:ReportsView />
+            </DataTemplate>
 
         </ResourceDictionary>
     </Application.Resources>

@@ -31,6 +31,7 @@ namespace WorkActivity.WPF
                 services.AddSingleton<IFileService<Work.Core.Models.Sprint>>(new FileRepository<Work.Core.Models.Sprint>());
 
                 services.AddSingleton<IDailyWorkService, DailyWorkService>();
+                services.AddSingleton<IReport, MonthReport>();
 
                 services.AddSingleton<NavigationStore>();
                 services.AddSingleton<ISnackbarService, SnackbarService>();
@@ -43,6 +44,7 @@ namespace WorkActivity.WPF
                 services.AddTransient<NavigationService<TaskListViewModel>>((s) => CreateTaskListNavigationService(s));
                 services.AddTransient<NavigationService<WorkListViewModel>>((s) => CreateWorkListNavigationService(s));
                 services.AddTransient<NavigationService<DailyWorkListViewModel>>((s) => CreateDailyWorkListNavigationService(s));
+                services.AddTransient<NavigationService<ReportsViewModel>>((s) => CreateReportsNavigationService(s));
                 services.AddTransient<SprintListViewModel>((s) => CreateSprintListViewModel(s));
                 services.AddTransient<AddSprintViewModel>((s) => CreateAddSprintViewModel(s));
                 services.AddTransient<TaskListViewModel>((s) => CreateTaskListViewModel(s));
@@ -102,6 +104,11 @@ namespace WorkActivity.WPF
         private NavigationService<DailyWorkListViewModel> CreateDailyWorkListNavigationService(IServiceProvider serviceProvider)
         {
             return new NavigationService<DailyWorkListViewModel>(serviceProvider.GetRequiredService<NavigationStore>(), () => CreateDailyWorkListViewModel(serviceProvider));
+        }
+
+        private NavigationService<ReportsViewModel> CreateReportsNavigationService(IServiceProvider serviceProvider)
+        {
+            return new NavigationService<ReportsViewModel>(serviceProvider.GetRequiredService<NavigationStore>(), () => CreateReportsViewModel(serviceProvider));
         }
 
         private ParameterNavigationService<object, AddWorkViewModel> CreateAddWorkNavigationService(IServiceProvider serviceProvider)
@@ -181,6 +188,11 @@ namespace WorkActivity.WPF
         private DailyWorkListViewModel CreateDailyWorkListViewModel(IServiceProvider serviceProvider)
         {
             return new DailyWorkListViewModel(serviceProvider.GetRequiredService<IDailyWorkService>(), serviceProvider.GetRequiredService<IWorkRepository>(), CreateDailyWorkDetailsNavigationService(serviceProvider));
+        }
+
+        private ReportsViewModel CreateReportsViewModel(IServiceProvider serviceProvider)
+        {
+            return new ReportsViewModel(serviceProvider.GetRequiredService<IReport>());
         }
 
         private DailyWorkDetailsListViewModel CreateDailyWorkDetailsViewModel(IServiceProvider serviceProvider, object parameter)
