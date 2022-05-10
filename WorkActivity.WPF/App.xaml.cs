@@ -44,6 +44,7 @@ namespace WorkActivity.WPF
                 services.AddTransient<NavigationService<TaskListViewModel>>((s) => CreateTaskListNavigationService(s));
                 services.AddTransient<NavigationService<WorkListViewModel>>((s) => CreateWorkListNavigationService(s));
                 services.AddTransient<NavigationService<DailyWorkListViewModel>>((s) => CreateDailyWorkListNavigationService(s));
+                services.AddTransient<NavigationService<OffWorkViewModel>>((s) => CreateOffWorkNavigationService(s));
                 services.AddTransient<NavigationService<ReportsViewModel>>((s) => CreateReportsNavigationService(s));
                 services.AddTransient<SprintListViewModel>((s) => CreateSprintListViewModel(s));
                 services.AddTransient<AddSprintViewModel>((s) => CreateAddSprintViewModel(s));
@@ -104,6 +105,11 @@ namespace WorkActivity.WPF
         private NavigationService<DailyWorkListViewModel> CreateDailyWorkListNavigationService(IServiceProvider serviceProvider)
         {
             return new NavigationService<DailyWorkListViewModel>(serviceProvider.GetRequiredService<NavigationStore>(), () => CreateDailyWorkListViewModel(serviceProvider));
+        }
+
+        private NavigationService<OffWorkViewModel> CreateOffWorkNavigationService(IServiceProvider serviceProvider)
+        {
+            return new NavigationService<OffWorkViewModel>(serviceProvider.GetRequiredService<NavigationStore>(), () => CreateOffWorkViewModel(serviceProvider));
         }
 
         private NavigationService<ReportsViewModel> CreateReportsNavigationService(IServiceProvider serviceProvider)
@@ -193,6 +199,11 @@ namespace WorkActivity.WPF
         private ReportsViewModel CreateReportsViewModel(IServiceProvider serviceProvider)
         {
             return new ReportsViewModel(serviceProvider.GetRequiredService<IReport>());
+        }
+
+        private OffWorkViewModel CreateOffWorkViewModel(IServiceProvider serviceProvider)
+        {
+            return new OffWorkViewModel();
         }
 
         private DailyWorkDetailsListViewModel CreateDailyWorkDetailsViewModel(IServiceProvider serviceProvider, object parameter)

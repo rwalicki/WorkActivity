@@ -17,6 +17,7 @@ namespace WorkActivity.WPF.ViewModels
         private readonly NavigationService<TaskListViewModel> _taskListNavigationService;
         private readonly NavigationService<WorkListViewModel> _workListNavigationService;
         private readonly NavigationService<DailyWorkListViewModel> _dailyWorkListNavigationService;
+        private readonly NavigationService<OffWorkViewModel> _offWorkNavigationService;
         private readonly NavigationService<ReportsViewModel> _reportsNavigationService;
 
         public ViewModelBase CurrentViewModel => _navigationStore.CurrentViewModel;
@@ -28,6 +29,7 @@ namespace WorkActivity.WPF.ViewModels
         public ICommand TaskListCommand { get; set; }
         public ICommand WorkListCommand { get; set; }
         public ICommand DailyWorkListCommand { get; set; }
+        public ICommand OffWorkCommand { get; set; }
         public ICommand ReportsCommand { get; set; }
         public ICommand CloseCommand { get; set; }
 
@@ -37,6 +39,7 @@ namespace WorkActivity.WPF.ViewModels
             NavigationService<TaskListViewModel> taskListNavigationService,
             NavigationService<WorkListViewModel> workListNavigationService,
             NavigationService<DailyWorkListViewModel> dailyWorkListNavigationService,
+            NavigationService<OffWorkViewModel> offWorkNavigationService,
             NavigationService<ReportsViewModel> reportsNavigationService)
         {
             _navigationStore = navigationStore;
@@ -48,12 +51,14 @@ namespace WorkActivity.WPF.ViewModels
             _taskListNavigationService = taskListNavigationService;
             _workListNavigationService = workListNavigationService;
             _dailyWorkListNavigationService = dailyWorkListNavigationService;
+            _offWorkNavigationService = offWorkNavigationService;
             _reportsNavigationService = reportsNavigationService;
 
             SprintListCommand = new NavigateCommand(_sprintListNavigationService);
             TaskListCommand = new NavigateCommand(_taskListNavigationService);
             WorkListCommand = new NavigateCommand(_workListNavigationService);
             DailyWorkListCommand = new NavigateCommand(_dailyWorkListNavigationService);
+            OffWorkCommand = new NavigateCommand(_offWorkNavigationService);
             ReportsCommand = new NavigateCommand(_reportsNavigationService);
 
             CloseCommand = new RelayCommand((obj) => Close?.Invoke());

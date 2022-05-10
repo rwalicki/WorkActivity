@@ -55,6 +55,7 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
                     <Button Margin="5"
@@ -83,6 +84,12 @@
                             Command="{Binding DailyWorkListCommand}" />
                     <Button Margin="5"
                             Grid.Row="4"
+                            Content="Off Work"
+                            HorizontalContentAlignment="Left"
+                            Style="{DynamicResource MaterialDesignFlatButton}"
+                            Command="{Binding OffWorkCommand}" />
+                    <Button Margin="5"
+                            Grid.Row="5"
                             Content="Reports"
                             HorizontalContentAlignment="Left"
                             Style="{DynamicResource MaterialDesignFlatButton}"
