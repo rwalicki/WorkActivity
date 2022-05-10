@@ -6,6 +6,7 @@ namespace WorkActivity.WPF.ViewModels
     public class OffWorkItemViewModel : ViewModelBase
     {
         private OffWork _offWork;
+        public OffWork OffWork => _offWork;
 
         public string StartDate => _offWork.StartDate.ToString("dd.MM.yyyy");
 

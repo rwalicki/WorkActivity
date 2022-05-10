@@ -6,6 +6,7 @@ using System;
 using System.Windows;
 using Work.API.Repositories;
 using Work.Core.Interfaces;
+using Work.Core.Models;
 using WorkActivity.WPF.Services;
 using WorkActivity.WPF.Stores;
 using WorkActivity.WPF.ViewModels;
@@ -32,7 +33,7 @@ namespace WorkActivity.WPF
 
                 services.AddSingleton<IDailyWorkService, DailyWorkService>();
                 services.AddSingleton<IReport, MonthReport>();
-
+                services.AddSingleton<IFileService<OffWork>, OffWorkRepository>();
                 services.AddSingleton<NavigationStore>();
                 services.AddSingleton<ISnackbarService, SnackbarService>();
 
@@ -203,7 +204,7 @@ namespace WorkActivity.WPF
 
         private OffWorkViewModel CreateOffWorkViewModel(IServiceProvider serviceProvider)
         {
-            return new OffWorkViewModel();
+            return new OffWorkViewModel(serviceProvider.GetRequiredService<IFileService<OffWork>>());
         }
 
         private DailyWorkDetailsListViewModel CreateDailyWorkDetailsViewModel(IServiceProvider serviceProvider, object parameter)
