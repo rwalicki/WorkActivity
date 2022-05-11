@@ -51,6 +51,9 @@
             <DataTemplate DataType="{x:Type viewModels:OffWorkViewModel}">
                 <views:OffWorkView />
             </DataTemplate>
+            <DataTemplate DataType="{x:Type viewModels:AddOffWorkViewModel}">
+                <views:AddOffWorkView />
+            </DataTemplate>
 
         </ResourceDictionary>
     </Application.Resources>
