@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Shared.Interfaces;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Work.Core.Interfaces;
@@ -9,18 +10,20 @@ namespace WorkActivity.WPF.Services
     {
         private int _currentMonthWorkDays;
         private readonly IDailyWorkService _dailyWorkService;
+        private readonly IFileService<Work.Core.Models.OffWork> _offWorkService;
 
-        public MonthReport(IDailyWorkService dailyWorkService)
+        public MonthReport(IDailyWorkService dailyWorkService, IFileService<Work.Core.Models.OffWork> offWorkService)
         {
             _currentMonthWorkDays = GetCurrentMonthWorkDays();
             _dailyWorkService = dailyWorkService;
+            _offWorkService = offWorkService;
         }
 
         public decimal GetExpectedHours()
         {
             var today = DateTime.Today;
             var firstDayOfMonth = new DateTime(today.Year, today.Month, 1);
-
+            var offWorkDays = _offWorkService.GetAll();
             var days = 0;
             for (int i = 1; i <= today.Day; i++)
             {
