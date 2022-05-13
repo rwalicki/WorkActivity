@@ -1,15 +1,15 @@
 ﻿using Shared.Interfaces;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using WorkActivity.WPF.Commands;
 using WorkActivity.WPF.Services;
-using System.Threading.Tasks;
 
 namespace WorkActivity.WPF.ViewModels
 {
     public class OffWorkViewModel : ViewModelBase
     {
-        private readonly IFileService<Work.Core.Models.OffWork> _offWorkService;
+        private readonly IFileService<Work.Core.Models.OffWork> _offWorkRepository;
         private readonly NavigationService<AddOffWorkViewModel> _addOffWorkNavigationService;
 
         public ObservableCollection<OffWorkItemViewModel> OffWorkList { get; set; }
@@ -20,7 +20,7 @@ namespace WorkActivity.WPF.ViewModels
 
         public OffWorkViewModel(IFileService<Work.Core.Models.OffWork> offWorkService, NavigationService<AddOffWorkViewModel> addOffWorkNavigationService)
         {
-            _offWorkService = offWorkService;
+            _offWorkRepository = offWorkService;
             _addOffWorkNavigationService = addOffWorkNavigationService;
 
             OnLoadCommand = new RelayCommand(async (sender) => await Load(sender));
@@ -32,7 +32,7 @@ namespace WorkActivity.WPF.ViewModels
         {
             OffWorkList = new ObservableCollection<OffWorkItemViewModel>();
 
-            var offWorkList = await _offWorkService.GetAll();
+            var offWorkList = await _offWorkRepository.GetAll();
             foreach (var offWork in offWorkList)
             {
                 OffWorkList.Add(new OffWorkItemViewModel(offWork));
@@ -44,7 +44,7 @@ namespace WorkActivity.WPF.ViewModels
         private async Task Delete(object sender)
         {
             var offWorkItem = sender as OffWorkItemViewModel;
-            await _offWorkService.Delete(offWorkItem.OffWork.Id);
+            await _offWorkRepository.Delete(offWorkItem.OffWork.Id);
             await Load(sender);
         }
     }

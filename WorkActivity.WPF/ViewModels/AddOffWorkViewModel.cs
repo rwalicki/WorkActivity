@@ -12,7 +12,7 @@ namespace WorkActivity.WPF.ViewModels
         private IFileService<OffWork> _offWorkRepository;
         private NavigationService<OffWorkViewModel> _navigationService;
 
-        private DateTime _startDate = DateTime.Now;
+        private DateTime _startDate = DateTime.Today;
         public DateTime StartDate
         {
             get { return _startDate; }
@@ -23,7 +23,7 @@ namespace WorkActivity.WPF.ViewModels
             }
         }
 
-        private DateTime _endDate = DateTime.Now;
+        private DateTime _endDate = DateTime.Today;
         public DateTime EndDate
         {
             get { return _endDate; }

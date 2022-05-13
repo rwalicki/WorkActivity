@@ -39,7 +39,7 @@ namespace WorkActivity.WPF.ViewModels
                     days++;
                 }
             }
-            
+
             DaysOff = days;
         }
     }
