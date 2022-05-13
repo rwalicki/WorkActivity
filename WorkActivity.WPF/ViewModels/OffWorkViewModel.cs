@@ -1,9 +1,9 @@
 ﻿using Shared.Interfaces;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using WorkActivity.WPF.Commands;
 using WorkActivity.WPF.Services;
-using System.Threading.Tasks;
 
 namespace WorkActivity.WPF.ViewModels
 {

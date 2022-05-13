@@ -1,5 +1,4 @@
-﻿using Shared.Interfaces;
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Work.Core.Interfaces;
@@ -10,9 +9,9 @@ namespace WorkActivity.WPF.Services
     {
         private int _currentMonthWorkDays;
         private readonly IDailyWorkService _dailyWorkService;
-        private readonly IFileService<Work.Core.Models.OffWork> _offWorkService;
+        private readonly IOffWorkService _offWorkService;
 
-        public MonthReport(IDailyWorkService dailyWorkService, IFileService<Work.Core.Models.OffWork> offWorkService)
+        public MonthReport(IDailyWorkService dailyWorkService, IOffWorkService offWorkService)
         {
             _currentMonthWorkDays = GetCurrentMonthWorkDays();
             _dailyWorkService = dailyWorkService;
@@ -23,12 +22,14 @@ namespace WorkActivity.WPF.Services
         {
             var today = DateTime.Today;
             var firstDayOfMonth = new DateTime(today.Year, today.Month, 1);
-            var offWorkDays = _offWorkService.GetAll();
+            var task = Task.Run(() => { return _offWorkService.GetOffDateList(); });
+            task.Wait();
+            var offWorkDays = task.Result;
             var days = 0;
             for (int i = 1; i <= today.Day; i++)
             {
                 var date = new DateTime(today.Year, today.Month, i);
-                if (date.DayOfWeek != DayOfWeek.Saturday && date.DayOfWeek != DayOfWeek.Sunday)
+                if (date.DayOfWeek != DayOfWeek.Saturday && date.DayOfWeek != DayOfWeek.Sunday && !offWorkDays.Contains(date.Date))
                 {
                     days++;
                 }
@@ -42,7 +43,7 @@ namespace WorkActivity.WPF.Services
             var task = Task.Run(() => { return _dailyWorkService.GetAll(); });
             task.Wait();
             var dailyWorks = task.Result;
-            
+
             var loggedDailyWorks = dailyWorks.Where(x => x.Date.Month == DateTime.Today.Month && x.Date.Year == DateTime.Today.Year).ToList();
             return (decimal)loggedDailyWorks.Select(x => x.Hours).Sum();
         }

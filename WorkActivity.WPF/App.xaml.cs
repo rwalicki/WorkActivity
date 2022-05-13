@@ -31,11 +31,15 @@ namespace WorkActivity.WPF
                 services.AddSingleton<ISprintRepository, SprintFileRepository>();
                 services.AddSingleton<IFileService<Work.Core.Models.Sprint>>(new FileRepository<Work.Core.Models.Sprint>());
 
+                services.AddSingleton<IFileService<OffWork>, OffWorkRepository>();
+
                 services.AddSingleton<IDailyWorkService, DailyWorkService>();
                 services.AddSingleton<IReport, MonthReport>();
-                services.AddSingleton<IFileService<OffWork>, OffWorkRepository>();
-                services.AddSingleton<NavigationStore>();
+                services.AddSingleton<IOffWorkService, OffWorkService>();
+
                 services.AddSingleton<ISnackbarService, SnackbarService>();
+
+                services.AddSingleton<NavigationStore>();
 
                 services.AddSingleton<IFilterService<TaskViewModel>, FilterTaskService>();
                 services.AddSingleton<TaskListViewStore>();
@@ -113,7 +117,7 @@ namespace WorkActivity.WPF
         {
             return new NavigationService<OffWorkViewModel>(serviceProvider.GetRequiredService<NavigationStore>(), () => CreateOffWorkViewModel(serviceProvider));
         }
-        
+
         private NavigationService<AddOffWorkViewModel> CreateAddOffWorkNavigationService(IServiceProvider serviceProvider)
         {
             return new NavigationService<AddOffWorkViewModel>(serviceProvider.GetRequiredService<NavigationStore>(), () => CreateAddOffWorkViewModel(serviceProvider));

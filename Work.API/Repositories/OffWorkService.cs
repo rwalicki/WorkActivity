@@ -26,6 +26,19 @@ namespace Work.API.Repositories
                 var startDate = offDay.StartDate;
                 var endDate = offDay.EndDate;
 
+                if (startDate.DayOfWeek != DayOfWeek.Saturday && startDate.DayOfWeek != DayOfWeek.Sunday)
+                {
+                    dateList.Add(startDate);
+                }
+
+                while (startDate < endDate)
+                {
+                    startDate = startDate.AddDays(1);
+                    if (startDate.DayOfWeek != DayOfWeek.Saturday && startDate.DayOfWeek != DayOfWeek.Sunday)
+                    {
+                        dateList.Add(startDate);
+                    }
+                }
             }
 
             return dateList;
