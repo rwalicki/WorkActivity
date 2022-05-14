@@ -10,6 +10,7 @@
     <PublishReadyToRun>true</PublishReadyToRun>
 	<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
 	<ApplicationIcon>icon.ico</ApplicationIcon>
+	<AssemblyVersion>1.0.3</AssemblyVersion>
 
   </PropertyGroup>
 
