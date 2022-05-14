@@ -8,7 +8,7 @@ using WorkActivity.WPF.Stores;
 
 namespace WorkActivity.WPF.ViewModels
 {
-    public class MainWindowViewModel : ViewModelBase, ICloseWindow
+    public class MainWindowViewModel : ViewModelBase, IWindowOperations
     {
         private readonly ISnackbarService _snackbarService;
         private readonly NavigationStore _navigationStore;
@@ -20,9 +20,25 @@ namespace WorkActivity.WPF.ViewModels
         private readonly NavigationService<OffWorkViewModel> _offWorkNavigationService;
         private readonly NavigationService<ReportsViewModel> _reportsNavigationService;
 
+        private bool _isMaximized;
+        public bool IsMaximized
+        {
+            get => _isMaximized;
+            set
+            {
+                _isMaximized = value;
+                OnPropertyChanged(nameof(IsMaximized));
+            }
+        }
+
         public ViewModelBase CurrentViewModel => _navigationStore.CurrentViewModel;
         public SnackbarMessageQueue SnakbarMessageQueue => _snackbarService.GetSnackbar();
 
+        public Action<bool> WindowMaximized { get; set; }
+        
+        public event Action Minimize;
+        public event Action Maximize;
+        public event Action Restore;
         public event Action Close;
 
         public ICommand SprintListCommand { get; set; }
@@ -31,6 +47,10 @@ namespace WorkActivity.WPF.ViewModels
         public ICommand DailyWorkListCommand { get; set; }
         public ICommand OffWorkCommand { get; set; }
         public ICommand ReportsCommand { get; set; }
+
+        public ICommand WindowMinimizeCommand { get; set; }
+        public ICommand WindowMaximizeCommand { get; set; }
+        public ICommand WindowRestoreCommand { get; set; }
         public ICommand CloseCommand { get; set; }
 
         public MainWindowViewModel(NavigationStore navigationStore,
@@ -47,6 +67,8 @@ namespace WorkActivity.WPF.ViewModels
 
             _snackbarService = snackbarService;
 
+            WindowMaximized = (isMaximized) => IsMaximized = isMaximized;
+
             _sprintListNavigationService = sprintListNavigationService;
             _taskListNavigationService = taskListNavigationService;
             _workListNavigationService = workListNavigationService;
@@ -61,6 +83,9 @@ namespace WorkActivity.WPF.ViewModels
             OffWorkCommand = new NavigateCommand(_offWorkNavigationService);
             ReportsCommand = new NavigateCommand(_reportsNavigationService);
 
+            WindowMinimizeCommand = new RelayCommand((obj) => Minimize?.Invoke());
+            WindowMaximizeCommand = new RelayCommand((obj) => Maximize?.Invoke());
+            WindowRestoreCommand = new RelayCommand((obj) => Restore?.Invoke());
             CloseCommand = new RelayCommand((obj) => Close?.Invoke());
         }
     }
