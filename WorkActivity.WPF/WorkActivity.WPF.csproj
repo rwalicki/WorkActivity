@@ -10,7 +10,6 @@
     <PublishReadyToRun>true</PublishReadyToRun>
 	<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
 	<ApplicationIcon>icon.ico</ApplicationIcon>
-	<Version>1.0.3</Version>
 
   </PropertyGroup>
 

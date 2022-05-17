@@ -1,6 +1,6 @@
-﻿using Shared.Interfaces;
-using System;
+﻿using System;
 using System.Windows.Input;
+using Work.Core.Interfaces;
 using Work.Core.Models;
 using WorkActivity.WPF.Commands;
 using WorkActivity.WPF.Services;
@@ -9,7 +9,7 @@ namespace WorkActivity.WPF.ViewModels
 {
     public class AddOffWorkViewModel : ViewModelBase
     {
-        private IFileService<OffWork> _offWorkRepository;
+        private IOffWorkRepository _offWorkRepository;
         private NavigationService<OffWorkViewModel> _navigationService;
 
         private DateTime _startDate = DateTime.Today;
@@ -36,7 +36,7 @@ namespace WorkActivity.WPF.ViewModels
 
         public ICommand AddOffWorkCommand { get; }
 
-        public AddOffWorkViewModel(IFileService<OffWork> offWorkRepository, NavigationService<OffWorkViewModel> navigationService)
+        public AddOffWorkViewModel(IOffWorkRepository offWorkRepository, NavigationService<OffWorkViewModel> navigationService)
         {
             _offWorkRepository = offWorkRepository;
             _navigationService = navigationService;

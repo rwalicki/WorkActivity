@@ -29,9 +29,10 @@ namespace WorkActivity.WPF
                 services.AddSingleton<IFileService<Work.Core.DTOs.Work>>(new FileRepository<Work.Core.DTOs.Work>());
 
                 services.AddSingleton<ISprintRepository, SprintFileRepository>();
-                services.AddSingleton<IFileService<Work.Core.Models.Sprint>>(new FileRepository<Work.Core.Models.Sprint>());
+                services.AddSingleton<IFileService<Sprint>>(new FileRepository<Work.Core.Models.Sprint>());
 
-                services.AddSingleton<IFileService<OffWork>, OffWorkRepository>();
+                services.AddSingleton<IOffWorkRepository, OffWorkRepository>();
+                services.AddSingleton<IFileService<OffWork>>(new FileRepository<OffWork>());
 
                 services.AddSingleton<IDailyWorkService, DailyWorkService>();
                 services.AddSingleton<IReport, MonthReport>();
@@ -214,12 +215,12 @@ namespace WorkActivity.WPF
 
         private OffWorkViewModel CreateOffWorkViewModel(IServiceProvider serviceProvider)
         {
-            return new OffWorkViewModel(serviceProvider.GetRequiredService<IFileService<OffWork>>(), CreateAddOffWorkNavigationService(serviceProvider));
+            return new OffWorkViewModel(serviceProvider.GetRequiredService<IOffWorkRepository>(), CreateAddOffWorkNavigationService(serviceProvider));
         }
 
         private AddOffWorkViewModel CreateAddOffWorkViewModel(IServiceProvider serviceProvider)
         {
-            return new AddOffWorkViewModel(serviceProvider.GetRequiredService<IFileService<OffWork>>(), CreateOffWorkNavigationService(serviceProvider));
+            return new AddOffWorkViewModel(serviceProvider.GetRequiredService<IOffWorkRepository>(), CreateOffWorkNavigationService(serviceProvider));
         }
 
         private DailyWorkDetailsListViewModel CreateDailyWorkDetailsViewModel(IServiceProvider serviceProvider, object parameter)

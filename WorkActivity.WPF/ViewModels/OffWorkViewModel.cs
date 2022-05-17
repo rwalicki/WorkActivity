@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Work.Core.Interfaces;
 using WorkActivity.WPF.Commands;
 using WorkActivity.WPF.Services;
 
@@ -9,7 +10,7 @@ namespace WorkActivity.WPF.ViewModels
 {
     public class OffWorkViewModel : ViewModelBase
     {
-        private readonly IFileService<Work.Core.Models.OffWork> _offWorkRepository;
+        private readonly IOffWorkRepository _offWorkRepository;
         private readonly NavigationService<AddOffWorkViewModel> _addOffWorkNavigationService;
 
         public ObservableCollection<OffWorkItemViewModel> OffWorkList { get; set; }
@@ -18,7 +19,7 @@ namespace WorkActivity.WPF.ViewModels
         public ICommand AddOffWorkCommand { get; }
         public ICommand DeleteCommand { get; }
 
-        public OffWorkViewModel(IFileService<Work.Core.Models.OffWork> offWorkService, NavigationService<AddOffWorkViewModel> addOffWorkNavigationService)
+        public OffWorkViewModel(IOffWorkRepository offWorkService, NavigationService<AddOffWorkViewModel> addOffWorkNavigationService)
         {
             _offWorkRepository = offWorkService;
             _addOffWorkNavigationService = addOffWorkNavigationService;
@@ -33,9 +34,12 @@ namespace WorkActivity.WPF.ViewModels
             OffWorkList = new ObservableCollection<OffWorkItemViewModel>();
 
             var offWorkList = await _offWorkRepository.GetAll();
-            foreach (var offWork in offWorkList)
+            if (offWorkList.Success)
             {
-                OffWorkList.Add(new OffWorkItemViewModel(offWork));
+                foreach (var offWork in offWorkList.Data)
+                {
+                    OffWorkList.Add(new OffWorkItemViewModel(offWork));
+                }
             }
 
             OnPropertyChanged(nameof(OffWorkList));
