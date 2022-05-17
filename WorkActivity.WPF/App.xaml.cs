@@ -220,7 +220,8 @@ namespace WorkActivity.WPF
 
         private AddOffWorkViewModel CreateAddOffWorkViewModel(IServiceProvider serviceProvider)
         {
-            return new AddOffWorkViewModel(serviceProvider.GetRequiredService<IOffWorkRepository>(), CreateOffWorkNavigationService(serviceProvider));
+            return new AddOffWorkViewModel(serviceProvider.GetRequiredService<IOffWorkRepository
+                >(), CreateOffWorkNavigationService(serviceProvider));
         }
 
         private DailyWorkDetailsListViewModel CreateDailyWorkDetailsViewModel(IServiceProvider serviceProvider, object parameter)
