@@ -6,7 +6,7 @@
         xmlns:controls="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:views="clr-namespace:WorkActivity.WPF.Views"
         mc:Ignorable="d"
-        Title="Work reporter"
+        Title="Work Activity"
         Height="675"
         Width="1200"
         WindowStyle="None"
@@ -20,7 +20,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <views:TopBar Title="Work Reporter"
+        <views:TopBar Title="Work Activity"
                       WindowMinimizeCommand="{Binding WindowMinimizeCommand}"
                       WindowMaximizeCommand="{Binding WindowMaximizeCommand}"
                       CloseCommand="{Binding CloseCommand}"
