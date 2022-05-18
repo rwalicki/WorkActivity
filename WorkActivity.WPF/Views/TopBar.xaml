@@ -16,23 +16,23 @@
                    Text="{Binding Title, ElementName=topBar}" />
         <StackPanel Orientation="Horizontal"
                     HorizontalAlignment="Right">
-            <Button Margin="5"
+            <Button Style="{StaticResource TopButton}"
                     Command="{Binding WindowMinimizeCommand}">
                 <controls:PackIcon Kind="WindowMinimize" />
             </Button>
             <Grid>
-                <Button Margin="5"
+                <Button Style="{StaticResource TopButton}"
                         Visibility="{Binding IsMaximized, ElementName=topBar, Converter={StaticResource BooleanToVisibilityConverter}}"
                         Command="{Binding WindowRestoreCommand}">
                     <controls:PackIcon Kind="WindowRestore" />
                 </Button>
-                <Button Margin="5"
+                <Button Style="{StaticResource TopButton}"
                         Visibility="{Binding IsMaximized, ElementName=topBar, Converter={StaticResource InverseBoolToVisConverter}}"
                         Command="{Binding WindowMaximizeCommand}">
                     <controls:PackIcon Kind="WindowMaximize" />
                 </Button>
             </Grid>
-            <Button Margin="5"
+            <Button Style="{StaticResource TopButton}"
                     Command="{Binding CloseCommand, ElementName=topBar}">
                 <controls:PackIcon Kind="Close" />
             </Button>
