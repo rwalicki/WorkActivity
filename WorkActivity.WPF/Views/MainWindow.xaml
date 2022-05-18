@@ -31,53 +31,57 @@
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <Grid Grid.Column="0">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                <Button Margin="5"
-                        Grid.Row="0"
-                        Content="Sprints"
-                        HorizontalContentAlignment="Left"
-                        Style="{DynamicResource MaterialDesignFlatButton}"
-                        Command="{Binding SprintListCommand}" />
-                <Button Margin="5"
-                        Grid.Row="1"
-                        Content="Tasks"
-                        HorizontalContentAlignment="Left"
-                        Style="{DynamicResource MaterialDesignFlatButton}"
-                        Command="{Binding TaskListCommand}" />
-                <Button Margin="5"
-                        Grid.Row="2"
-                        Content="Works"
-                        HorizontalContentAlignment="Left"
-                        Style="{DynamicResource MaterialDesignFlatButton}"
-                        Command="{Binding WorkListCommand}" />
-                <Button Margin="5"
-                        Grid.Row="3"
-                        Content="Daily Work"
-                        HorizontalContentAlignment="Left"
-                        Style="{DynamicResource MaterialDesignFlatButton}"
-                        Command="{Binding DailyWorkListCommand}" />
-                <Button Margin="5"
-                        Grid.Row="4"
-                        Content="Off Work"
-                        HorizontalContentAlignment="Left"
-                        Style="{DynamicResource MaterialDesignFlatButton}"
-                        Command="{Binding OffWorkCommand}" />
-                <Button Margin="5"
-                        Grid.Row="5"
-                        Content="Reports"
-                        HorizontalContentAlignment="Left"
-                        Style="{DynamicResource MaterialDesignFlatButton}"
-                        Command="{Binding ReportsCommand}" />
-            </Grid>
+            <Border Grid.Column="0"
+                    BorderThickness="0 0 1 0"
+                    BorderBrush="{DynamicResource PrimaryHueMidBrush}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Button Margin="5"
+                            Grid.Row="0"
+                            Content="Sprints"
+                            HorizontalContentAlignment="Left"
+                            Style="{DynamicResource MaterialDesignFlatButton}"
+                            Command="{Binding SprintListCommand}" />
+                    <Button Margin="5"
+                            Grid.Row="1"
+                            Content="Tasks"
+                            HorizontalContentAlignment="Left"
+                            Style="{DynamicResource MaterialDesignFlatButton}"
+                            Command="{Binding TaskListCommand}" />
+                    <Button Margin="5"
+                            Grid.Row="2"
+                            Content="Works"
+                            HorizontalContentAlignment="Left"
+                            Style="{DynamicResource MaterialDesignFlatButton}"
+                            Command="{Binding WorkListCommand}" />
+                    <Button Margin="5"
+                            Grid.Row="3"
+                            Content="Daily Work"
+                            HorizontalContentAlignment="Left"
+                            Style="{DynamicResource MaterialDesignFlatButton}"
+                            Command="{Binding DailyWorkListCommand}" />
+                    <Button Margin="5"
+                            Grid.Row="4"
+                            Content="Off Work"
+                            HorizontalContentAlignment="Left"
+                            Style="{DynamicResource MaterialDesignFlatButton}"
+                            Command="{Binding OffWorkCommand}" />
+                    <Button Margin="5"
+                            Grid.Row="5"
+                            Content="Reports"
+                            HorizontalContentAlignment="Left"
+                            Style="{DynamicResource MaterialDesignFlatButton}"
+                            Command="{Binding ReportsCommand}" />
+                </Grid>
+            </Border>
             <Grid Grid.Column="2">
                 <ContentControl Content="{Binding CurrentViewModel}" />
                 <controls:Snackbar MessageQueue="{Binding SnakbarMessageQueue}"

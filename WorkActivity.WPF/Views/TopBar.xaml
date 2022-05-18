@@ -7,35 +7,39 @@
              Name="topBar"
              mc:Ignorable="d"
              d:DesignWidth="800">
-    <Grid>
-        <TextBlock Margin="10 0"
-                   VerticalAlignment="Center"
-                   HorizontalAlignment="Left"
-                   Style="{DynamicResource MaterialDesignHeadline5TextBlock}"
-                   Foreground="{DynamicResource PrimaryHueMidBrush}"
-                   Text="{Binding Title, ElementName=topBar}" />
-        <StackPanel Orientation="Horizontal"
-                    HorizontalAlignment="Right">
-            <Button Style="{StaticResource TopButton}"
-                    Command="{Binding WindowMinimizeCommand}">
-                <controls:PackIcon Kind="WindowMinimize" />
-            </Button>
-            <Grid>
+    <Border BorderThickness="0 0 0 1"
+            BorderBrush="{DynamicResource PrimaryHueMidBrush}">
+
+        <Grid Margin="0 5 0 10">
+            <TextBlock Margin="10 0"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Left"
+                       Style="{DynamicResource MaterialDesignHeadline5TextBlock}"
+                       Foreground="{DynamicResource PrimaryHueMidBrush}"
+                       Text="{Binding Title, ElementName=topBar}" />
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Right">
                 <Button Style="{StaticResource TopButton}"
-                        Visibility="{Binding IsMaximized, ElementName=topBar, Converter={StaticResource BooleanToVisibilityConverter}}"
-                        Command="{Binding WindowRestoreCommand}">
-                    <controls:PackIcon Kind="WindowRestore" />
+                        Command="{Binding WindowMinimizeCommand}">
+                    <controls:PackIcon Kind="WindowMinimize" />
                 </Button>
+                <Grid>
+                    <Button Style="{StaticResource TopButton}"
+                            Visibility="{Binding IsMaximized, ElementName=topBar, Converter={StaticResource BooleanToVisibilityConverter}}"
+                            Command="{Binding WindowRestoreCommand}">
+                        <controls:PackIcon Kind="WindowRestore" />
+                    </Button>
+                    <Button Style="{StaticResource TopButton}"
+                            Visibility="{Binding IsMaximized, ElementName=topBar, Converter={StaticResource InverseBoolToVisConverter}}"
+                            Command="{Binding WindowMaximizeCommand}">
+                        <controls:PackIcon Kind="WindowMaximize" />
+                    </Button>
+                </Grid>
                 <Button Style="{StaticResource TopButton}"
-                        Visibility="{Binding IsMaximized, ElementName=topBar, Converter={StaticResource InverseBoolToVisConverter}}"
-                        Command="{Binding WindowMaximizeCommand}">
-                    <controls:PackIcon Kind="WindowMaximize" />
+                        Command="{Binding CloseCommand, ElementName=topBar}">
+                    <controls:PackIcon Kind="Close" />
                 </Button>
-            </Grid>
-            <Button Style="{StaticResource TopButton}"
-                    Command="{Binding CloseCommand, ElementName=topBar}">
-                <controls:PackIcon Kind="Close" />
-            </Button>
-        </StackPanel>
-    </Grid>
+            </StackPanel>
+        </Grid>
+    </Border>
 </UserControl>
