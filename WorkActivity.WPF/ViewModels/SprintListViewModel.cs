@@ -50,7 +50,8 @@ namespace WorkActivity.WPF.ViewModels
             var result = await _sprintRepository.GetAll();
             if (result.Success)
             {
-                Sprints = new ObservableCollection<Sprint>(result.Data);
+                var data = result.Data.ToList().OrderByDescending(x => x.StartDate);
+                Sprints = new ObservableCollection<Sprint>(data);
             }
         }
 
