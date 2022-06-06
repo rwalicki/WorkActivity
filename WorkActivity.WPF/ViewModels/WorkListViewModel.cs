@@ -7,6 +7,7 @@ using System.Windows.Input;
 using Work.Core.Interfaces;
 using WorkActivity.WPF.Commands;
 using WorkActivity.WPF.Services;
+using WorkActivity.WPF.Stores;
 
 namespace WorkActivity.WPF.ViewModels
 {
@@ -15,6 +16,8 @@ namespace WorkActivity.WPF.ViewModels
         private readonly ISnackbarService _snackbarService;
         private readonly IWorkRepository _workRepository;
         private readonly ParameterNavigationService<object, AddWorkViewModel> _addWorkNavigationService;
+        private readonly DailyProgressStore _dailyProgressStore;
+        private readonly IDailyWorkService _dailyWorkService;
 
         private List<Work.Core.Models.Work> _works;
 
@@ -38,11 +41,15 @@ namespace WorkActivity.WPF.ViewModels
 
         public WorkListViewModel(ISnackbarService snackbarService,
             IWorkRepository workRepository,
-            ParameterNavigationService<object, AddWorkViewModel> addWorkNavigationService)
+            ParameterNavigationService<object, AddWorkViewModel> addWorkNavigationService, 
+            DailyProgressStore dailyProgressStore,
+            IDailyWorkService dailyWorkService)
         {
             _snackbarService = snackbarService;
             _workRepository = workRepository;
             _addWorkNavigationService = addWorkNavigationService;
+            _dailyProgressStore = dailyProgressStore;
+            _dailyWorkService = dailyWorkService;
 
             OnLoadCommand = new RelayCommand(Load);
             AddWorkCommand = new RelayCommand(AddWorkNavigate);
@@ -77,6 +84,10 @@ namespace WorkActivity.WPF.ViewModels
                 ItemView.Refresh();
                 OnPropertyChanged(nameof(ItemView));
             }
+
+            var dailyWorks = (await _dailyWorkService.GetAll()).ToList();
+            var element = dailyWorks.FirstOrDefault();
+            _dailyProgressStore.Hours = element?.Hours ?? 0;
         }
 
         private void AddWorkNavigate(object sender)

@@ -56,7 +56,10 @@
                 <views:AddOffWorkView />
             </DataTemplate>
             <DataTemplate DataType="{x:Type viewModels:DailyProgressViewModel}">
-                <components:DailyProgressView/>
+                <components:DailyProgressView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type viewModels:TopBarViewModel}">
+                <components:TopBarView />
             </DataTemplate>
 
         </ResourceDictionary>

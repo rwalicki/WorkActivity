@@ -2,12 +2,14 @@
 using System.Windows.Input;
 using Work.Core.Interfaces;
 using WorkActivity.WPF.Commands;
+using WorkActivity.WPF.Stores;
 
 namespace WorkActivity.WPF.ViewModels
 {
     public class DailyProgressViewModel : ViewModelBase
     {
         private readonly IDailyWorkService _dailyWorkService;
+        private readonly DailyProgressStore _dailyProgressStore;
 
         private string _text;
         public string Text
@@ -44,9 +46,12 @@ namespace WorkActivity.WPF.ViewModels
 
         public ICommand OnLoadCommand { get; set; }
 
-        public DailyProgressViewModel(IDailyWorkService dailyWorkService)
+        public DailyProgressViewModel(IDailyWorkService dailyWorkService, DailyProgressStore dailyProgressStore)
         {
             _dailyWorkService = dailyWorkService;
+            _dailyProgressStore = dailyProgressStore;
+            _dailyProgressStore.ProgressChanged += ProgressChanged;
+
             OnLoadCommand = new RelayCommand(Load);
         }
 
@@ -54,10 +59,18 @@ namespace WorkActivity.WPF.ViewModels
         {
             var list = (await _dailyWorkService.GetAll()).ToList();
             var element = list.FirstOrDefault();
-            Text = $"{element.Hours} / {7.5}";
-            var value = (int)((element.Hours / 7.5)*100);
+
+            _dailyProgressStore.Hours = element?.Hours ?? 0;
+        }
+
+        private void ProgressChanged()
+        {
+            var hours = _dailyProgressStore.Hours;
+            Text = $"{hours} / {7.5}";
+
+            var value = (int)((hours / 7.5) * 100);
             Value = value;
-            Percentage = value.ToString() + "%";
+            Percentage = value.ToString() + " %";
         }
     }
 }

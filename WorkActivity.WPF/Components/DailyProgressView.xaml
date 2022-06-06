@@ -1,21 +1,46 @@
 ﻿<UserControl x:Class="WorkActivity.WPF.Components.DailyProgressView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:WorkActivity.WPF.Components"
              xmlns:controls="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:vm="clr-namespace:WorkActivity.WPF.ViewModels" xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-             mc:Ignorable="d" 
-             d:DesignHeight="50" d:DesignWidth="300">
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             mc:Ignorable="d"
+             d:DesignHeight="50"
+             d:DesignWidth="300">
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding OnLoadCommand}" />
         </i:EventTrigger>
     </i:Interaction.Triggers>
     <Grid>
-        <ProgressBar Height="{Binding ActualHeight, RelativeSource={RelativeSource FindAncestor, AncestorType=local:DailyProgressView}}" Value="{Binding Value}" />
-        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding Text}" Foreground="White"/>
-        <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Text="{Binding Percentage}" Foreground="White" Margin="0 0 10 0"/>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Column="0">
+            <ProgressBar Height="20"
+                         Value="{Binding Value}"
+                         Foreground="{DynamicResource PrimaryHueLightBrush}"
+                         Background="Transparent"/>
+        </Grid>
+        <Grid Grid.Column="1">
+            <StackPanel Orientation="Vertical" Margin="10 0"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+                <TextBlock Margin="0 0 0 5"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           Text="{Binding Text}"
+                           Foreground="{DynamicResource PrimaryHueLightBrush}" />
+                <TextBlock Margin="0 0 0 0"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           Text="{Binding Percentage}"
+                           Foreground="{DynamicResource PrimaryHueLightBrush}" />
+            </StackPanel>
+
+        </Grid>
     </Grid>
 </UserControl>
