@@ -3,7 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:controls="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:controls="http://materialdesigninxaml.net/winfx/xaml/themes" 
+             xmlns:components="clr-namespace:WorkActivity.WPF.Components"
+             xmlns:vm="clr-namespace:WorkActivity.WPF.ViewModels"
              Name="topBar"
              mc:Ignorable="d"
              d:DesignWidth="800">
@@ -17,8 +19,10 @@
                        Style="{DynamicResource MaterialDesignHeadline5TextBlock}"
                        Foreground="{DynamicResource PrimaryHueMidBrush}"
                        Text="{Binding Title, ElementName=topBar}" />
+            
             <StackPanel Orientation="Horizontal"
                         HorizontalAlignment="Right">
+                <ContentControl Content="{Binding DailyProgressViewModel, ElementName=topBar}" Width="300" Margin="0 0 5 0"/>
                 <Button Style="{StaticResource TopButton}"
                         Command="{Binding WindowMinimizeCommand}">
                     <controls:PackIcon Kind="WindowMinimize" />

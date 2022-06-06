@@ -34,6 +34,8 @@ namespace WorkActivity.WPF.ViewModels
         public ViewModelBase CurrentViewModel => _navigationStore.CurrentViewModel;
         public SnackbarMessageQueue SnakbarMessageQueue => _snackbarService.GetSnackbar();
 
+        public DailyProgressViewModel DailyProgressViewModel { get; private set; }
+
         public Action<bool> WindowMaximized { get; set; }
         
         public event Action Minimize;
@@ -60,8 +62,10 @@ namespace WorkActivity.WPF.ViewModels
             NavigationService<WorkListViewModel> workListNavigationService,
             NavigationService<DailyWorkListViewModel> dailyWorkListNavigationService,
             NavigationService<OffWorkViewModel> offWorkNavigationService,
-            NavigationService<ReportsViewModel> reportsNavigationService)
+            NavigationService<ReportsViewModel> reportsNavigationService,
+            DailyProgressViewModel dailyProgressViewModel)
         {
+            DailyProgressViewModel = dailyProgressViewModel;
             _navigationStore = navigationStore;
             _navigationStore.CurrentViewModelChanged += () => OnPropertyChanged(nameof(CurrentViewModel));
 

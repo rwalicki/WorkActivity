@@ -7,6 +7,7 @@ using System.Windows;
 using Work.API.Repositories;
 using Work.Core.Interfaces;
 using Work.Core.Models;
+using WorkActivity.WPF.Components;
 using WorkActivity.WPF.Services;
 using WorkActivity.WPF.Stores;
 using WorkActivity.WPF.ViewModels;
@@ -22,6 +23,9 @@ namespace WorkActivity.WPF
         {
             _host = Host.CreateDefaultBuilder().ConfigureServices(services =>
             {
+                services.AddSingleton<DailyProgressViewModel>();
+                services.AddSingleton<DailyProgressView>();
+
                 services.AddSingleton<ITaskRepository, TaskFileRepository>();
                 services.AddSingleton<IFileService<Work.Core.DTOs.Task>>(new FileRepository<Work.Core.DTOs.Task>());
 

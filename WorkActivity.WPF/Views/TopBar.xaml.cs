@@ -1,11 +1,22 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using WorkActivity.WPF.ViewModels;
 
 namespace WorkActivity.WPF.Views
 {
     public partial class TopBar : UserControl
     {
+        public DailyProgressViewModel DailyProgressViewModel
+        {
+            get { return (DailyProgressViewModel)GetValue(DailyProgressViewModelProperty); }
+            set { SetValue(DailyProgressViewModelProperty, value); }
+        }
+
+        public static readonly DependencyProperty DailyProgressViewModelProperty =
+            DependencyProperty.Register("DailyProgressViewModel", typeof(DailyProgressViewModel), typeof(TopBar));
+
+
         public bool IsMaximized
         {
             get { return (bool)GetValue(IsMaximizedProperty); }
