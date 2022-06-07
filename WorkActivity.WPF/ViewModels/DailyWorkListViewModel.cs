@@ -5,6 +5,7 @@ using Work.Core.Interfaces;
 using Work.Core.Models;
 using WorkActivity.WPF.Commands;
 using WorkActivity.WPF.Services;
+using WorkActivity.WPF.Stores;
 
 namespace WorkActivity.WPF.ViewModels
 {
@@ -13,6 +14,7 @@ namespace WorkActivity.WPF.ViewModels
         private readonly IDailyWorkService _dailyWorkService;
         private readonly IWorkRepository _workRepository;
         private readonly ParameterNavigationService<object, DailyWorkDetailsListViewModel> _detailsNavigationService;
+        private readonly DailyProgressStore _dailyProgressStore;
 
         private List<DailyWork> _dailyWorks;
         public List<DailyWork> DailyWorks
@@ -31,11 +33,13 @@ namespace WorkActivity.WPF.ViewModels
 
         public DailyWorkListViewModel(IDailyWorkService dailyWorkService,
             IWorkRepository workRepository,
-            ParameterNavigationService<object, DailyWorkDetailsListViewModel> detailsNavigationService)
+            ParameterNavigationService<object, DailyWorkDetailsListViewModel> detailsNavigationService,
+            DailyProgressStore dailyProgressStore)
         {
             _dailyWorkService = dailyWorkService;
             _workRepository = workRepository;
             _detailsNavigationService = detailsNavigationService;
+            _dailyProgressStore = dailyProgressStore;
 
             OnLoadCommand = new RelayCommand(Load);
             ShowDetailsCommand = new RelayCommand(ShowDetails);
@@ -44,6 +48,8 @@ namespace WorkActivity.WPF.ViewModels
         private async void Load(object obj)
         {
             DailyWorks = (await _dailyWorkService.GetAll()).ToList();
+            var element = DailyWorks.FirstOrDefault();
+            _dailyProgressStore.Hours = element?.Hours ?? 0;
         }
 
         private async void ShowDetails(object sender)

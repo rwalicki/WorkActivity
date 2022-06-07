@@ -28,6 +28,7 @@ namespace WorkActivity.WPF.Views
                 vm.Maximize += () => WindowState = WindowState.Maximized;
                 vm.Restore += () => WindowState = WindowState.Normal;
                 vm.Close += () => Close();
+                vm.SetWindowTitle(Title);
             }
         }
 

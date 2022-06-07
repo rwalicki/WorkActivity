@@ -5,10 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:views="clr-namespace:WorkActivity.WPF.Views"
+        xmlns:components="clr-namespace:WorkActivity.WPF.Components"
         mc:Ignorable="d"
         Title="Work Activity"
         Height="675"
         Width="1200"
+        MinWidth="640"
         WindowStyle="None"
         Margin="0"
         Padding="0"
@@ -20,11 +22,9 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <views:TopBar Title="Work Activity"
-                      WindowMinimizeCommand="{Binding WindowMinimizeCommand}"
-                      WindowMaximizeCommand="{Binding WindowMaximizeCommand}"
-                      CloseCommand="{Binding CloseCommand}"
-                      IsMaximized="{Binding IsMaximized}" />
+        <Grid Grid.Row="0">
+            <ContentControl Content="{Binding TopBarViewModel}" />
+        </Grid>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />

@@ -7,6 +7,7 @@ using System.Windows;
 using Work.API.Repositories;
 using Work.Core.Interfaces;
 using Work.Core.Models;
+using WorkActivity.WPF.Components;
 using WorkActivity.WPF.Services;
 using WorkActivity.WPF.Stores;
 using WorkActivity.WPF.ViewModels;
@@ -22,6 +23,9 @@ namespace WorkActivity.WPF
         {
             _host = Host.CreateDefaultBuilder().ConfigureServices(services =>
             {
+                services.AddSingleton<TopBarViewModel>();
+                services.AddSingleton<DailyProgressViewModel>();
+
                 services.AddSingleton<ITaskRepository, TaskFileRepository>();
                 services.AddSingleton<IFileService<Work.Core.DTOs.Task>>(new FileRepository<Work.Core.DTOs.Task>());
 
@@ -41,6 +45,7 @@ namespace WorkActivity.WPF
                 services.AddSingleton<ISnackbarService, SnackbarService>();
 
                 services.AddSingleton<NavigationStore>();
+                services.AddSingleton<DailyProgressStore>();
 
                 services.AddSingleton<IFilterService<TaskViewModel>, FilterTaskService>();
                 services.AddSingleton<TaskListViewStore>();
@@ -195,7 +200,11 @@ namespace WorkActivity.WPF
 
         private WorkListViewModel CreateWorkListViewModel(IServiceProvider serviceProvider)
         {
-            return new WorkListViewModel(serviceProvider.GetRequiredService<ISnackbarService>(), serviceProvider.GetRequiredService<IWorkRepository>(), CreateAddWorkNavigationService(serviceProvider));
+            return new WorkListViewModel(serviceProvider.GetRequiredService<ISnackbarService>(), 
+                serviceProvider.GetRequiredService<IWorkRepository>(), 
+                CreateAddWorkNavigationService(serviceProvider), 
+                serviceProvider.GetRequiredService<DailyProgressStore>(),
+                serviceProvider.GetRequiredService<IDailyWorkService>());
         }
 
         private AddWorkViewModel CreateAddWorkViewModel(IServiceProvider serviceProvider, object parameter)
@@ -205,7 +214,7 @@ namespace WorkActivity.WPF
 
         private DailyWorkListViewModel CreateDailyWorkListViewModel(IServiceProvider serviceProvider)
         {
-            return new DailyWorkListViewModel(serviceProvider.GetRequiredService<IDailyWorkService>(), serviceProvider.GetRequiredService<IWorkRepository>(), CreateDailyWorkDetailsNavigationService(serviceProvider));
+            return new DailyWorkListViewModel(serviceProvider.GetRequiredService<IDailyWorkService>(), serviceProvider.GetRequiredService<IWorkRepository>(), CreateDailyWorkDetailsNavigationService(serviceProvider), serviceProvider.GetRequiredService<DailyProgressStore>());
         }
 
         private ReportsViewModel CreateReportsViewModel(IServiceProvider serviceProvider)
