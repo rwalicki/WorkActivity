@@ -4,13 +4,14 @@ using System.Windows.Input;
 using Work.Core.Interfaces;
 using WorkActivity.WPF.Commands;
 using WorkActivity.WPF.Services;
+using WorkActivity.WPF.Stores;
 
 namespace WorkActivity.WPF.ViewModels
 {
     public class EditTaskViewModel : ViewModelBase
     {
         private readonly ISnackbarService _snackbarService;
-        private readonly ITaskRepository _taskService;
+        private readonly TaskStore _taskStore;
         private readonly ISprintRepository _sprintService;
         private readonly NavigationService<TaskListViewModel> _taskListNavigationService;
 
@@ -51,7 +52,7 @@ namespace WorkActivity.WPF.ViewModels
         public ICommand EditTaskCommand { get; set; }
 
         public EditTaskViewModel(ISnackbarService snackbarService,
-            ITaskRepository taskService,
+            TaskStore taskStore,
             ISprintRepository sprintService,
             NavigationService<TaskListViewModel> taskListNavigationService,
             object task)
@@ -60,7 +61,7 @@ namespace WorkActivity.WPF.ViewModels
             Task = (task as TaskViewModel)?.Task;
 
             _snackbarService = snackbarService;
-            _taskService = taskService;
+            _taskStore = taskStore;
             _sprintService = sprintService;
             _taskListNavigationService = taskListNavigationService;
 
@@ -93,7 +94,7 @@ namespace WorkActivity.WPF.ViewModels
         {
             _task.Sprints = Sprints.Where(x => x.IsSelected).Select(x => x.Sprint).ToList();
 
-            var result = await _taskService.Update(_task);
+            var result = await _taskStore.Update(_task);
             if (result.Success)
             {
                 _taskListNavigationService.Navigate();

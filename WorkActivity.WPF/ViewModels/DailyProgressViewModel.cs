@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Windows.Input;
 using Work.Core.Interfaces;
 using WorkActivity.WPF.Commands;
@@ -60,7 +61,14 @@ namespace WorkActivity.WPF.ViewModels
             var list = (await _dailyWorkService.GetAll()).ToList();
             var element = list.FirstOrDefault();
 
-            _dailyProgressStore.Hours = element?.Hours ?? 0;
+            if (element != null && element.Date.Date.Equals(DateTime.Today.Date))
+            {
+                _dailyProgressStore.Hours = element?.Hours ?? 0;
+            }
+            else
+            {
+                _dailyProgressStore.Hours = 0;
+            }
         }
 
         private void ProgressChanged()

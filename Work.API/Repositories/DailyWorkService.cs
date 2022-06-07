@@ -10,7 +10,7 @@ namespace Work.API.Repositories
     {
         private readonly IWorkRepository _workRepository;
 
-        public DailyWorkService(ITaskRepository taskService, IWorkRepository workService)
+        public DailyWorkService(IWorkRepository workService)
         {
             _workRepository = workService;
         }

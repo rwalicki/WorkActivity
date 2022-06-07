@@ -14,7 +14,7 @@ namespace WorkActivity.WPF.ViewModels
     public class WorkListViewModel : ViewModelBase
     {
         private readonly ISnackbarService _snackbarService;
-        private readonly IWorkRepository _workRepository;
+        private readonly WorkStore _workStore;
         private readonly ParameterNavigationService<object, AddWorkViewModel> _addWorkNavigationService;
         private readonly DailyProgressStore _dailyProgressStore;
         private readonly IDailyWorkService _dailyWorkService;
@@ -40,13 +40,13 @@ namespace WorkActivity.WPF.ViewModels
         public ICommand DeleteCommand { get; set; }
 
         public WorkListViewModel(ISnackbarService snackbarService,
-            IWorkRepository workRepository,
+            WorkStore workStore,
             ParameterNavigationService<object, AddWorkViewModel> addWorkNavigationService, 
             DailyProgressStore dailyProgressStore,
             IDailyWorkService dailyWorkService)
         {
             _snackbarService = snackbarService;
-            _workRepository = workRepository;
+            _workStore = workStore;
             _addWorkNavigationService = addWorkNavigationService;
             _dailyProgressStore = dailyProgressStore;
             _dailyWorkService = dailyWorkService;
@@ -75,19 +75,24 @@ namespace WorkActivity.WPF.ViewModels
 
         private async void Load(object obj)
         {
-            var result = await _workRepository.GetAll();
-            if (result.Success)
-            {
-                _works = result.Data.OrderByDescending(x => x.Date).ToList();
-                ItemView = CollectionViewSource.GetDefaultView(_works);
-                ItemView.Filter = Filter;
-                ItemView.Refresh();
-                OnPropertyChanged(nameof(ItemView));
-            }
+            await _workStore.Load();
+            _works = _workStore.Works.OrderByDescending(x => x.Date).ToList();
+            ItemView = CollectionViewSource.GetDefaultView(_works);
+            ItemView.Filter = Filter;
+            ItemView.Refresh();
+            OnPropertyChanged(nameof(ItemView));
 
             var dailyWorks = (await _dailyWorkService.GetAll()).ToList();
             var element = dailyWorks.FirstOrDefault();
-            _dailyProgressStore.Hours = element?.Hours ?? 0;
+            
+            if (element != null && element.Date.Date.Equals(DateTime.Today.Date))
+            {
+                _dailyProgressStore.Hours = element?.Hours ?? 0;
+            }
+            else
+            {
+                _dailyProgressStore.Hours = 0;
+            }
         }
 
         private void AddWorkNavigate(object sender)
@@ -100,7 +105,7 @@ namespace WorkActivity.WPF.ViewModels
             var work = sender as Work.Core.Models.Work;
             if (work != null)
             {
-                var result = await _workRepository.Delete(work.Id);
+                var result = await _workStore.Delete(work.Id);
                 if (result.Success)
                 {
                     _snackbarService.ShowMessage($"Work id {result.Data.Id} removed.");
