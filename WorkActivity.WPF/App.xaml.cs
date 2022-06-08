@@ -48,6 +48,7 @@ namespace WorkActivity.WPF
                 services.AddSingleton<DailyProgressStore>();
                 services.AddSingleton<TaskStore>();
                 services.AddSingleton<WorkStore>();
+                services.AddSingleton<DailyWorkStore>();
 
                 services.AddSingleton<IFilterService<TaskViewModel>, FilterTaskService>();
                 services.AddSingleton<TaskListViewStore>();
@@ -204,9 +205,7 @@ namespace WorkActivity.WPF
         {
             return new WorkListViewModel(serviceProvider.GetRequiredService<ISnackbarService>(), 
                 serviceProvider.GetRequiredService<WorkStore>(), 
-                CreateAddWorkNavigationService(serviceProvider), 
-                serviceProvider.GetRequiredService<DailyProgressStore>(),
-                serviceProvider.GetRequiredService<IDailyWorkService>());
+                CreateAddWorkNavigationService(serviceProvider));
         }
 
         private AddWorkViewModel CreateAddWorkViewModel(IServiceProvider serviceProvider, object parameter)
@@ -216,7 +215,7 @@ namespace WorkActivity.WPF
 
         private DailyWorkListViewModel CreateDailyWorkListViewModel(IServiceProvider serviceProvider)
         {
-            return new DailyWorkListViewModel(serviceProvider.GetRequiredService<IDailyWorkService>(), serviceProvider.GetRequiredService<WorkStore>(), CreateDailyWorkDetailsNavigationService(serviceProvider), serviceProvider.GetRequiredService<DailyProgressStore>());
+            return new DailyWorkListViewModel(serviceProvider.GetRequiredService<DailyWorkStore>(), serviceProvider.GetRequiredService<WorkStore>(), CreateDailyWorkDetailsNavigationService(serviceProvider), serviceProvider.GetRequiredService<DailyProgressStore>());
         }
 
         private ReportsViewModel CreateReportsViewModel(IServiceProvider serviceProvider)

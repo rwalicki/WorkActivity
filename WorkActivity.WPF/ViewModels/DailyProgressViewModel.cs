@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Windows.Input;
-using Work.Core.Interfaces;
+﻿using System.Windows.Input;
 using WorkActivity.WPF.Commands;
 using WorkActivity.WPF.Stores;
 
@@ -9,7 +6,6 @@ namespace WorkActivity.WPF.ViewModels
 {
     public class DailyProgressViewModel : ViewModelBase
     {
-        private readonly IDailyWorkService _dailyWorkService;
         private readonly DailyProgressStore _dailyProgressStore;
 
         private string _text;
@@ -47,9 +43,8 @@ namespace WorkActivity.WPF.ViewModels
 
         public ICommand OnLoadCommand { get; set; }
 
-        public DailyProgressViewModel(IDailyWorkService dailyWorkService, DailyProgressStore dailyProgressStore)
+        public DailyProgressViewModel(DailyProgressStore dailyProgressStore)
         {
-            _dailyWorkService = dailyWorkService;
             _dailyProgressStore = dailyProgressStore;
             _dailyProgressStore.ProgressChanged += ProgressChanged;
 
@@ -58,17 +53,8 @@ namespace WorkActivity.WPF.ViewModels
 
         private async void Load(object obj)
         {
-            var list = (await _dailyWorkService.GetAll()).ToList();
-            var element = list.FirstOrDefault();
-
-            if (element != null && element.Date.Date.Equals(DateTime.Today.Date))
-            {
-                _dailyProgressStore.Hours = element?.Hours ?? 0;
-            }
-            else
-            {
-                _dailyProgressStore.Hours = 0;
-            }
+            await _dailyProgressStore.Load();
+            ProgressChanged();
         }
 
         private void ProgressChanged()

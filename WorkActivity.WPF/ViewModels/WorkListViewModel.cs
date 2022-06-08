@@ -16,8 +16,6 @@ namespace WorkActivity.WPF.ViewModels
         private readonly ISnackbarService _snackbarService;
         private readonly WorkStore _workStore;
         private readonly ParameterNavigationService<object, AddWorkViewModel> _addWorkNavigationService;
-        private readonly DailyProgressStore _dailyProgressStore;
-        private readonly IDailyWorkService _dailyWorkService;
 
         private List<Work.Core.Models.Work> _works;
 
@@ -41,15 +39,11 @@ namespace WorkActivity.WPF.ViewModels
 
         public WorkListViewModel(ISnackbarService snackbarService,
             WorkStore workStore,
-            ParameterNavigationService<object, AddWorkViewModel> addWorkNavigationService, 
-            DailyProgressStore dailyProgressStore,
-            IDailyWorkService dailyWorkService)
+            ParameterNavigationService<object, AddWorkViewModel> addWorkNavigationService)
         {
             _snackbarService = snackbarService;
             _workStore = workStore;
             _addWorkNavigationService = addWorkNavigationService;
-            _dailyProgressStore = dailyProgressStore;
-            _dailyWorkService = dailyWorkService;
 
             OnLoadCommand = new RelayCommand(Load);
             AddWorkCommand = new RelayCommand(AddWorkNavigate);
@@ -81,18 +75,6 @@ namespace WorkActivity.WPF.ViewModels
             ItemView.Filter = Filter;
             ItemView.Refresh();
             OnPropertyChanged(nameof(ItemView));
-
-            var dailyWorks = (await _dailyWorkService.GetAll()).ToList();
-            var element = dailyWorks.FirstOrDefault();
-            
-            if (element != null && element.Date.Date.Equals(DateTime.Today.Date))
-            {
-                _dailyProgressStore.Hours = element?.Hours ?? 0;
-            }
-            else
-            {
-                _dailyProgressStore.Hours = 0;
-            }
         }
 
         private void AddWorkNavigate(object sender)

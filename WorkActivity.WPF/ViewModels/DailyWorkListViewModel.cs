@@ -12,7 +12,7 @@ namespace WorkActivity.WPF.ViewModels
 {
     public class DailyWorkListViewModel : ViewModelBase
     {
-        private readonly IDailyWorkService _dailyWorkService;
+        private readonly DailyWorkStore _dailyWorkStore;
         private readonly WorkStore _workStore;
         private readonly ParameterNavigationService<object, DailyWorkDetailsListViewModel> _detailsNavigationService;
         private readonly DailyProgressStore _dailyProgressStore;
@@ -32,12 +32,12 @@ namespace WorkActivity.WPF.ViewModels
         public ICommand OnSelectItem { get; set; }
         public ICommand ShowDetailsCommand { get; set; }
 
-        public DailyWorkListViewModel(IDailyWorkService dailyWorkService,
+        public DailyWorkListViewModel(DailyWorkStore dailyWorkStore,
             WorkStore workStore,
             ParameterNavigationService<object, DailyWorkDetailsListViewModel> detailsNavigationService,
             DailyProgressStore dailyProgressStore)
         {
-            _dailyWorkService = dailyWorkService;
+            _dailyWorkStore = dailyWorkStore;
             _workStore = workStore;
             _detailsNavigationService = detailsNavigationService;
             _dailyProgressStore = dailyProgressStore;
@@ -48,16 +48,8 @@ namespace WorkActivity.WPF.ViewModels
 
         private async void Load(object obj)
         {
-            DailyWorks = (await _dailyWorkService.GetAll()).ToList();
-            var element = DailyWorks.FirstOrDefault();
-            if (element != null && element.Date.Date.Equals(DateTime.Today.Date))
-            {
-                _dailyProgressStore.Hours = element?.Hours ?? 0;
-            }
-            else
-            {
-                _dailyProgressStore.Hours = 0;
-            }
+            await _dailyWorkStore.Load();
+            DailyWorks = _dailyWorkStore.DailyWorks.ToList();
         }
 
         private void ShowDetails(object sender)

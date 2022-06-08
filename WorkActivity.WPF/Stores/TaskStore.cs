@@ -15,6 +15,8 @@ namespace WorkActivity.WPF.Stores
 
         public IEnumerable<Work.Core.Models.Task> Tasks => _tasks;
 
+        public event Func<Task> TasksChanged;
+
         public TaskStore(ITaskRepository taskRepository)
         {
             _taskRepository = taskRepository;
@@ -29,6 +31,7 @@ namespace WorkActivity.WPF.Stores
             {
                 _tasks.Clear();
                 _tasks.AddRange(result.Data);
+                await TasksChanged?.Invoke();
             }
         }
 
@@ -44,6 +47,7 @@ namespace WorkActivity.WPF.Stores
             {
                 _tasks.Clear();
                 _tasks.AddRange(result.Data);
+                await TasksChanged?.Invoke();
             }
             return result;
         }
@@ -55,6 +59,7 @@ namespace WorkActivity.WPF.Stores
             {
                 _tasks.Remove(task);
                 _tasks.Add(result.Data);
+                await TasksChanged?.Invoke();
             }
             return result;
         }
@@ -68,6 +73,7 @@ namespace WorkActivity.WPF.Stores
                 if (task != null)
                 {
                     _tasks.Remove(task);
+                    await TasksChanged?.Invoke();
                 }
             }
             return result;

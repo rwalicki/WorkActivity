@@ -10,16 +10,26 @@ namespace WorkActivity.WPF.Stores
     public class WorkStore
     {
         private readonly IWorkRepository _workRepository;
+        private readonly TaskStore _taskStore;
         private readonly Lazy<Task> _initialize;
         private readonly List<Work.Core.Models.Work> _works;
 
         public IEnumerable<Work.Core.Models.Work> Works => _works;
 
-        public WorkStore(IWorkRepository workRepository)
+        public event Func<Task> WorksChanged;
+
+        public WorkStore(IWorkRepository workRepository, TaskStore taskStore)
         {
             _workRepository = workRepository;
+            _taskStore = taskStore;
+            _taskStore.TasksChanged += TasksChanged;
             _initialize = new Lazy<Task>(Initialize);
             _works = new List<Work.Core.Models.Work>();
+        }
+
+        private async Task TasksChanged()
+        {
+            await Initialize();
         }
 
         private async Task Initialize()
@@ -29,6 +39,7 @@ namespace WorkActivity.WPF.Stores
             {
                 _works.Clear();
                 _works.AddRange(result.Data);
+                await WorksChanged?.Invoke();
             }
         }
 
@@ -44,6 +55,7 @@ namespace WorkActivity.WPF.Stores
             {
                 _works.Clear();
                 _works.AddRange(result.Data);
+                await WorksChanged?.Invoke();
             }
             return result;
         }
@@ -55,6 +67,7 @@ namespace WorkActivity.WPF.Stores
             {
                 _works.Remove(task);
                 _works.Add(result.Data);
+                await WorksChanged?.Invoke();
             }
             return result;
         }
@@ -68,6 +81,7 @@ namespace WorkActivity.WPF.Stores
                 if (task != null)
                 {
                     _works.Remove(task);
+                    await WorksChanged?.Invoke();
                 }
             }
             return result;
