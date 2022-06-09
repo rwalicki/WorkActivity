@@ -15,6 +15,7 @@ namespace WorkActivity.WPF.ViewModels
     {
         private readonly ISnackbarService _snackbarService;
         private readonly WorkStore _workStore;
+        private readonly ModalNavigationStore _modalNavigationStore;
         private readonly ParameterNavigationService<object, AddWorkViewModel> _addWorkNavigationService;
 
         private List<Work.Core.Models.Work> _works;
@@ -39,10 +40,12 @@ namespace WorkActivity.WPF.ViewModels
 
         public WorkListViewModel(ISnackbarService snackbarService,
             WorkStore workStore,
+            ModalNavigationStore modalNavigationStore,
             ParameterNavigationService<object, AddWorkViewModel> addWorkNavigationService)
         {
             _snackbarService = snackbarService;
             _workStore = workStore;
+            _modalNavigationStore = modalNavigationStore;
             _addWorkNavigationService = addWorkNavigationService;
 
             OnLoadCommand = new RelayCommand(Load);
@@ -87,12 +90,18 @@ namespace WorkActivity.WPF.ViewModels
             var work = sender as Work.Core.Models.Work;
             if (work != null)
             {
-                var result = await _workStore.Delete(work.Id);
-                if (result.Success)
+                var submitCommand = new Action<object>(async (task) =>
                 {
-                    _snackbarService.ShowMessage($"Work id {result.Data.Id} removed.");
-                    OnLoadCommand.Execute(null);
-                }
+                    var result = await _workStore.Delete(work.Id);
+                    if (result.Success)
+                    {
+                        _snackbarService.ShowMessage($"Work id {result.Data.Id} removed.");
+                        OnLoadCommand.Execute(null);
+                    }
+                    _modalNavigationStore.CurrentViewModel = null;
+                });
+                var cancelCommand = new Action(() => _modalNavigationStore.CurrentViewModel = null);
+                _modalNavigationStore.CurrentViewModel = new PopupViewModel($"Do you want to remove work from task number: {work.Task.Number}?", obj => submitCommand(work), cancelCommand);
             }
         }
     }

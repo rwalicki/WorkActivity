@@ -10,5 +10,10 @@ namespace WorkActivity.WPF.ViewModels
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
+
+        public virtual void Dispose()
+        {
+
+        }
     }
 }

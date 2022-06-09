@@ -22,6 +22,7 @@ namespace WorkActivity.WPF.ViewModels
         private readonly WorkStore _workStore;
         private readonly IFilterService<TaskViewModel> _filterService;
         private readonly TaskListViewStore _taskListViewStore;
+        private readonly ModalNavigationStore _modalNavigationStore;
         private readonly NavigationService<AddTaskViewModel> _addTaskNavigationService;
         private readonly ParameterNavigationService<object, AddWorkViewModel> _addWorkNavigationService;
         private readonly ParameterNavigationService<object, EditTaskViewModel> _editTaskNavigationService;
@@ -71,7 +72,8 @@ namespace WorkActivity.WPF.ViewModels
             NavigationService<AddTaskViewModel> addTaskNavigationService,
             ParameterNavigationService<object, AddWorkViewModel> addWorkNavigationService,
             ParameterNavigationService<object, EditTaskViewModel> editTaskNavigationService,
-            ParameterNavigationService<object, AttachedWorkListViewModel> attachedWorkListNavigationService)
+            ParameterNavigationService<object, AttachedWorkListViewModel> attachedWorkListNavigationService, 
+            ModalNavigationStore modalNavigationStore)
         {
             _snackbarService = snackbarService;
             _taskStore = taskStore;
@@ -83,6 +85,7 @@ namespace WorkActivity.WPF.ViewModels
             _editTaskNavigationService = editTaskNavigationService;
             _addWorkNavigationService = addWorkNavigationService;
             _attachedWorkListNavigationService = attachedWorkListNavigationService;
+            _modalNavigationStore = modalNavigationStore;
 
             OnLoadCommand = new RelayCommand(Load);
             AddTaskCommand = new RelayCommand(AddTaskNavigate);
@@ -163,12 +166,20 @@ namespace WorkActivity.WPF.ViewModels
                     return;
                 }
 
-                var result = await _taskStore.Delete(task.Id);
-                if (result.Success)
+                var submitCommand = new Action<object>(async (task) =>
                 {
-                    _snackbarService.ShowMessage($"Task number {task.Number} removed.");
-                    await LoadTasks();
-                }
+                    var result = await _taskStore.Delete((task as TaskViewModel).Id);
+                    if (result.Success)
+                    {
+                        _snackbarService.ShowMessage($"Task number {(task as TaskViewModel).Number} removed.");
+                        await LoadTasks();
+                    }
+                    _modalNavigationStore.CurrentViewModel = null;
+                });
+
+                var cancelCommand = new Action(() => _modalNavigationStore.CurrentViewModel = null);
+
+                _modalNavigationStore.CurrentViewModel = new PopupViewModel($"Do you want to remove task number: {task.Number}?",obj => submitCommand(task), cancelCommand);
             }
         }
 

@@ -20,6 +20,11 @@ namespace WorkActivity.WPF.ViewModels
         private readonly NavigationService<OffWorkViewModel> _offWorkNavigationService;
         private readonly NavigationService<ReportsViewModel> _reportsNavigationService;
 
+        private readonly ModalNavigationStore _modalNavigationStore;
+
+        public ViewModelBase CurrentModalViewModel => _modalNavigationStore.CurrentViewModel;
+        public bool IsModalOpen => _modalNavigationStore.IsOpen;
+
         public TopBarViewModel TopBarViewModel { get; }
         public ViewModelBase CurrentViewModel => _navigationStore.CurrentViewModel;
         public SnackbarMessageQueue SnakbarMessageQueue => _snackbarService.GetSnackbar();
@@ -40,6 +45,7 @@ namespace WorkActivity.WPF.ViewModels
         public ICommand ReportsCommand { get; set; }
 
         public MainWindowViewModel(NavigationStore navigationStore,
+            ModalNavigationStore modalNavigationStore,
             ISnackbarService snackbarService,
             NavigationService<SprintListViewModel> sprintListNavigationService,
             NavigationService<TaskListViewModel> taskListNavigationService,
@@ -50,7 +56,10 @@ namespace WorkActivity.WPF.ViewModels
             TopBarViewModel topBarViewModel)
         {
             _navigationStore = navigationStore;
-            _navigationStore.CurrentViewModelChanged += () => OnPropertyChanged(nameof(CurrentViewModel));
+            _navigationStore.CurrentViewModelChanged += CurrentViewModelChanged;
+
+            _modalNavigationStore = modalNavigationStore;
+            _modalNavigationStore.CurrentViewModelChanged += CurrentModalViewModelChanged;
 
             _snackbarService = snackbarService;
 
@@ -75,6 +84,23 @@ namespace WorkActivity.WPF.ViewModels
             TopBarViewModel.CloseCommand = new RelayCommand((obj) => Close?.Invoke());
             WindowMaximized = (isMaximized) => TopBarViewModel.IsMaximized = isMaximized;
             SetWindowTitle = (title) => TopBarViewModel.Title = title;
+        }
+
+        private void CurrentViewModelChanged()
+        {
+            OnPropertyChanged(nameof(CurrentViewModel));
+        }
+
+        private void CurrentModalViewModelChanged()
+        {
+            OnPropertyChanged(nameof(CurrentModalViewModel));
+            OnPropertyChanged(nameof(IsModalOpen));
+        }
+
+        public override void Dispose()
+        {
+            _modalNavigationStore.CurrentViewModelChanged -= CurrentModalViewModelChanged;
+            _navigationStore.CurrentViewModelChanged -= CurrentViewModelChanged;
         }
     }
 }

@@ -26,6 +26,8 @@ namespace WorkActivity.WPF
                 services.AddSingleton<TopBarViewModel>();
                 services.AddSingleton<DailyProgressViewModel>();
 
+                services.AddTransient<PopupViewModel>();
+
                 services.AddSingleton<ITaskRepository, TaskFileRepository>();
                 services.AddSingleton<IFileService<Work.Core.DTOs.Task>>(new FileRepository<Work.Core.DTOs.Task>());
 
@@ -66,6 +68,8 @@ namespace WorkActivity.WPF
                 services.AddTransient<TaskListViewModel>((s) => CreateTaskListViewModel(s));
                 services.AddTransient<WorkListViewModel>((s) => CreateWorkListViewModel(s));
                 services.AddTransient<DailyWorkListViewModel>((s) => CreateDailyWorkListViewModel(s));
+
+                services.AddSingleton<ModalNavigationStore>();
 
                 services.AddSingleton<MainWindowViewModel>();
                 services.AddSingleton(s => new MainWindow()
@@ -181,7 +185,8 @@ namespace WorkActivity.WPF
                 CreateAddTaskNavigationService(serviceProvider),
                 CreateAddWorkNavigationService(serviceProvider),
                 CreateEditTaskNavigationService(serviceProvider),
-                CreateAttachedWorkListNavigationService(serviceProvider));
+                CreateAttachedWorkListNavigationService(serviceProvider),
+                serviceProvider.GetRequiredService<ModalNavigationStore>());
         }
 
         private AddTaskViewModel CreateAddTaskViewModel(IServiceProvider serviceProvider)
@@ -204,7 +209,8 @@ namespace WorkActivity.WPF
         private WorkListViewModel CreateWorkListViewModel(IServiceProvider serviceProvider)
         {
             return new WorkListViewModel(serviceProvider.GetRequiredService<ISnackbarService>(), 
-                serviceProvider.GetRequiredService<WorkStore>(), 
+                serviceProvider.GetRequiredService<WorkStore>(),
+                serviceProvider.GetRequiredService<ModalNavigationStore>(),
                 CreateAddWorkNavigationService(serviceProvider));
         }
 
