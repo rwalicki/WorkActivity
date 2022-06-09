@@ -4,13 +4,14 @@ using System.Windows.Input;
 using Work.Core.Interfaces;
 using WorkActivity.WPF.Commands;
 using WorkActivity.WPF.Services;
+using WorkActivity.WPF.Stores;
 
 namespace WorkActivity.WPF.ViewModels
 {
     public class AddTaskViewModel : ViewModelBase
     {
         private readonly ISnackbarService _snackbarService;
-        private readonly ITaskRepository _taskService;
+        private readonly TaskStore _taskStore;
         private readonly ISprintRepository _sprintService;
         private readonly NavigationService<TaskListViewModel> _taskListNavigationService;
 
@@ -42,14 +43,14 @@ namespace WorkActivity.WPF.ViewModels
         public ICommand AddTaskCommand { get; set; }
 
         public AddTaskViewModel(ISnackbarService snackbarService,
-            ITaskRepository taskService,
+            TaskStore taskStore,
             ISprintRepository sprintService,
             NavigationService<TaskListViewModel> taskListNavigationService)
         {
             Sprints = new ObservableCollection<SprintViewModel>();
 
             _snackbarService = snackbarService;
-            _taskService = taskService;
+            _taskStore = taskStore;
             _sprintService = sprintService;
             _taskListNavigationService = taskListNavigationService;
 
@@ -71,7 +72,7 @@ namespace WorkActivity.WPF.ViewModels
 
         private async void AddTask(object sender)
         {
-            var result = await _taskService.Create(new Work.Core.Models.Task()
+            var result = await _taskStore.Create(new Work.Core.Models.Task()
             {
                 Number = int.Parse(Number),
                 Title = Title,

@@ -1,20 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Linq;
 using System.Windows.Data;
 using System.Windows.Input;
-using Work.Core.Interfaces;
 using WorkActivity.WPF.Commands;
 using WorkActivity.WPF.Services;
+using WorkActivity.WPF.Stores;
 
 namespace WorkActivity.WPF.ViewModels
 {
     public class AttachedWorkListViewModel : ViewModelBase
     {
         private readonly ISnackbarService _snackbarService;
-        private readonly IWorkRepository _workRepository;
+        private readonly WorkStore _workStore;
         private readonly ParameterNavigationService<object, AddWorkViewModel> _addWorkNavigationService;
         private readonly TaskViewModel _task;
 
@@ -26,12 +23,12 @@ namespace WorkActivity.WPF.ViewModels
         public ICommand DeleteCommand { get; set; }
 
         public AttachedWorkListViewModel(ISnackbarService snackbarService,
-            IWorkRepository workRepository,
+            WorkStore workStore,
             ParameterNavigationService<object, AddWorkViewModel> addWorkNavigationService,
             object task)
         {
             _snackbarService = snackbarService;
-            _workRepository = workRepository;
+            _workStore = workStore;
             _addWorkNavigationService = addWorkNavigationService;
             _task = task as TaskViewModel;
 
@@ -41,14 +38,12 @@ namespace WorkActivity.WPF.ViewModels
 
         private async void Load(object obj)
         {
-            var result = await _workRepository.GetAll();
-            if (result.Success)
-            {
-                var works = result.Data.Where(x => x.Task.Id == _task.Id).OrderByDescending(x => x.Date).ToList();
-                ItemView = CollectionViewSource.GetDefaultView(works);
-                ItemView.Refresh();
-                OnPropertyChanged(nameof(ItemView));
-            }
+            await _workStore.Load();
+
+            var works = _workStore.Works.Where(x => x.Task.Id == _task.Id).OrderByDescending(x => x.Date).ToList();
+            ItemView = CollectionViewSource.GetDefaultView(works);
+            ItemView.Refresh();
+            OnPropertyChanged(nameof(ItemView));
         }
 
         private async void Delete(object sender)
@@ -56,7 +51,7 @@ namespace WorkActivity.WPF.ViewModels
             var work = sender as Work.Core.Models.Work;
             if (work != null)
             {
-                var result = await _workRepository.Delete(work.Id);
+                var result = await _workStore.Delete(work.Id);
                 if (result.Success)
                 {
                     _snackbarService.ShowMessage($"Work id {result.Data.Id} removed.");

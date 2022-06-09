@@ -2,19 +2,20 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Work.Core.Interfaces;
+using WorkActivity.WPF.Stores;
 
 namespace WorkActivity.WPF.Services
 {
     public class MonthReport : IReport
     {
         private int _currentMonthWorkDays;
-        private readonly IDailyWorkService _dailyWorkService;
+        private readonly DailyWorkStore _dailyWorkStore;
         private readonly IOffWorkService _offWorkService;
 
-        public MonthReport(IDailyWorkService dailyWorkService, IOffWorkService offWorkService)
+        public MonthReport(DailyWorkStore dailyWorkStore, IOffWorkService offWorkService)
         {
             _currentMonthWorkDays = GetCurrentMonthWorkDays();
-            _dailyWorkService = dailyWorkService;
+            _dailyWorkStore = dailyWorkStore;
             _offWorkService = offWorkService;
         }
 
@@ -40,7 +41,12 @@ namespace WorkActivity.WPF.Services
 
         public decimal GetLoggedHours()
         {
-            var task = Task.Run(() => { return _dailyWorkService.GetAll(); });
+            var task = Task.Run(async () => 
+            {
+                await _dailyWorkStore.Load();
+                return _dailyWorkStore.DailyWorks;
+            });
+
             task.Wait();
             var dailyWorks = task.Result;
 

@@ -5,6 +5,7 @@ using Work.Core.Interfaces;
 using Work.Core.Models;
 using WorkActivity.WPF.Commands;
 using WorkActivity.WPF.Services;
+using WorkActivity.WPF.Stores;
 
 namespace WorkActivity.WPF.ViewModels
 {
@@ -12,7 +13,7 @@ namespace WorkActivity.WPF.ViewModels
     {
         private readonly ISnackbarService _snackbarService;
         private readonly ISprintRepository _sprintRepository;
-        private readonly ITaskRepository _taskRepository;
+        private readonly TaskStore _taskStore;
         private readonly NavigationService<AddSprintViewModel> _addSprintNavigationService;
 
         private ObservableCollection<Sprint> _sprints;
@@ -32,12 +33,12 @@ namespace WorkActivity.WPF.ViewModels
 
         public SprintListViewModel(ISnackbarService snackbarService,
             ISprintRepository sprintRepository,
-            ITaskRepository taskRepository,
+            TaskStore taskStore,
             NavigationService<AddSprintViewModel> addSprintNavigationService)
         {
             _snackbarService = snackbarService;
             _sprintRepository = sprintRepository;
-            _taskRepository = taskRepository;
+            _taskStore = taskStore;
             _addSprintNavigationService = addSprintNavigationService;
 
             OnLoadCommand = new RelayCommand(Load);
@@ -65,14 +66,11 @@ namespace WorkActivity.WPF.ViewModels
             var sprint = sender as Work.Core.Models.Sprint;
             if (sprint != null)
             {
-                var taskResult = await _taskRepository.GetAll();
-                if (taskResult.Success)
+                await _taskStore.Load();
+                if (_taskStore.Tasks.Any(x => x.Sprints.Exists(x => x?.Id.Equals(sprint.Id) ?? false)))
                 {
-                    if (taskResult.Data.Any(x => x.Sprints.Exists(x => x?.Id.Equals(sprint.Id) ?? false)))
-                    {
-                        _snackbarService.ShowMessage($"Cannot remove {sprint.Name}. It has tasks attached.");
-                        return;
-                    }
+                    _snackbarService.ShowMessage($"Cannot remove {sprint.Name}. It has tasks attached.");
+                    return;
                 }
 
                 var result = await _sprintRepository.Delete(sprint.Id);

@@ -15,9 +15,11 @@ namespace WorkActivity.WPF.ViewModels
     public class TaskListViewModel : ViewModelBase
     {
         private readonly ISnackbarService _snackbarService;
-        private readonly ITaskRepository _taskRepository;
+
+        private readonly TaskStore _taskStore;
+
         private readonly ISprintRepository _sprintRepository;
-        private readonly IWorkRepository _workRepository;
+        private readonly WorkStore _workStore;
         private readonly IFilterService<TaskViewModel> _filterService;
         private readonly TaskListViewStore _taskListViewStore;
         private readonly NavigationService<AddTaskViewModel> _addTaskNavigationService;
@@ -61,9 +63,9 @@ namespace WorkActivity.WPF.ViewModels
         public ICommand ShowWorksCommand { get; set; }
 
         public TaskListViewModel(ISnackbarService snackbarService,
-            ITaskRepository taskRepository,
+            TaskStore taskStore,
             ISprintRepository sprintRepository,
-            IWorkRepository workRepository,
+            WorkStore workStore,
             IFilterService<TaskViewModel> filterService,
             TaskListViewStore taskListViewStore,
             NavigationService<AddTaskViewModel> addTaskNavigationService,
@@ -72,9 +74,9 @@ namespace WorkActivity.WPF.ViewModels
             ParameterNavigationService<object, AttachedWorkListViewModel> attachedWorkListNavigationService)
         {
             _snackbarService = snackbarService;
-            _taskRepository = taskRepository;
+            _taskStore = taskStore;
             _sprintRepository = sprintRepository;
-            _workRepository = workRepository;
+            _workStore = workStore;
             _filterService = filterService;
             _taskListViewStore = taskListViewStore;
             _addTaskNavigationService = addTaskNavigationService;
@@ -102,7 +104,7 @@ namespace WorkActivity.WPF.ViewModels
         {
             await LoadSprints();
             SelectActiveSprint();
-            await LoadTasks(sender);
+            await LoadTasks();
         }
 
         private async Task LoadSprints()
@@ -128,17 +130,15 @@ namespace WorkActivity.WPF.ViewModels
             }
         }
 
-        private async Task LoadTasks(object sender)
+        private async Task LoadTasks()
         {
-            var result = await _taskRepository.GetAll();
-            if (result.Success)
-            {
-                var tasks = result.Data.OrderByDescending(x => x.Date).ToList().Select(x => new TaskViewModel(x));
-                ItemView = CollectionViewSource.GetDefaultView(tasks);
-                ItemView.Filter = Filter;
-                ItemView.Refresh();
-                OnPropertyChanged(nameof(ItemView));
-            }
+            await _taskStore.Load();
+
+            var tasks = _taskStore.Tasks.OrderByDescending(x => x.Date).ToList().Select(x => new TaskViewModel(x));
+            ItemView = CollectionViewSource.GetDefaultView(tasks);
+            ItemView.Filter = Filter;
+            ItemView.Refresh();
+            OnPropertyChanged(nameof(ItemView));
         }
 
         private void AddTaskNavigate(object sender)
@@ -156,21 +156,18 @@ namespace WorkActivity.WPF.ViewModels
             var task = sender as TaskViewModel;
             if (task != null)
             {
-                var workResult = await _workRepository.GetAll();
-                if (workResult.Success)
+                await _workStore.Load();
+                if (_workStore.Works.Any(x => x.Task.Id.Equals(task.Id)))
                 {
-                    if (workResult.Data.Any(x => x.Task.Id.Equals(task.Id)))
-                    {
-                        _snackbarService.ShowMessage($"Cannot remove task {task.Number}. It has works attached.");
-                        return;
-                    }
+                    _snackbarService.ShowMessage($"Cannot remove task {task.Number}. It has works attached.");
+                    return;
                 }
 
-                var result = await _taskRepository.Delete(task.Id);
+                var result = await _taskStore.Delete(task.Id);
                 if (result.Success)
                 {
-                    _snackbarService.ShowMessage($"Task number {result.Data.Number} removed.");
-                    await LoadTasks(sender);
+                    _snackbarService.ShowMessage($"Task number {task.Number} removed.");
+                    await LoadTasks();
                 }
             }
         }
