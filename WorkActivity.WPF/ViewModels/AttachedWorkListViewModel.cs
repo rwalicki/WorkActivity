@@ -15,7 +15,7 @@ namespace WorkActivity.WPF.ViewModels
         private readonly ParameterNavigationService<object, AddWorkViewModel> _addWorkNavigationService;
         private readonly TaskViewModel _task;
 
-        public string TaskTitle => $"{_task.Number}: {_task.Title}";
+        public string TaskTitle => $"{_task.Name}: {_task.Title}";
 
         public ICollectionView ItemView { get; set; }
 

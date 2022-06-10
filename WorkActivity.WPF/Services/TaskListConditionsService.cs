@@ -20,7 +20,7 @@ namespace WorkActivity.WPF.Services
             var textCondition = string.IsNullOrEmpty(_searchText) ||
                 item.Date.ToString().Contains(_searchText, StringComparison.InvariantCultureIgnoreCase) ||
                 item.Title.Contains(_searchText, StringComparison.InvariantCultureIgnoreCase) ||
-                item.Number.ToString().Contains(_searchText, StringComparison.InvariantCultureIgnoreCase) ||
+                item.Name.Contains(_searchText, StringComparison.InvariantCultureIgnoreCase) ||
                 item.Sprints.Contains(_searchText, StringComparison.InvariantCultureIgnoreCase);
 
             var sprintCondition = _sprintId.Equals(-1) || item.Task.Sprints.Exists(x => x?.Id == _sprintId);

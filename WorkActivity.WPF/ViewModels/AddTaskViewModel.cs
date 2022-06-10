@@ -17,14 +17,14 @@ namespace WorkActivity.WPF.ViewModels
 
         public ObservableCollection<SprintViewModel> Sprints { get; set; }
 
-        public string _number;
-        public string Number
+        public string _name;
+        public string Name
         {
-            get { return _number; }
+            get { return _name; }
             set
             {
-                _number = value;
-                OnPropertyChanged(nameof(Number));
+                _name = value;
+                OnPropertyChanged(nameof(Name));
             }
         }
 
@@ -74,7 +74,7 @@ namespace WorkActivity.WPF.ViewModels
         {
             var result = await _taskStore.Create(new Work.Core.Models.Task()
             {
-                Number = int.Parse(Number),
+                Name = Name,
                 Title = Title,
                 Date = System.DateTime.Now,
                 Sprints = Sprints.Where(x => x.IsSelected).Select(x => x.Sprint).ToList()

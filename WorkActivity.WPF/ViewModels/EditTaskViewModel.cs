@@ -28,13 +28,13 @@ namespace WorkActivity.WPF.ViewModels
 
         public ObservableCollection<SprintViewModel> Sprints { get; set; }
 
-        public string Number
+        public string Name
         {
-            get { return _task.Number.ToString(); }
+            get { return _task.Name.ToString(); }
             set
             {
-                _task.Number = int.Parse(value);
-                OnPropertyChanged(nameof(Number));
+                _task.Name = value;
+                OnPropertyChanged(nameof(Name));
             }
         }
 

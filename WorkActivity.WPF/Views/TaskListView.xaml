@@ -112,8 +112,8 @@
                 </Style>
             </DataGrid.ColumnHeaderStyle>
             <DataGrid.Columns>
-                <DataGridTextColumn Binding="{Binding Number}"
-                                    Header="Number"
+                <DataGridTextColumn Binding="{Binding Name}"
+                                    Header="Name"
                                     Width="Auto" />
                 <DataGridTextColumn Binding="{Binding Title}"
                                     Header="Title"
@@ -146,7 +146,7 @@
                                         </ListBoxItem.ContentTemplate>
                                         
                                         <i:Interaction.Triggers>
-                                            <i:EventTrigger EventName="PreviewMouseDown">
+                                            <i:EventTrigger EventName="PreviewMouseUp">
                                                 <i:InvokeCommandAction Command="{Binding DataContext.ShowWorksCommand, RelativeSource={RelativeSource AncestorType=local:TaskListView}}"
                                                                        CommandParameter="{Binding .}" />
                                             </i:EventTrigger>
@@ -168,7 +168,7 @@
                                         </ListBoxItem.ContentTemplate>
                                         
                                         <i:Interaction.Triggers>
-                                            <i:EventTrigger EventName="PreviewMouseDown">
+                                            <i:EventTrigger EventName="PreviewMouseUp">
                                                 <i:InvokeCommandAction Command="{Binding DataContext.AddWorkCommand, RelativeSource={RelativeSource AncestorType=local:TaskListView}}"
                                                                        CommandParameter="{Binding .}" />
                                             </i:EventTrigger>
@@ -192,7 +192,7 @@
                                         </ListBoxItem.ContentTemplate>
                                         
                                         <i:Interaction.Triggers>
-                                            <i:EventTrigger EventName="PreviewMouseDown">
+                                            <i:EventTrigger EventName="PreviewMouseUp">
                                                 <i:InvokeCommandAction Command="{Binding DataContext.EditTaskCommand, RelativeSource={RelativeSource AncestorType=local:TaskListView}}"
                                                                        CommandParameter="{Binding .}" />
                                             </i:EventTrigger>
@@ -216,7 +216,7 @@
                                         </ListBoxItem.ContentTemplate>
                                         
                                         <i:Interaction.Triggers>
-                                            <i:EventTrigger EventName="PreviewMouseDown">
+                                            <i:EventTrigger EventName="PreviewMouseUp">
                                                 <i:InvokeCommandAction Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=local:TaskListView}}"
                                                                        CommandParameter="{Binding .}" />
                                             </i:EventTrigger>

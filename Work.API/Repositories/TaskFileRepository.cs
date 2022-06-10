@@ -44,7 +44,7 @@ namespace Work.API.Repositories
                     {
                         Id = task.Id,
                         Date = task.Date,
-                        Number = task.Number,
+                        Name = task.Name,
                         Title = task.Title,
                         Sprints = sprints
                     });
@@ -71,7 +71,7 @@ namespace Work.API.Repositories
                 {
                     Id = taskDTO.Id,
                     Date = taskDTO.Date,
-                    Number = taskDTO.Number,
+                    Name = taskDTO.Name,
                     Title = taskDTO.Title,
                     Sprints = new List<Sprint>()
                 };
@@ -101,7 +101,7 @@ namespace Work.API.Repositories
             try
             {
                 var allTasks = await _fileTaskRepository.GetAll();
-                var foundTasks = allTasks.Where(x => x.Number == entity.Number);
+                var foundTasks = allTasks.Where(x => x.Name == entity.Name);
                 if (foundTasks.Any())
                 {
                     result.Success = false;
@@ -113,7 +113,7 @@ namespace Work.API.Repositories
                     {
                         Id = entity.Id,
                         Date = entity.Date,
-                        Number = entity.Number,
+                        Name = entity.Name,
                         Title = entity.Title,
                         SprintIds = entity.Sprints.Select(x => x.Id).ToList()
                     };
@@ -141,7 +141,7 @@ namespace Work.API.Repositories
                 {
                     Id = entity.Id,
                     Date = entity.Date,
-                    Number = entity.Number,
+                    Name = entity.Name,
                     Title = entity.Title,
                     SprintIds = entity.Sprints.Select(x => x.Id).ToList()
                 };
@@ -170,7 +170,7 @@ namespace Work.API.Repositories
                 {
                     Id = taskDTO.Id,
                     Date = taskDTO.Date,
-                    Number = taskDTO.Number,
+                    Name = taskDTO.Name,
                     Title = taskDTO.Title
                 };
                 result.Data = task;

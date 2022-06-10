@@ -65,7 +65,7 @@ namespace WorkActivity.WPF.ViewModels
             {
                 return work.Date.ToString().Contains(SearchText, StringComparison.InvariantCultureIgnoreCase) ||
                     work.Task.Title.Contains(SearchText, StringComparison.InvariantCultureIgnoreCase) ||
-                    work.Task.Number.ToString().Contains(SearchText, StringComparison.InvariantCultureIgnoreCase);
+                    work.Task.Name.Contains(SearchText, StringComparison.InvariantCultureIgnoreCase);
             }
             return false;
         }
@@ -101,7 +101,7 @@ namespace WorkActivity.WPF.ViewModels
                     _modalNavigationStore.CurrentViewModel = null;
                 });
                 var cancelCommand = new Action(() => _modalNavigationStore.CurrentViewModel = null);
-                _modalNavigationStore.CurrentViewModel = new PopupViewModel($"Do you want to remove work from task number: {work.Task.Number}?", obj => submitCommand(work), cancelCommand);
+                _modalNavigationStore.CurrentViewModel = new PopupViewModel($"Do you want to remove work from task {work.Task.Name}?", obj => submitCommand(work), cancelCommand);
             }
         }
     }

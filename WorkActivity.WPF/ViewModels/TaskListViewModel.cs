@@ -125,8 +125,8 @@ namespace WorkActivity.WPF.ViewModels
 
                 var allOption = new SprintViewModel(new Work.Core.Models.Sprint() { Id = -1, Name = "All", StartDate = minDate, EndDate = maxDate });
                 Sprints.Add(allOption);
-
-                foreach (var sprint in sprintResult.Data)
+                var sprints = sprintResult.Data.OrderByDescending(x => x.StartDate);
+                foreach (var sprint in sprints)
                 {
                     Sprints.Add(new SprintViewModel(sprint));
                 }
@@ -162,7 +162,7 @@ namespace WorkActivity.WPF.ViewModels
                 await _workStore.Load();
                 if (_workStore.Works.Any(x => x.Task.Id.Equals(task.Id)))
                 {
-                    _snackbarService.ShowMessage($"Cannot remove task {task.Number}. It has works attached.");
+                    _snackbarService.ShowMessage($"Cannot remove task {task.Name}. It has works attached.");
                     return;
                 }
 
@@ -171,7 +171,7 @@ namespace WorkActivity.WPF.ViewModels
                     var result = await _taskStore.Delete((task as TaskViewModel).Id);
                     if (result.Success)
                     {
-                        _snackbarService.ShowMessage($"Task number {(task as TaskViewModel).Number} removed.");
+                        _snackbarService.ShowMessage($"Task {(task as TaskViewModel).Name} removed.");
                         await LoadTasks();
                     }
                     _modalNavigationStore.CurrentViewModel = null;
@@ -179,7 +179,7 @@ namespace WorkActivity.WPF.ViewModels
 
                 var cancelCommand = new Action(() => _modalNavigationStore.CurrentViewModel = null);
 
-                _modalNavigationStore.CurrentViewModel = new PopupViewModel($"Do you want to remove task number: {task.Number}?",obj => submitCommand(task), cancelCommand);
+                _modalNavigationStore.CurrentViewModel = new PopupViewModel($"Do you want to remove task {task.Name}?",obj => submitCommand(task), cancelCommand);
             }
         }
 
