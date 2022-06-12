@@ -20,6 +20,11 @@ namespace WorkActivity.WPF.ViewModels
             {
                 _startDate = value;
                 OnPropertyChanged(nameof(StartDate));
+                
+                if (StartDate > EndDate)
+                {
+                    EndDate = StartDate;
+                }
             }
         }
 
@@ -31,6 +36,11 @@ namespace WorkActivity.WPF.ViewModels
             {
                 _endDate = value;
                 OnPropertyChanged(nameof(EndDate));
+
+                if (StartDate > EndDate)
+                {
+                    StartDate = EndDate;
+                }
             }
         }
 

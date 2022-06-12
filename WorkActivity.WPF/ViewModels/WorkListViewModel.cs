@@ -7,13 +7,15 @@ using System.Windows.Input;
 using Work.Core.Interfaces;
 using WorkActivity.WPF.Commands;
 using WorkActivity.WPF.Services;
+using WorkActivity.WPF.Stores;
 
 namespace WorkActivity.WPF.ViewModels
 {
     public class WorkListViewModel : ViewModelBase
     {
         private readonly ISnackbarService _snackbarService;
-        private readonly IWorkRepository _workRepository;
+        private readonly WorkStore _workStore;
+        private readonly ModalNavigationStore _modalNavigationStore;
         private readonly ParameterNavigationService<object, AddWorkViewModel> _addWorkNavigationService;
 
         private List<Work.Core.Models.Work> _works;
@@ -37,11 +39,13 @@ namespace WorkActivity.WPF.ViewModels
         public ICommand DeleteCommand { get; set; }
 
         public WorkListViewModel(ISnackbarService snackbarService,
-            IWorkRepository workRepository,
+            WorkStore workStore,
+            ModalNavigationStore modalNavigationStore,
             ParameterNavigationService<object, AddWorkViewModel> addWorkNavigationService)
         {
             _snackbarService = snackbarService;
-            _workRepository = workRepository;
+            _workStore = workStore;
+            _modalNavigationStore = modalNavigationStore;
             _addWorkNavigationService = addWorkNavigationService;
 
             OnLoadCommand = new RelayCommand(Load);
@@ -61,22 +65,19 @@ namespace WorkActivity.WPF.ViewModels
             {
                 return work.Date.ToString().Contains(SearchText, StringComparison.InvariantCultureIgnoreCase) ||
                     work.Task.Title.Contains(SearchText, StringComparison.InvariantCultureIgnoreCase) ||
-                    work.Task.Number.ToString().Contains(SearchText, StringComparison.InvariantCultureIgnoreCase);
+                    work.Task.Name.Contains(SearchText, StringComparison.InvariantCultureIgnoreCase);
             }
             return false;
         }
 
         private async void Load(object obj)
         {
-            var result = await _workRepository.GetAll();
-            if (result.Success)
-            {
-                _works = result.Data.OrderByDescending(x => x.Date).ToList();
-                ItemView = CollectionViewSource.GetDefaultView(_works);
-                ItemView.Filter = Filter;
-                ItemView.Refresh();
-                OnPropertyChanged(nameof(ItemView));
-            }
+            await _workStore.Load();
+            _works = _workStore.Works.OrderByDescending(x => x.Date).ToList();
+            ItemView = CollectionViewSource.GetDefaultView(_works);
+            ItemView.Filter = Filter;
+            ItemView.Refresh();
+            OnPropertyChanged(nameof(ItemView));
         }
 
         private void AddWorkNavigate(object sender)
@@ -84,17 +85,23 @@ namespace WorkActivity.WPF.ViewModels
             _addWorkNavigationService.Navigate(null);
         }
 
-        private async void Delete(object sender)
+        private void Delete(object sender)
         {
             var work = sender as Work.Core.Models.Work;
             if (work != null)
             {
-                var result = await _workRepository.Delete(work.Id);
-                if (result.Success)
+                var submitCommand = new Action<object>(async (task) =>
                 {
-                    _snackbarService.ShowMessage($"Work id {result.Data.Id} removed.");
-                    OnLoadCommand.Execute(null);
-                }
+                    var result = await _workStore.Delete(work.Id);
+                    if (result.Success)
+                    {
+                        _snackbarService.ShowMessage($"Work id {result.Data.Id} removed.");
+                        OnLoadCommand.Execute(null);
+                    }
+                    _modalNavigationStore.CurrentViewModel = null;
+                });
+                var cancelCommand = new Action(() => _modalNavigationStore.CurrentViewModel = null);
+                _modalNavigationStore.CurrentViewModel = new PopupViewModel($"Do you want to remove work from task {work.Task.Name}?", obj => submitCommand(work), cancelCommand);
             }
         }
     }

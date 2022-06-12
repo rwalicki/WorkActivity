@@ -13,7 +13,7 @@
             <i:InvokeCommandAction Command="{Binding OnLoadCommand}" />
         </i:EventTrigger>
     </i:Interaction.Triggers>
-    <Grid>
+    <Grid Grid.IsSharedSizeScope="True">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -22,46 +22,96 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0"
-                   Margin="10 10 0 20"
-                   Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-                   Foreground="{DynamicResource PrimaryHueMidBrush}"
-                   Text="Month Report" />
+        <Grid Grid.Row="0"
+              Margin="10 10 10 20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0"
+                       Margin="0 0 30 0"
+                       Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                       Foreground="{DynamicResource PrimaryHueMidBrush}"
+                       Text="Month Report" />
+            <ComboBox Grid.Column="1"
+                      MinWidth="100"
+                      HorizontalContentAlignment="Center"
+                      HorizontalAlignment="Left"
+                      VerticalAlignment="Center"
+                      ItemsSource="{Binding Months}"
+                      SelectedItem="{Binding SelectedMonth}">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="SelectionChanged">
+                        <i:InvokeCommandAction Command="{Binding GenerateReportCommand}" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding ., StringFormat='MM'}"
+                                       Margin="0 0 10 0" />
+                            <TextBlock Text="{Binding ., StringFormat='yyyy'}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+        </Grid>
 
-        <StackPanel Grid.Row="1"
-                    Margin="10 5"
-                    Orientation="Horizontal">
-            <TextBlock Style="{StaticResource MaterialDesignTextBlock}"
+        <Grid Grid.Row="1"
+              Margin="10 5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"
+                                  SharedSizeGroup="A" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0"
+                       HorizontalAlignment="Right"
+                       Style="{StaticResource MaterialDesignTextBlock}"
                        Foreground="{DynamicResource PrimaryHueMidBrush}"
                        Text="Expected Hours:" />
-            <TextBlock Style="{StaticResource MaterialDesignTextBlock}"
+            <TextBlock Grid.Column="1"
+                       Style="{StaticResource MaterialDesignTextBlock}"
                        Foreground="{DynamicResource PrimaryHueMidBrush}"
                        Margin="10 0 0 0"
                        Text="{Binding ExpectedHours}" />
-        </StackPanel>
+        </Grid>
 
-        <StackPanel Grid.Row="2"
-                    Margin="10 5"
-                    Orientation="Horizontal">
-            <TextBlock Style="{StaticResource MaterialDesignTextBlock}"
+        <Grid Grid.Row="2"
+              Margin="10 5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"
+                                  SharedSizeGroup="A" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0"
+                       HorizontalAlignment="Right"
+                       Style="{StaticResource MaterialDesignTextBlock}"
                        Foreground="{DynamicResource PrimaryHueMidBrush}"
                        Text="Logged Hours:" />
-            <TextBlock Style="{StaticResource MaterialDesignTextBlock}"
+            <TextBlock Grid.Column="1"
+                       Style="{StaticResource MaterialDesignTextBlock}"
                        Foreground="{DynamicResource PrimaryHueMidBrush}"
                        Margin="10 0 0 0"
                        Text="{Binding LoggedHours}" />
-        </StackPanel>
+        </Grid>
 
-        <StackPanel Grid.Row="3"
-                    Margin="10 5"
-                    Orientation="Horizontal">
-            <TextBlock Style="{StaticResource MaterialDesignTextBlock}"
+        <Grid Grid.Row="3"
+              Margin="10 5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"
+                                  SharedSizeGroup="A" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0"
+                       HorizontalAlignment="Right"
+                       Style="{StaticResource MaterialDesignTextBlock}"
                        Foreground="{DynamicResource PrimaryHueMidBrush}"
                        Text="Missing Hours:" />
-            <TextBlock Style="{StaticResource MaterialDesignTextBlock}"
+            <TextBlock Grid.Column="1"
+                       Style="{StaticResource MaterialDesignTextBlock}"
                        Foreground="{DynamicResource PrimaryHueMidBrush}"
                        Margin="10 0 0 0"
                        Text="{Binding MissingHours}" />
-        </StackPanel>
+        </Grid>
     </Grid>
 </UserControl>

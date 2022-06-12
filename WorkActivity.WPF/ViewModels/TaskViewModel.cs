@@ -13,7 +13,7 @@ namespace WorkActivity.WPF.ViewModels
 
         public string Title => _task.Title;
 
-        public string Number => _task.Number.ToString();
+        public string Name => _task.Name;
 
         public DateTime Date => _task.Date.Date;
 

@@ -58,8 +58,8 @@
                 </Style>
             </DataGrid.ColumnHeaderStyle>
             <DataGrid.Columns>
-                <DataGridTextColumn Binding="{Binding Task.Number}"
-                                    Header="Number"
+                <DataGridTextColumn Binding="{Binding Task.Name}"
+                                    Header="Name"
                                     Width="Auto" />
                 <DataGridTextColumn Binding="{Binding Task.Title}"
                                     Header="Title"

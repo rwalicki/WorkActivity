@@ -83,7 +83,7 @@
                                     Header="Days Off"
                                     Width="*" />
                 <DataGridTemplateColumn Header=""
-                                        Width="Auto">
+                                        Width="80">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Button Width="30"

@@ -1,4 +1,5 @@
 ﻿using Shared.Interfaces;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -13,7 +14,8 @@ namespace WorkActivity.WPF.ViewModels
         private readonly IOffWorkRepository _offWorkRepository;
         private readonly NavigationService<AddOffWorkViewModel> _addOffWorkNavigationService;
 
-        public ObservableCollection<OffWorkItemViewModel> OffWorkList { get; set; }
+        private readonly ObservableCollection<OffWorkItemViewModel> _offWorkList;
+        public IEnumerable<OffWorkItemViewModel> OffWorkList => _offWorkList;
 
         public ICommand OnLoadCommand { get; }
         public ICommand AddOffWorkCommand { get; }
@@ -21,6 +23,8 @@ namespace WorkActivity.WPF.ViewModels
 
         public OffWorkViewModel(IOffWorkRepository offWorkService, NavigationService<AddOffWorkViewModel> addOffWorkNavigationService)
         {
+            _offWorkList = new ObservableCollection<OffWorkItemViewModel>();
+
             _offWorkRepository = offWorkService;
             _addOffWorkNavigationService = addOffWorkNavigationService;
 
@@ -31,14 +35,14 @@ namespace WorkActivity.WPF.ViewModels
 
         private async Task Load(object sender)
         {
-            OffWorkList = new ObservableCollection<OffWorkItemViewModel>();
+            _offWorkList.Clear();
 
             var offWorkList = await _offWorkRepository.GetAll();
             if (offWorkList.Success)
             {
                 foreach (var offWork in offWorkList.Data)
                 {
-                    OffWorkList.Add(new OffWorkItemViewModel(offWork));
+                    _offWorkList.Add(new OffWorkItemViewModel(offWork));
                 }
             }
 
@@ -48,8 +52,11 @@ namespace WorkActivity.WPF.ViewModels
         private async Task Delete(object sender)
         {
             var offWorkItem = sender as OffWorkItemViewModel;
-            await _offWorkRepository.Delete(offWorkItem.OffWork.Id);
-            await Load(sender);
+            var result = await _offWorkRepository.Delete(offWorkItem.OffWork.Id);
+            if (result.Success)
+            {
+                await Load(sender);
+            }
         }
     }
 }

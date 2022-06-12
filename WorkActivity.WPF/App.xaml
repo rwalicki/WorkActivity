@@ -4,6 +4,7 @@
              xmlns:local="clr-namespace:WorkActivity.WPF"
              xmlns:viewModels="clr-namespace:WorkActivity.WPF.ViewModels"
              xmlns:views="clr-namespace:WorkActivity.WPF.Views"
+             xmlns:components="clr-namespace:WorkActivity.WPF.Components"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              Exit="CloseApplication">
     <Application.Resources>
@@ -53,6 +54,20 @@
             </DataTemplate>
             <DataTemplate DataType="{x:Type viewModels:AddOffWorkViewModel}">
                 <views:AddOffWorkView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type viewModels:DailyProgressViewModel}">
+                <components:DailyProgressView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type viewModels:TopBarViewModel}">
+                <components:TopBarView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type viewModels:SideBarViewModel}">
+                <components:SideBarView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type viewModels:PopupViewModel}">
+                <views:PopupView />
             </DataTemplate>
 
         </ResourceDictionary>

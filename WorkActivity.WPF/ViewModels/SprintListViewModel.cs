@@ -1,10 +1,12 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
 using Work.Core.Interfaces;
 using Work.Core.Models;
 using WorkActivity.WPF.Commands;
 using WorkActivity.WPF.Services;
+using WorkActivity.WPF.Stores;
 
 namespace WorkActivity.WPF.ViewModels
 {
@@ -12,19 +14,11 @@ namespace WorkActivity.WPF.ViewModels
     {
         private readonly ISnackbarService _snackbarService;
         private readonly ISprintRepository _sprintRepository;
-        private readonly ITaskRepository _taskRepository;
+        private readonly TaskStore _taskStore;
         private readonly NavigationService<AddSprintViewModel> _addSprintNavigationService;
 
-        private ObservableCollection<Sprint> _sprints;
-        public ObservableCollection<Sprint> Sprints
-        {
-            get { return _sprints; }
-            set
-            {
-                _sprints = value;
-                OnPropertyChanged(nameof(Sprints));
-            }
-        }
+        private readonly ObservableCollection<Sprint> _sprints;
+        public IEnumerable<Sprint> Sprints => _sprints;
 
         public ICommand OnLoadCommand { get; set; }
         public ICommand AddSprintCommand { get; set; }
@@ -32,12 +26,14 @@ namespace WorkActivity.WPF.ViewModels
 
         public SprintListViewModel(ISnackbarService snackbarService,
             ISprintRepository sprintRepository,
-            ITaskRepository taskRepository,
+            TaskStore taskStore,
             NavigationService<AddSprintViewModel> addSprintNavigationService)
         {
+            _sprints = new ObservableCollection<Sprint>();
+
             _snackbarService = snackbarService;
             _sprintRepository = sprintRepository;
-            _taskRepository = taskRepository;
+            _taskStore = taskStore;
             _addSprintNavigationService = addSprintNavigationService;
 
             OnLoadCommand = new RelayCommand(Load);
@@ -47,10 +43,16 @@ namespace WorkActivity.WPF.ViewModels
 
         private async void Load(object sender)
         {
+            _sprints.Clear();
+
             var result = await _sprintRepository.GetAll();
             if (result.Success)
             {
-                Sprints = new ObservableCollection<Sprint>(result.Data);
+                var data = result.Data.ToList().OrderByDescending(x => x.StartDate);
+                foreach (var sprint in data)
+                {
+                    _sprints.Add(sprint);
+                }
             }
         }
 
@@ -64,14 +66,11 @@ namespace WorkActivity.WPF.ViewModels
             var sprint = sender as Work.Core.Models.Sprint;
             if (sprint != null)
             {
-                var taskResult = await _taskRepository.GetAll();
-                if (taskResult.Success)
+                await _taskStore.Load();
+                if (_taskStore.Tasks.Any(x => x.Sprints.Exists(x => x?.Id.Equals(sprint.Id) ?? false)))
                 {
-                    if (taskResult.Data.Any(x => x.Sprints.Exists(x => x?.Id.Equals(sprint.Id) ?? false)))
-                    {
-                        _snackbarService.ShowMessage($"Cannot remove {sprint.Name}. It has tasks attached.");
-                        return;
-                    }
+                    _snackbarService.ShowMessage($"Cannot remove {sprint.Name}. It has tasks attached.");
+                    return;
                 }
 
                 var result = await _sprintRepository.Delete(sprint.Id);

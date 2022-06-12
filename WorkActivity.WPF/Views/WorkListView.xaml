@@ -87,8 +87,8 @@
                 </Style>
             </DataGrid.ColumnHeaderStyle>
             <DataGrid.Columns>
-                <DataGridTextColumn Binding="{Binding Task.Number}"
-                                    Header="Number"
+                <DataGridTextColumn Binding="{Binding Task.Name}"
+                                    Header="Name"
                                     Width="Auto" />
                 <DataGridTextColumn Binding="{Binding Task.Title}"
                                     Header="Title"
@@ -96,11 +96,11 @@
                 <DataGridTextColumn Binding="{Binding Hours}"
                                     Header="Hours"
                                     Width="Auto" />
-                <DataGridTextColumn Binding="{Binding Date, StringFormat='dd.MM.yyyy HH.mm'}"
+                <DataGridTextColumn Binding="{Binding Date, StringFormat='dd.MM.yyyy'}"
                                     Header="Date"
                                     Width="Auto" />
                 <DataGridTemplateColumn Header=""
-                                        Width="Auto">
+                                        Width="80">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Button Width="30"

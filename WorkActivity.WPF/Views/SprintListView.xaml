@@ -90,7 +90,7 @@
                                     Header="End Date"
                                     Width="Auto" />
                 <DataGridTemplateColumn Header=""
-                                        Width="Auto">
+                                        Width="80">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Button Width="30"

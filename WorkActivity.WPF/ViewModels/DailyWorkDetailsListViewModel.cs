@@ -2,34 +2,28 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
-using Work.Core.Interfaces;
 using WorkActivity.WPF.Commands;
+using WorkActivity.WPF.Stores;
 
 namespace WorkActivity.WPF.ViewModels
 {
     public class DailyWorkDetailsListViewModel : ViewModelBase
     {
-        private readonly IWorkRepository _workService;
+        private readonly WorkStore _workStore;
 
         private List<Work.Core.Models.Work> _dailyWorks;
 
-        private ObservableCollection<Work.Core.Models.Work> _works;
-        public ObservableCollection<Work.Core.Models.Work> Works
-        {
-            get { return _works; }
-            set
-            {
-                _works = value;
-                OnPropertyChanged(nameof(Works));
-            }
-        }
+        private readonly ObservableCollection<Work.Core.Models.Work> _works;
+        public IEnumerable<Work.Core.Models.Work> Works => _works;
 
         public ICommand OnLoadCommand { get; set; }
         public ICommand DeleteCommand { get; set; }
 
-        public DailyWorkDetailsListViewModel(IWorkRepository workService, object dailyWorks)
+        public DailyWorkDetailsListViewModel(WorkStore workStore, object dailyWorks)
         {
-            _workService = workService;
+            _works = new ObservableCollection<Work.Core.Models.Work>();
+
+            _workStore = workStore;
             _dailyWorks = dailyWorks as List<Work.Core.Models.Work>;
 
             OnLoadCommand = new RelayCommand(Load);
@@ -38,16 +32,19 @@ namespace WorkActivity.WPF.ViewModels
 
         private void Load(object obj)
         {
-            Works = new ObservableCollection<Work.Core.Models.Work>(_dailyWorks);
+            foreach(var dailyWork in _dailyWorks)
+            {
+                _works.Add(dailyWork);
+            }
         }
 
         private async void Delete(object sender)
         {
             var work = sender as Work.Core.Models.Work;
-            var result = await _workService.Delete(work.Id);
+            var result = await _workStore.Delete(work.Id);
             if (result.Success)
             {
-                Works.Remove(Works.Where(x => x.Id == result.Data.Id).First());
+                _works.Remove(_works.Where(x => x.Id == result.Data.Id).First());
             }
         }
     }

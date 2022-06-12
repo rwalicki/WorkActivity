@@ -1,18 +1,21 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
 using Work.Core.Interfaces;
 using Work.Core.Models;
 using WorkActivity.WPF.Commands;
 using WorkActivity.WPF.Services;
+using WorkActivity.WPF.Stores;
 
 namespace WorkActivity.WPF.ViewModels
 {
     public class DailyWorkListViewModel : ViewModelBase
     {
-        private readonly IDailyWorkService _dailyWorkService;
-        private readonly IWorkRepository _workRepository;
+        private readonly DailyWorkStore _dailyWorkStore;
+        private readonly WorkStore _workStore;
         private readonly ParameterNavigationService<object, DailyWorkDetailsListViewModel> _detailsNavigationService;
+        private readonly DailyProgressStore _dailyProgressStore;
 
         private List<DailyWork> _dailyWorks;
         public List<DailyWork> DailyWorks
@@ -29,13 +32,15 @@ namespace WorkActivity.WPF.ViewModels
         public ICommand OnSelectItem { get; set; }
         public ICommand ShowDetailsCommand { get; set; }
 
-        public DailyWorkListViewModel(IDailyWorkService dailyWorkService,
-            IWorkRepository workRepository,
-            ParameterNavigationService<object, DailyWorkDetailsListViewModel> detailsNavigationService)
+        public DailyWorkListViewModel(DailyWorkStore dailyWorkStore,
+            WorkStore workStore,
+            ParameterNavigationService<object, DailyWorkDetailsListViewModel> detailsNavigationService,
+            DailyProgressStore dailyProgressStore)
         {
-            _dailyWorkService = dailyWorkService;
-            _workRepository = workRepository;
+            _dailyWorkStore = dailyWorkStore;
+            _workStore = workStore;
             _detailsNavigationService = detailsNavigationService;
+            _dailyProgressStore = dailyProgressStore;
 
             OnLoadCommand = new RelayCommand(Load);
             ShowDetailsCommand = new RelayCommand(ShowDetails);
@@ -43,10 +48,11 @@ namespace WorkActivity.WPF.ViewModels
 
         private async void Load(object obj)
         {
-            DailyWorks = (await _dailyWorkService.GetAll()).ToList();
+            await _dailyWorkStore.Load();
+            DailyWorks = _dailyWorkStore.DailyWorks.ToList();
         }
 
-        private async void ShowDetails(object sender)
+        private void ShowDetails(object sender)
         {
             var dailyWork = sender as DailyWork;
             if (dailyWork != null)
@@ -54,10 +60,10 @@ namespace WorkActivity.WPF.ViewModels
                 var works = new List<Work.Core.Models.Work>();
                 foreach (var id in dailyWork.WorkIds)
                 {
-                    var result = await _workRepository.Get(id);
-                    if (result.Success)
+                    var work = _workStore.Works.FirstOrDefault(x => x.Id == id);
+                    if (work != null)
                     {
-                        works.Add(result.Data);
+                        works.Add(work);
                     }
                 }
                 _detailsNavigationService.Navigate(works);

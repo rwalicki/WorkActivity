@@ -1,16 +1,18 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
 using Work.Core.Interfaces;
 using WorkActivity.WPF.Commands;
 using WorkActivity.WPF.Services;
+using WorkActivity.WPF.Stores;
 
 namespace WorkActivity.WPF.ViewModels
 {
     public class EditTaskViewModel : ViewModelBase
     {
         private readonly ISnackbarService _snackbarService;
-        private readonly ITaskRepository _taskService;
+        private readonly TaskStore _taskStore;
         private readonly ISprintRepository _sprintService;
         private readonly NavigationService<TaskListViewModel> _taskListNavigationService;
 
@@ -25,15 +27,16 @@ namespace WorkActivity.WPF.ViewModels
             }
         }
 
-        public ObservableCollection<SprintViewModel> Sprints { get; set; }
+        private readonly ObservableCollection<SprintViewModel> _sprints;
+        public IEnumerable<SprintViewModel> Sprints => _sprints;
 
-        public string Number
+        public string Name
         {
-            get { return _task.Number.ToString(); }
+            get { return _task.Name.ToString(); }
             set
             {
-                _task.Number = int.Parse(value);
-                OnPropertyChanged(nameof(Number));
+                _task.Name = value;
+                OnPropertyChanged(nameof(Name));
             }
         }
 
@@ -51,16 +54,16 @@ namespace WorkActivity.WPF.ViewModels
         public ICommand EditTaskCommand { get; set; }
 
         public EditTaskViewModel(ISnackbarService snackbarService,
-            ITaskRepository taskService,
+            TaskStore taskStore,
             ISprintRepository sprintService,
             NavigationService<TaskListViewModel> taskListNavigationService,
             object task)
         {
-            Sprints = new ObservableCollection<SprintViewModel>();
+            _sprints = new ObservableCollection<SprintViewModel>();
             Task = (task as TaskViewModel)?.Task;
 
             _snackbarService = snackbarService;
-            _taskService = taskService;
+            _taskStore = taskStore;
             _sprintService = sprintService;
             _taskListNavigationService = taskListNavigationService;
 
@@ -75,12 +78,12 @@ namespace WorkActivity.WPF.ViewModels
             {
                 foreach (var sprint in result.Data)
                 {
-                    Sprints.Add(new SprintViewModel(sprint));
+                    _sprints.Add(new SprintViewModel(sprint));
                 }
             }
 
             var ids = _task.Sprints.Select(x => x.Id);
-            foreach (var sprint in Sprints)
+            foreach (var sprint in _sprints)
             {
                 if (ids.Contains(sprint.Sprint.Id))
                 {
@@ -93,7 +96,7 @@ namespace WorkActivity.WPF.ViewModels
         {
             _task.Sprints = Sprints.Where(x => x.IsSelected).Select(x => x.Sprint).ToList();
 
-            var result = await _taskService.Update(_task);
+            var result = await _taskStore.Update(_task);
             if (result.Success)
             {
                 _taskListNavigationService.Navigate();

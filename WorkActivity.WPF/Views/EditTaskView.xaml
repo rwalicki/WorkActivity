@@ -41,11 +41,11 @@
                        Grid.Column="0"
                        Margin="5"
                        VerticalAlignment="Center"
-                       Text="Number"
+                       Text="Name"
                        Foreground="{DynamicResource MaterialDesignBody}" />
             <TextBox Grid.Column="1"
                      Margin="5"
-                     Text="{Binding Number}" />
+                     Text="{Binding Name}" />
         </Grid>
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>

@@ -49,7 +49,7 @@
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding Number}"
+                            <TextBlock Text="{Binding Name}"
                                        Margin="0 0 10 0" />
                             <TextBlock Text="{Binding Title}" />
                         </StackPanel>
@@ -72,7 +72,7 @@
             <TextBox Grid.Column="1"
                      Margin="5"
                      Text="{Binding Hours}"
-                     PreviewTextInput="PreviewTextInput" />
+                     PreviewTextInput="HoursPreviewTextInput" />
         </Grid>
         <Grid Grid.Row="3">
             <Grid.ColumnDefinitions>

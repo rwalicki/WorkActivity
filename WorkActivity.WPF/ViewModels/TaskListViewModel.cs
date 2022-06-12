@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -15,17 +16,22 @@ namespace WorkActivity.WPF.ViewModels
     public class TaskListViewModel : ViewModelBase
     {
         private readonly ISnackbarService _snackbarService;
-        private readonly ITaskRepository _taskRepository;
+
+        private readonly TaskStore _taskStore;
+
         private readonly ISprintRepository _sprintRepository;
-        private readonly IWorkRepository _workRepository;
+        private readonly WorkStore _workStore;
         private readonly IFilterService<TaskViewModel> _filterService;
         private readonly TaskListViewStore _taskListViewStore;
+        private readonly ModalNavigationStore _modalNavigationStore;
         private readonly NavigationService<AddTaskViewModel> _addTaskNavigationService;
         private readonly ParameterNavigationService<object, AddWorkViewModel> _addWorkNavigationService;
         private readonly ParameterNavigationService<object, EditTaskViewModel> _editTaskNavigationService;
         private readonly ParameterNavigationService<object, AttachedWorkListViewModel> _attachedWorkListNavigationService;
 
-        public ObservableCollection<SprintViewModel> Sprints { get; set; }
+        private readonly ObservableCollection<SprintViewModel> _sprints;
+        public IEnumerable<SprintViewModel> Sprints => _sprints;
+
         private SprintViewModel _selectedSprint;
         public SprintViewModel SelectedSprint
         {
@@ -61,26 +67,30 @@ namespace WorkActivity.WPF.ViewModels
         public ICommand ShowWorksCommand { get; set; }
 
         public TaskListViewModel(ISnackbarService snackbarService,
-            ITaskRepository taskRepository,
+            TaskStore taskStore,
             ISprintRepository sprintRepository,
-            IWorkRepository workRepository,
+            WorkStore workStore,
             IFilterService<TaskViewModel> filterService,
             TaskListViewStore taskListViewStore,
             NavigationService<AddTaskViewModel> addTaskNavigationService,
             ParameterNavigationService<object, AddWorkViewModel> addWorkNavigationService,
             ParameterNavigationService<object, EditTaskViewModel> editTaskNavigationService,
-            ParameterNavigationService<object, AttachedWorkListViewModel> attachedWorkListNavigationService)
+            ParameterNavigationService<object, AttachedWorkListViewModel> attachedWorkListNavigationService, 
+            ModalNavigationStore modalNavigationStore)
         {
+            _sprints = new ObservableCollection<SprintViewModel>();
+
             _snackbarService = snackbarService;
-            _taskRepository = taskRepository;
+            _taskStore = taskStore;
             _sprintRepository = sprintRepository;
-            _workRepository = workRepository;
+            _workStore = workStore;
             _filterService = filterService;
             _taskListViewStore = taskListViewStore;
             _addTaskNavigationService = addTaskNavigationService;
             _editTaskNavigationService = editTaskNavigationService;
             _addWorkNavigationService = addWorkNavigationService;
             _attachedWorkListNavigationService = attachedWorkListNavigationService;
+            _modalNavigationStore = modalNavigationStore;
 
             OnLoadCommand = new RelayCommand(Load);
             AddTaskCommand = new RelayCommand(AddTaskNavigate);
@@ -88,8 +98,6 @@ namespace WorkActivity.WPF.ViewModels
             DeleteCommand = new RelayCommand(async (obj) => await Delete(obj));
             AddWorkCommand = new RelayCommand(AddWork);
             ShowWorksCommand = new RelayCommand(ShowWorks);
-
-            Sprints = new ObservableCollection<SprintViewModel>();
         }
 
         private bool Filter(object sender)
@@ -102,7 +110,7 @@ namespace WorkActivity.WPF.ViewModels
         {
             await LoadSprints();
             SelectActiveSprint();
-            await LoadTasks(sender);
+            await LoadTasks();
         }
 
         private async Task LoadSprints()
@@ -119,26 +127,24 @@ namespace WorkActivity.WPF.ViewModels
                 }
 
                 var allOption = new SprintViewModel(new Work.Core.Models.Sprint() { Id = -1, Name = "All", StartDate = minDate, EndDate = maxDate });
-                Sprints.Add(allOption);
-
-                foreach (var sprint in sprintResult.Data)
+                _sprints.Add(allOption);
+                var sprints = sprintResult.Data.OrderByDescending(x => x.StartDate);
+                foreach (var sprint in sprints)
                 {
-                    Sprints.Add(new SprintViewModel(sprint));
+                    _sprints.Add(new SprintViewModel(sprint));
                 }
             }
         }
 
-        private async Task LoadTasks(object sender)
+        private async Task LoadTasks()
         {
-            var result = await _taskRepository.GetAll();
-            if (result.Success)
-            {
-                var tasks = result.Data.OrderByDescending(x => x.Date).ToList().Select(x => new TaskViewModel(x));
-                ItemView = CollectionViewSource.GetDefaultView(tasks);
-                ItemView.Filter = Filter;
-                ItemView.Refresh();
-                OnPropertyChanged(nameof(ItemView));
-            }
+            await _taskStore.Load();
+
+            var tasks = _taskStore.Tasks.OrderByDescending(x => x.Date).ToList().Select(x => new TaskViewModel(x));
+            ItemView = CollectionViewSource.GetDefaultView(tasks);
+            ItemView.Filter = Filter;
+            ItemView.Refresh();
+            OnPropertyChanged(nameof(ItemView));
         }
 
         private void AddTaskNavigate(object sender)
@@ -156,22 +162,27 @@ namespace WorkActivity.WPF.ViewModels
             var task = sender as TaskViewModel;
             if (task != null)
             {
-                var workResult = await _workRepository.GetAll();
-                if (workResult.Success)
+                await _workStore.Load();
+                if (_workStore.Works.Any(x => x.Task.Id.Equals(task.Id)))
                 {
-                    if (workResult.Data.Any(x => x.Task.Id.Equals(task.Id)))
-                    {
-                        _snackbarService.ShowMessage($"Cannot remove task {task.Number}. It has works attached.");
-                        return;
-                    }
+                    _snackbarService.ShowMessage($"Cannot remove task {task.Name}. It has works attached.");
+                    return;
                 }
 
-                var result = await _taskRepository.Delete(task.Id);
-                if (result.Success)
+                var submitCommand = new Action<object>(async (task) =>
                 {
-                    _snackbarService.ShowMessage($"Task number {result.Data.Number} removed.");
-                    await LoadTasks(sender);
-                }
+                    var result = await _taskStore.Delete((task as TaskViewModel).Id);
+                    if (result.Success)
+                    {
+                        _snackbarService.ShowMessage($"Task {(task as TaskViewModel).Name} removed.");
+                        await LoadTasks();
+                    }
+                    _modalNavigationStore.CurrentViewModel = null;
+                });
+
+                var cancelCommand = new Action(() => _modalNavigationStore.CurrentViewModel = null);
+
+                _modalNavigationStore.CurrentViewModel = new PopupViewModel($"Do you want to remove task {task.Name}?",obj => submitCommand(task), cancelCommand);
             }
         }
 
