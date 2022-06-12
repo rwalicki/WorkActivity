@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
 using Work.Core.Interfaces;
@@ -16,16 +17,8 @@ namespace WorkActivity.WPF.ViewModels
         private readonly TaskStore _taskStore;
         private readonly NavigationService<AddSprintViewModel> _addSprintNavigationService;
 
-        private ObservableCollection<Sprint> _sprints;
-        public ObservableCollection<Sprint> Sprints
-        {
-            get { return _sprints; }
-            set
-            {
-                _sprints = value;
-                OnPropertyChanged(nameof(Sprints));
-            }
-        }
+        private readonly ObservableCollection<Sprint> _sprints;
+        public IEnumerable<Sprint> Sprints => _sprints;
 
         public ICommand OnLoadCommand { get; set; }
         public ICommand AddSprintCommand { get; set; }
@@ -36,6 +29,8 @@ namespace WorkActivity.WPF.ViewModels
             TaskStore taskStore,
             NavigationService<AddSprintViewModel> addSprintNavigationService)
         {
+            _sprints = new ObservableCollection<Sprint>();
+
             _snackbarService = snackbarService;
             _sprintRepository = sprintRepository;
             _taskStore = taskStore;
@@ -48,11 +43,16 @@ namespace WorkActivity.WPF.ViewModels
 
         private async void Load(object sender)
         {
+            _sprints.Clear();
+
             var result = await _sprintRepository.GetAll();
             if (result.Success)
             {
                 var data = result.Data.ToList().OrderByDescending(x => x.StartDate);
-                Sprints = new ObservableCollection<Sprint>(data);
+                foreach (var sprint in data)
+                {
+                    _sprints.Add(sprint);
+                }
             }
         }
 

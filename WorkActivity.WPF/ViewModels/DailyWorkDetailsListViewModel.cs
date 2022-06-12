@@ -13,22 +13,16 @@ namespace WorkActivity.WPF.ViewModels
 
         private List<Work.Core.Models.Work> _dailyWorks;
 
-        private ObservableCollection<Work.Core.Models.Work> _works;
-        public ObservableCollection<Work.Core.Models.Work> Works
-        {
-            get { return _works; }
-            set
-            {
-                _works = value;
-                OnPropertyChanged(nameof(Works));
-            }
-        }
+        private readonly ObservableCollection<Work.Core.Models.Work> _works;
+        public IEnumerable<Work.Core.Models.Work> Works => _works;
 
         public ICommand OnLoadCommand { get; set; }
         public ICommand DeleteCommand { get; set; }
 
         public DailyWorkDetailsListViewModel(WorkStore workStore, object dailyWorks)
         {
+            _works = new ObservableCollection<Work.Core.Models.Work>();
+
             _workStore = workStore;
             _dailyWorks = dailyWorks as List<Work.Core.Models.Work>;
 
@@ -38,7 +32,10 @@ namespace WorkActivity.WPF.ViewModels
 
         private void Load(object obj)
         {
-            Works = new ObservableCollection<Work.Core.Models.Work>(_dailyWorks);
+            foreach(var dailyWork in _dailyWorks)
+            {
+                _works.Add(dailyWork);
+            }
         }
 
         private async void Delete(object sender)
@@ -47,7 +44,7 @@ namespace WorkActivity.WPF.ViewModels
             var result = await _workStore.Delete(work.Id);
             if (result.Success)
             {
-                Works.Remove(Works.Where(x => x.Id == result.Data.Id).First());
+                _works.Remove(_works.Where(x => x.Id == result.Data.Id).First());
             }
         }
     }

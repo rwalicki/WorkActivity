@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
 using Work.Core.Interfaces;
@@ -12,12 +13,13 @@ namespace WorkActivity.WPF.ViewModels
     {
         private readonly ISnackbarService _snackbarService;
         private readonly TaskStore _taskStore;
-        private readonly ISprintRepository _sprintService;
+        private readonly ISprintRepository _sprintRepository;
         private readonly NavigationService<TaskListViewModel> _taskListNavigationService;
 
-        public ObservableCollection<SprintViewModel> Sprints { get; set; }
+        private readonly ObservableCollection<SprintViewModel> _sprints;
+        public IEnumerable<SprintViewModel> Sprints => _sprints;
 
-        public string _name;
+        private string _name;
         public string Name
         {
             get { return _name; }
@@ -28,7 +30,7 @@ namespace WorkActivity.WPF.ViewModels
             }
         }
 
-        public string _title;
+        private string _title;
         public string Title
         {
             get { return _title; }
@@ -44,14 +46,14 @@ namespace WorkActivity.WPF.ViewModels
 
         public AddTaskViewModel(ISnackbarService snackbarService,
             TaskStore taskStore,
-            ISprintRepository sprintService,
+            ISprintRepository sprintRepository,
             NavigationService<TaskListViewModel> taskListNavigationService)
         {
-            Sprints = new ObservableCollection<SprintViewModel>();
+            _sprints = new ObservableCollection<SprintViewModel>();
 
             _snackbarService = snackbarService;
             _taskStore = taskStore;
-            _sprintService = sprintService;
+            _sprintRepository = sprintRepository;
             _taskListNavigationService = taskListNavigationService;
 
             OnLoadCommand = new RelayCommand(Load);
@@ -60,12 +62,12 @@ namespace WorkActivity.WPF.ViewModels
 
         private async void Load(object sender)
         {
-            var result = await _sprintService.GetAll();
+            var result = await _sprintRepository.GetAll();
             if (result.Success)
             {
                 foreach (var sprint in result.Data)
                 {
-                    Sprints.Add(new SprintViewModel(sprint));
+                    _sprints.Add(new SprintViewModel(sprint));
                 }
             }
         }

@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
 using Work.Core.Interfaces;
@@ -26,7 +27,8 @@ namespace WorkActivity.WPF.ViewModels
             }
         }
 
-        public ObservableCollection<SprintViewModel> Sprints { get; set; }
+        private readonly ObservableCollection<SprintViewModel> _sprints;
+        public IEnumerable<SprintViewModel> Sprints => _sprints;
 
         public string Name
         {
@@ -57,7 +59,7 @@ namespace WorkActivity.WPF.ViewModels
             NavigationService<TaskListViewModel> taskListNavigationService,
             object task)
         {
-            Sprints = new ObservableCollection<SprintViewModel>();
+            _sprints = new ObservableCollection<SprintViewModel>();
             Task = (task as TaskViewModel)?.Task;
 
             _snackbarService = snackbarService;
@@ -76,12 +78,12 @@ namespace WorkActivity.WPF.ViewModels
             {
                 foreach (var sprint in result.Data)
                 {
-                    Sprints.Add(new SprintViewModel(sprint));
+                    _sprints.Add(new SprintViewModel(sprint));
                 }
             }
 
             var ids = _task.Sprints.Select(x => x.Id);
-            foreach (var sprint in Sprints)
+            foreach (var sprint in _sprints)
             {
                 if (ids.Contains(sprint.Sprint.Id))
                 {

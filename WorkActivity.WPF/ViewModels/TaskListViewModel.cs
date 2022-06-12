@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -28,7 +29,9 @@ namespace WorkActivity.WPF.ViewModels
         private readonly ParameterNavigationService<object, EditTaskViewModel> _editTaskNavigationService;
         private readonly ParameterNavigationService<object, AttachedWorkListViewModel> _attachedWorkListNavigationService;
 
-        public ObservableCollection<SprintViewModel> Sprints { get; set; }
+        private readonly ObservableCollection<SprintViewModel> _sprints;
+        public IEnumerable<SprintViewModel> Sprints => _sprints;
+
         private SprintViewModel _selectedSprint;
         public SprintViewModel SelectedSprint
         {
@@ -75,6 +78,8 @@ namespace WorkActivity.WPF.ViewModels
             ParameterNavigationService<object, AttachedWorkListViewModel> attachedWorkListNavigationService, 
             ModalNavigationStore modalNavigationStore)
         {
+            _sprints = new ObservableCollection<SprintViewModel>();
+
             _snackbarService = snackbarService;
             _taskStore = taskStore;
             _sprintRepository = sprintRepository;
@@ -93,8 +98,6 @@ namespace WorkActivity.WPF.ViewModels
             DeleteCommand = new RelayCommand(async (obj) => await Delete(obj));
             AddWorkCommand = new RelayCommand(AddWork);
             ShowWorksCommand = new RelayCommand(ShowWorks);
-
-            Sprints = new ObservableCollection<SprintViewModel>();
         }
 
         private bool Filter(object sender)
@@ -124,11 +127,11 @@ namespace WorkActivity.WPF.ViewModels
                 }
 
                 var allOption = new SprintViewModel(new Work.Core.Models.Sprint() { Id = -1, Name = "All", StartDate = minDate, EndDate = maxDate });
-                Sprints.Add(allOption);
+                _sprints.Add(allOption);
                 var sprints = sprintResult.Data.OrderByDescending(x => x.StartDate);
                 foreach (var sprint in sprints)
                 {
-                    Sprints.Add(new SprintViewModel(sprint));
+                    _sprints.Add(new SprintViewModel(sprint));
                 }
             }
         }

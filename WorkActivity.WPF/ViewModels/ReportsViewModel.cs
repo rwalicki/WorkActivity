@@ -15,7 +15,7 @@ namespace WorkActivity.WPF.ViewModels
         private readonly IReport _reportService;
         private readonly WorkStore _workStore;
 
-        private ObservableCollection<DateTime> _months;
+        private readonly ObservableCollection<DateTime> _months;
         public IEnumerable<DateTime> Months => _months;
 
         private DateTime _selectedMonth;

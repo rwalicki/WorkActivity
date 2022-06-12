@@ -96,11 +96,11 @@
                 <DataGridTextColumn Binding="{Binding Hours}"
                                     Header="Hours"
                                     Width="Auto" />
-                <DataGridTextColumn Binding="{Binding Date, StringFormat='dd.MM.yyyy HH.mm'}"
+                <DataGridTextColumn Binding="{Binding Date, StringFormat='dd.MM.yyyy'}"
                                     Header="Date"
-                                    Width="100" />
+                                    Width="Auto" />
                 <DataGridTemplateColumn Header=""
-                                        Width="Auto">
+                                        Width="80">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Button Width="30"
