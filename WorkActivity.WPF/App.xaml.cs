@@ -25,6 +25,9 @@ namespace WorkActivity.WPF
             {
                 services.AddSingleton<TopBarViewModel>();
                 services.AddSingleton<DailyProgressViewModel>();
+                services.AddSingleton<SideBarViewModel>();
+
+                services.AddSingleton<IMenuService, MenuService>();
 
                 services.AddTransient<PopupViewModel>();
 

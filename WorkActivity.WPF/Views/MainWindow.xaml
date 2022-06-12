@@ -4,8 +4,6 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="http://materialdesigninxaml.net/winfx/xaml/themes"
-        xmlns:views="clr-namespace:WorkActivity.WPF.Views"
-        xmlns:components="clr-namespace:WorkActivity.WPF.Components"
         xmlns:modalcontrol="clr-namespace:ModalControl;assembly=ModalControl"
         mc:Ignorable="d"
         Title="Work Activity"
@@ -19,8 +17,10 @@
         MouseDown="WindowMouseDown"
         Loaded="WindowLoaded">
     <Grid>
-        <modalcontrol:Modal Panel.ZIndex="1" IsOpen="{Binding IsModalOpen}" >
-            <ContentControl Margin="10" Content="{Binding CurrentModalViewModel}" />
+        <modalcontrol:Modal Panel.ZIndex="1"
+                            IsOpen="{Binding IsModalOpen}">
+            <ContentControl Margin="10"
+                            Content="{Binding CurrentModalViewModel}" />
         </modalcontrol:Modal>
         <Grid>
             <Grid.RowDefinitions>
@@ -33,61 +33,15 @@
             <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <Border Grid.Column="0"
                         BorderThickness="0 0 1 0"
                         BorderBrush="{DynamicResource PrimaryHueMidBrush}">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-                        <Button Margin="5"
-                                Grid.Row="0"
-                                Content="Sprints"
-                                HorizontalContentAlignment="Left"
-                                Style="{DynamicResource MaterialDesignFlatButton}"
-                                Command="{Binding SprintListCommand}" />
-                        <Button Margin="5"
-                                Grid.Row="1"
-                                Content="Tasks"
-                                HorizontalContentAlignment="Left"
-                                Style="{DynamicResource MaterialDesignFlatButton}"
-                                Command="{Binding TaskListCommand}" />
-                        <Button Margin="5"
-                                Grid.Row="2"
-                                Content="Works"
-                                HorizontalContentAlignment="Left"
-                                Style="{DynamicResource MaterialDesignFlatButton}"
-                                Command="{Binding WorkListCommand}" />
-                        <Button Margin="5"
-                                Grid.Row="3"
-                                Content="Daily Work"
-                                HorizontalContentAlignment="Left"
-                                Style="{DynamicResource MaterialDesignFlatButton}"
-                                Command="{Binding DailyWorkListCommand}" />
-                        <Button Margin="5"
-                                Grid.Row="4"
-                                Content="Off Work"
-                                HorizontalContentAlignment="Left"
-                                Style="{DynamicResource MaterialDesignFlatButton}"
-                                Command="{Binding OffWorkCommand}" />
-                        <Button Margin="5"
-                                Grid.Row="5"
-                                Content="Reports"
-                                HorizontalContentAlignment="Left"
-                                Style="{DynamicResource MaterialDesignFlatButton}"
-                                Command="{Binding ReportsCommand}" />
-                    </Grid>
+                    <ContentControl MinWidth="150"
+                                    Content="{Binding SideBarViewModel}" />
                 </Border>
-                <Grid Grid.Column="2">
+                <Grid Grid.Column="1">
                     <ContentControl Content="{Binding CurrentViewModel}" />
                     <controls:Snackbar MessageQueue="{Binding SnakbarMessageQueue}"
                                        Background="{DynamicResource PrimaryHueMidBrush}"

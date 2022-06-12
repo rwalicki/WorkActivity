@@ -1,8 +1,8 @@
 ﻿using MaterialDesignThemes.Wpf;
 using Shared.Interfaces;
 using System;
-using System.Windows.Input;
 using WorkActivity.WPF.Commands;
+using WorkActivity.WPF.Enums;
 using WorkActivity.WPF.Services;
 using WorkActivity.WPF.Stores;
 
@@ -26,23 +26,18 @@ namespace WorkActivity.WPF.ViewModels
         public bool IsModalOpen => _modalNavigationStore.IsOpen;
 
         public TopBarViewModel TopBarViewModel { get; }
+        public SideBarViewModel SideBarViewModel { get; }
+
         public ViewModelBase CurrentViewModel => _navigationStore.CurrentViewModel;
         public SnackbarMessageQueue SnakbarMessageQueue => _snackbarService.GetSnackbar();
 
         public Action<bool> WindowMaximized { get; set; }
         public Action<string> SetWindowTitle { get; set; }
-        
+
         public event Action Minimize;
         public event Action Maximize;
         public event Action Restore;
         public event Action Close;
-
-        public ICommand SprintListCommand { get; set; }
-        public ICommand TaskListCommand { get; set; }
-        public ICommand WorkListCommand { get; set; }
-        public ICommand DailyWorkListCommand { get; set; }
-        public ICommand OffWorkCommand { get; set; }
-        public ICommand ReportsCommand { get; set; }
 
         public MainWindowViewModel(NavigationStore navigationStore,
             ModalNavigationStore modalNavigationStore,
@@ -53,7 +48,8 @@ namespace WorkActivity.WPF.ViewModels
             NavigationService<DailyWorkListViewModel> dailyWorkListNavigationService,
             NavigationService<OffWorkViewModel> offWorkNavigationService,
             NavigationService<ReportsViewModel> reportsNavigationService,
-            TopBarViewModel topBarViewModel)
+            TopBarViewModel topBarViewModel,
+            SideBarViewModel sideBarViewModel)
         {
             _navigationStore = navigationStore;
             _navigationStore.CurrentViewModelChanged += CurrentViewModelChanged;
@@ -70,13 +66,6 @@ namespace WorkActivity.WPF.ViewModels
             _offWorkNavigationService = offWorkNavigationService;
             _reportsNavigationService = reportsNavigationService;
 
-            SprintListCommand = new NavigateCommand(_sprintListNavigationService);
-            TaskListCommand = new NavigateCommand(_taskListNavigationService);
-            WorkListCommand = new NavigateCommand(_workListNavigationService);
-            DailyWorkListCommand = new NavigateCommand(_dailyWorkListNavigationService);
-            OffWorkCommand = new NavigateCommand(_offWorkNavigationService);
-            ReportsCommand = new NavigateCommand(_reportsNavigationService);
-
             TopBarViewModel = topBarViewModel;
             TopBarViewModel.WindowMinimizeCommand = new RelayCommand((obj) => Minimize?.Invoke());
             TopBarViewModel.WindowMaximizeCommand = new RelayCommand((obj) => Maximize?.Invoke());
@@ -84,6 +73,9 @@ namespace WorkActivity.WPF.ViewModels
             TopBarViewModel.CloseCommand = new RelayCommand((obj) => Close?.Invoke());
             WindowMaximized = (isMaximized) => TopBarViewModel.IsMaximized = isMaximized;
             SetWindowTitle = (title) => TopBarViewModel.Title = title;
+
+            SideBarViewModel = sideBarViewModel;
+            SideBarViewModel.SelectionChangedCommand = new RelayCommand(Navigate);
         }
 
         private void CurrentViewModelChanged()
@@ -101,6 +93,32 @@ namespace WorkActivity.WPF.ViewModels
         {
             _modalNavigationStore.CurrentViewModelChanged -= CurrentModalViewModelChanged;
             _navigationStore.CurrentViewModelChanged -= CurrentViewModelChanged;
+        }
+
+        private void Navigate(object obj)
+        {
+            var parameter = obj as MenuItemViewModel;
+            switch (parameter.MenuItem)
+            {
+                case MenuItems.Sprints:
+                    _sprintListNavigationService.Navigate();
+                    break;
+                case MenuItems.Tasks:
+                    _taskListNavigationService.Navigate();
+                    break;
+                case MenuItems.Works:
+                    _workListNavigationService.Navigate();
+                    break;
+                case MenuItems.DailyWork:
+                    _dailyWorkListNavigationService.Navigate();
+                    break;
+                case MenuItems.OffWork:
+                    _offWorkNavigationService.Navigate();
+                    break;
+                case MenuItems.Reports:
+                    _reportsNavigationService.Navigate();
+                    break;
+            }
         }
     }
 }
