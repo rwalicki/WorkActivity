@@ -226,7 +226,7 @@ namespace WorkActivity.WPF
 
         private ReportsViewModel CreateReportsViewModel(IServiceProvider serviceProvider)
         {
-            return new ReportsViewModel(serviceProvider.GetRequiredService<IReport>());
+            return new ReportsViewModel(serviceProvider.GetRequiredService<IReport>(), serviceProvider.GetRequiredService<WorkStore>());
         }
 
         private OffWorkViewModel CreateOffWorkViewModel(IServiceProvider serviceProvider)

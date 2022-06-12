@@ -11,8 +11,9 @@ namespace WorkActivity.WPF.Stores
             get => _currentViewModel;
             set
             {
-                if (!_currentViewModel?.GetType().Equals(value.GetType()) ?? true)
+                if (!_currentViewModel?.GetType().Equals(value?.GetType() ?? null) ?? true)
                 {
+                    _currentViewModel?.Dispose();
                     _currentViewModel = value;
                     OnCurrentViewModelChanged();
                 }

@@ -98,7 +98,7 @@
                                     Width="Auto" />
                 <DataGridTextColumn Binding="{Binding Date, StringFormat='dd.MM.yyyy HH.mm'}"
                                     Header="Date"
-                                    Width="Auto" />
+                                    Width="100" />
                 <DataGridTemplateColumn Header=""
                                         Width="Auto">
                     <DataGridTemplateColumn.CellTemplate>

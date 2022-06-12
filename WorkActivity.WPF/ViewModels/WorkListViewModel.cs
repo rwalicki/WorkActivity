@@ -85,7 +85,7 @@ namespace WorkActivity.WPF.ViewModels
             _addWorkNavigationService.Navigate(null);
         }
 
-        private async void Delete(object sender)
+        private void Delete(object sender)
         {
             var work = sender as Work.Core.Models.Work;
             if (work != null)
