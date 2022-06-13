@@ -1,5 +1,4 @@
 # Work Activity
----
 Work Activity is a simple desktop app which provides reporting work time.
 ## Features
 - create sprints with declared period
