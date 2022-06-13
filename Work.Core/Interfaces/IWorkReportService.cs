@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Work.Core.Models;
 
 namespace Work.Core.Interfaces
 {
-    public interface IDailyWorkService
+    public interface IWorkReportService
     {
-        Task<IEnumerable<DailyWork>> GetAll();
+        Task<IEnumerable<Models.Work>> Get(DateTime startDate, DateTime endDate);
     }
 }

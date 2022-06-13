@@ -28,6 +28,7 @@ namespace WorkActivity.WPF
                 services.AddSingleton<SideBarViewModel>();
 
                 services.AddSingleton<IMenuService, MenuService>();
+                services.AddSingleton<IWorkReportService, WorkReportService>();
 
                 services.AddTransient<PopupViewModel>();
 
