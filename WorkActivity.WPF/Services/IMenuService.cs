@@ -5,6 +5,6 @@ namespace WorkActivity.WPF.Services
 {
     public interface IMenuService
     {
-        IEnumerable<(MenuItems, string)> GetMenuItems();
+        IEnumerable<(MenuItems, string, string)> GetMenuItems();
     }
 }
