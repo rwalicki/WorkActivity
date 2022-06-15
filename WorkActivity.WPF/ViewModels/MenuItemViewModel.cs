@@ -10,10 +10,14 @@ namespace WorkActivity.WPF.ViewModels
         private string _name;
         public string Name => _name;
 
-        public MenuItemViewModel(MenuItems menuItem, string name)
+        private string _contextName;
+        public string ContextName => _contextName;
+
+        public MenuItemViewModel(MenuItems menuItem, string name, string contextName)
         {
             _menuItem = menuItem;
             _name = name;
+            _contextName = contextName;
         }
     }
 }

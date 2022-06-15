@@ -14,7 +14,7 @@
         </i:EventTrigger>
     </i:Interaction.Triggers>
     <ListView ItemsSource="{Binding MenuItems}"
-              SelectedItem="{Binding SelectedItem}">
+              SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
         <ListView.ItemTemplate>
             <DataTemplate>
                 <TextBlock Text="{Binding Name}" />
@@ -22,8 +22,7 @@
         </ListView.ItemTemplate>
         <i:Interaction.Triggers>
             <i:EventTrigger EventName="SelectionChanged">
-                <i:InvokeCommandAction Command="{Binding SelectionChangedCommand}"
-                                       CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListView}}}" />
+                <i:InvokeCommandAction Command="{Binding SelectionChangedCommand}" PassEventArgsToCommand="true"/>
             </i:EventTrigger>
         </i:Interaction.Triggers>
         <ListView.ItemContainerStyle>
