@@ -7,7 +7,6 @@ using System.Windows;
 using Work.API.Repositories;
 using Work.Core.Interfaces;
 using Work.Core.Models;
-using WorkActivity.WPF.Components;
 using WorkActivity.WPF.Services;
 using WorkActivity.WPF.Services.Renderer;
 using WorkActivity.WPF.Stores;
@@ -231,7 +230,7 @@ namespace WorkActivity.WPF
 
         private ReportsViewModel CreateReportsViewModel(IServiceProvider serviceProvider)
         {
-            return new ReportsViewModel(serviceProvider.GetRequiredService<IReport>(), serviceProvider.GetRequiredService<WorkStore>());
+            return new ReportsViewModel(serviceProvider.GetRequiredService<IReport>(), serviceProvider.GetRequiredService<IConfigurationService>(), serviceProvider.GetRequiredService<WorkStore>());
         }
 
         private OffWorkViewModel CreateOffWorkViewModel(IServiceProvider serviceProvider)
@@ -258,28 +257,28 @@ namespace WorkActivity.WPF
         private IFileService<Work.Core.DTOs.Work> CreateWorkFileService(IServiceProvider s)
         {
             var confService = s.GetRequiredService<IConfigurationService>();
-            var uri = confService.GetPath();
+            var uri = confService.GetDatabasePath();
             return new FileRepository<Work.Core.DTOs.Work>(uri);
         }
 
         private IFileService<Work.Core.DTOs.Task> CreateTaskFileService(IServiceProvider s)
         {
             var confService = s.GetRequiredService<IConfigurationService>();
-            var uri = confService.GetPath();
+            var uri = confService.GetDatabasePath();
             return new FileRepository<Work.Core.DTOs.Task>(uri);
         }
 
         private IFileService<OffWork> CreateOffWorkFileService(IServiceProvider s)
         {
             var confService = s.GetRequiredService<IConfigurationService>();
-            var uri = confService.GetPath();
+            var uri = confService.GetDatabasePath();
             return new FileRepository<OffWork>(uri);
         }
 
         private IFileService<Sprint> CreateSprintFileService(IServiceProvider s)
         {
             var confService = s.GetRequiredService<IConfigurationService>();
-            var uri = confService.GetPath();
+            var uri = confService.GetDatabasePath();
             return new FileRepository<Sprint>(uri);
         }
     }

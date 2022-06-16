@@ -12,9 +12,19 @@ namespace WorkActivity.WPF.Services
             _configuration = configuration;
         }
 
-        public string GetPath()
+        public string GetDatabasePath()
         {
             var path = _configuration.GetSection("Database")?["path"]?.ToString() ?? string.Empty;
+            if (string.IsNullOrEmpty(path))
+            {
+                return System.AppDomain.CurrentDomain.BaseDirectory;
+            }
+            return path;
+        }
+
+        public string GetPDFTemplatePath()
+        {
+            var path = _configuration.GetSection("PDF")?["templatePath"]?.ToString() ?? string.Empty;
             if (string.IsNullOrEmpty(path))
             {
                 return System.AppDomain.CurrentDomain.BaseDirectory;

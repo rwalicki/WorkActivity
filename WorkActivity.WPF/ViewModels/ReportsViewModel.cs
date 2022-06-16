@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Work.Core.Interfaces;
 using WorkActivity.WPF.Commands;
 using WorkActivity.WPF.Services;
 using WorkActivity.WPF.Services.Renderer;
@@ -14,6 +15,7 @@ namespace WorkActivity.WPF.ViewModels
     public class ReportsViewModel : ViewModelBase
     {
         private readonly IReport _reportService;
+        private readonly IConfigurationService _configurationService;
         private readonly WorkStore _workStore;
 
         private readonly ObservableCollection<DateTime> _months;
@@ -67,11 +69,12 @@ namespace WorkActivity.WPF.ViewModels
         public ICommand GenerateReportCommand { get; }
         public ICommand GenerateCommand { get; }
 
-        public ReportsViewModel(IReport reportService, WorkStore workStore)
+        public ReportsViewModel(IReport reportService, IConfigurationService configurationService, WorkStore workStore)
         {
             _months = new ObservableCollection<DateTime>();
 
             _reportService = reportService;
+            _configurationService = configurationService;
             _workStore = workStore;
 
             OnLoadCommand = new RelayCommand(s => Load(s));
@@ -99,7 +102,9 @@ namespace WorkActivity.WPF.ViewModels
             {
                 builder = builder.WithRow(row);
             }
-            var strin = builder.Build();
+            var table = builder.Build();
+
+            var documentBuilder = new HTMLBuilder(_configurationService.GetPDFTemplatePath()).WithElement(table);
 
         }
 

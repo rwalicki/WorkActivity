@@ -2,6 +2,7 @@
 {
     public interface IConfigurationService
     {
-        string GetPath();
+        string GetDatabasePath();
+        string GetPDFTemplatePath();
     }
 }
