@@ -1,0 +1,19 @@
+{
+  "profiles": {
+    "WorkActivity.WPF": {
+      "commandName": "Project"
+    },
+    "DEV": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "PROD": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production"
+      }
+    }
+  }
+}

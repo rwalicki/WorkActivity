@@ -11,10 +11,12 @@ namespace Shared.Services
     public class FileRepository<T> : IFileService<T> where T : BaseEntity
     {
         private readonly string _filePath;
+        private readonly string _path;
 
-        public FileRepository()
+        public FileRepository(string path)
         {
-            _filePath = $"{typeof(T).Name}.json".ToLower();
+            _path = path;
+            _filePath = _path + Path.DirectorySeparatorChar + $"{typeof(T).Name}.json".ToLower();
 
             if (!File.Exists(_filePath))
             {
