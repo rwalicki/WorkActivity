@@ -23,6 +23,7 @@ namespace WorkActivity.WPF
         {
             _host = Host.CreateDefaultBuilder().ConfigureServices(services =>
             {
+                services.AddSingleton<IConfigurationService, ConfigurationService>();
                 services.AddSingleton<TopBarViewModel>();
                 services.AddSingleton<DailyProgressViewModel>();
                 services.AddSingleton<SideBarViewModel>();
@@ -30,19 +31,17 @@ namespace WorkActivity.WPF
                 services.AddSingleton<IMenuService, MenuService>();
                 services.AddSingleton<IWorkReportService, WorkReportService>();
 
-                services.AddTransient<PopupViewModel>();
-
                 services.AddSingleton<ITaskRepository, TaskFileRepository>();
-                services.AddSingleton<IFileService<Work.Core.DTOs.Task>>(new FileRepository<Work.Core.DTOs.Task>());
+                services.AddSingleton<IFileService<Work.Core.DTOs.Task>>(s => CreateTaskFileService(s));
 
                 services.AddSingleton<IWorkRepository, WorkFileRepository>();
-                services.AddSingleton<IFileService<Work.Core.DTOs.Work>>(new FileRepository<Work.Core.DTOs.Work>());
+                services.AddSingleton<IFileService<Work.Core.DTOs.Work>>(s => CreateWorkFileService(s));
 
                 services.AddSingleton<ISprintRepository, SprintFileRepository>();
-                services.AddSingleton<IFileService<Sprint>>(new FileRepository<Work.Core.Models.Sprint>());
+                services.AddSingleton<IFileService<Sprint>>(s => CreateSprintFileService(s));
 
                 services.AddSingleton<IOffWorkRepository, OffWorkRepository>();
-                services.AddSingleton<IFileService<OffWork>>(new FileRepository<OffWork>());
+                services.AddSingleton<IFileService<OffWork>>(s => CreateOffWorkFileService(s));
 
                 services.AddSingleton<IDailyWorkService, DailyWorkService>();
                 services.AddSingleton<IReport, MonthReport>();
@@ -252,6 +251,34 @@ namespace WorkActivity.WPF
         private AttachedWorkListViewModel CreateAttachedWorkListViewModel(IServiceProvider serviceProvider, object parameter)
         {
             return new AttachedWorkListViewModel(serviceProvider.GetRequiredService<ISnackbarService>(), serviceProvider.GetRequiredService<WorkStore>(), CreateAddWorkNavigationService(serviceProvider), parameter);
+        }
+
+        private IFileService<Work.Core.DTOs.Work> CreateWorkFileService(IServiceProvider s)
+        {
+            var confService = s.GetRequiredService<IConfigurationService>();
+            var uri = confService.GetPath();
+            return new FileRepository<Work.Core.DTOs.Work>(uri);
+        }
+
+        private IFileService<Work.Core.DTOs.Task> CreateTaskFileService(IServiceProvider s)
+        {
+            var confService = s.GetRequiredService<IConfigurationService>();
+            var uri = confService.GetPath();
+            return new FileRepository<Work.Core.DTOs.Task>(uri);
+        }
+
+        private IFileService<OffWork> CreateOffWorkFileService(IServiceProvider s)
+        {
+            var confService = s.GetRequiredService<IConfigurationService>();
+            var uri = confService.GetPath();
+            return new FileRepository<OffWork>(uri);
+        }
+
+        private IFileService<Sprint> CreateSprintFileService(IServiceProvider s)
+        {
+            var confService = s.GetRequiredService<IConfigurationService>();
+            var uri = confService.GetPath();
+            return new FileRepository<Sprint>(uri);
         }
     }
 }
