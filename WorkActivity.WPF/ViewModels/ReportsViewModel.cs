@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using WorkActivity.WPF.Commands;
 using WorkActivity.WPF.Services;
+using WorkActivity.WPF.Services.Renderer;
 using WorkActivity.WPF.Stores;
 
 namespace WorkActivity.WPF.ViewModels
@@ -64,6 +65,7 @@ namespace WorkActivity.WPF.ViewModels
 
         public ICommand OnLoadCommand { get; }
         public ICommand GenerateReportCommand { get; }
+        public ICommand GenerateCommand { get; }
 
         public ReportsViewModel(IReport reportService, WorkStore workStore)
         {
@@ -74,6 +76,31 @@ namespace WorkActivity.WPF.ViewModels
 
             OnLoadCommand = new RelayCommand(s => Load(s));
             GenerateReportCommand = new RelayCommand(async s => await GenerateReport(SelectedMonth.Month, SelectedMonth.Year));
+            GenerateCommand = new RelayCommand(Generate);
+        }
+
+        private void Generate(object obj)
+        {
+            var _works = _workStore.Works;
+            var header = new List<string>()
+            {
+                "Id", "Name", "Title", "Date", "Hours"
+            };
+            var rows = new List<List<string>>();
+            foreach (var work in _works) 
+            {
+                rows.Add(new List<string>()
+                {
+                    work.Id.ToString(), work.Task.Name, work.Task.Title, work.Date.ToString("dd.MM.yyyy"), work.Hours.ToString()
+                });
+            }
+            var builder = new HTMLTableBuilder().WithHeader(header);
+            foreach(var row in rows)
+            {
+                builder = builder.WithRow(row);
+            }
+            var strin = builder.Build();
+
         }
 
         private async void Load(object sender)

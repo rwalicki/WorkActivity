@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:WorkActivity.WPF.Views"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d"
              d:DesignHeight="450"
              d:DesignWidth="800">
@@ -27,34 +28,47 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <TextBlock Grid.Column="0"
                        Margin="0 0 30 0"
                        Style="{StaticResource MaterialDesignHeadline6TextBlock}"
                        Foreground="{DynamicResource PrimaryHueMidBrush}"
                        Text="Month Report" />
-            <ComboBox Grid.Column="1"
-                      MinWidth="100"
-                      HorizontalContentAlignment="Center"
-                      HorizontalAlignment="Left"
-                      VerticalAlignment="Center"
-                      ItemsSource="{Binding Months}"
-                      SelectedItem="{Binding SelectedMonth}">
-                <i:Interaction.Triggers>
-                    <i:EventTrigger EventName="SelectionChanged">
-                        <i:InvokeCommandAction Command="{Binding GenerateReportCommand}" />
-                    </i:EventTrigger>
-                </i:Interaction.Triggers>
-                <ComboBox.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding ., StringFormat='MM'}"
-                                       Margin="0 0 10 0" />
-                            <TextBlock Text="{Binding ., StringFormat='yyyy'}" />
-                        </StackPanel>
-                    </DataTemplate>
-                </ComboBox.ItemTemplate>
-            </ComboBox>
+            <StackPanel Orientation="Horizontal" Grid.Column="1">
+                <ComboBox MinWidth="100"
+                          HorizontalContentAlignment="Center"
+                          HorizontalAlignment="Left"
+                          VerticalAlignment="Center"
+                          ItemsSource="{Binding Months}"
+                          SelectedItem="{Binding SelectedMonth}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="SelectionChanged">
+                            <i:InvokeCommandAction Command="{Binding GenerateReportCommand}" />
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding ., StringFormat='MM'}"
+                                           Margin="0 0 10 0" />
+                                <TextBlock Text="{Binding ., StringFormat='yyyy'}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                <Button HorizontalAlignment="Left"
+                        Margin="10 0 0 0"
+                        Style="{StaticResource TopButton}"
+                        Command="{Binding GenerateCommand}">
+                    <materialDesign:PackIcon Kind="FilePdfBox"
+                                             Padding="0"
+                                             Margin="0"
+                                             Width="{Binding Width, RelativeSource={RelativeSource AncestorType=Button}}"
+                                             Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Button}}" />
+                </Button>
+            </StackPanel>
+            
         </Grid>
 
         <Grid Grid.Row="1"

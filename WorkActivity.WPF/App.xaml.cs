@@ -9,6 +9,7 @@ using Work.Core.Interfaces;
 using Work.Core.Models;
 using WorkActivity.WPF.Components;
 using WorkActivity.WPF.Services;
+using WorkActivity.WPF.Services.Renderer;
 using WorkActivity.WPF.Stores;
 using WorkActivity.WPF.ViewModels;
 using WorkActivity.WPF.Views;
@@ -26,6 +27,7 @@ namespace WorkActivity.WPF
                 services.AddSingleton<TopBarViewModel>();
                 services.AddSingleton<DailyProgressViewModel>();
                 services.AddSingleton<SideBarViewModel>();
+                services.AddSingleton<ITableBuilder, HTMLTableBuilder>();
 
                 services.AddSingleton<IMenuService, MenuService>();
                 services.AddSingleton<IWorkReportService, WorkReportService>();
