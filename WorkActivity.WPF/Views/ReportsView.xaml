@@ -57,16 +57,7 @@
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
                 </ComboBox>
-                <Button HorizontalAlignment="Left"
-                        Margin="10 0 0 0"
-                        Style="{StaticResource TopButton}"
-                        Command="{Binding GenerateCommand}">
-                    <materialDesign:PackIcon Kind="FilePdfBox"
-                                             Padding="0"
-                                             Margin="0"
-                                             Width="{Binding Width, RelativeSource={RelativeSource AncestorType=Button}}"
-                                             Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Button}}" />
-                </Button>
+                
             </StackPanel>
             
         </Grid>

@@ -212,7 +212,8 @@ namespace WorkActivity.WPF
 
         private WorkListViewModel CreateWorkListViewModel(IServiceProvider serviceProvider)
         {
-            return new WorkListViewModel(serviceProvider.GetRequiredService<ISnackbarService>(), 
+            return new WorkListViewModel(serviceProvider.GetRequiredService<IConfigurationService>(),
+                serviceProvider.GetRequiredService<ISnackbarService>(),
                 serviceProvider.GetRequiredService<WorkStore>(),
                 serviceProvider.GetRequiredService<ModalNavigationStore>(),
                 CreateAddWorkNavigationService(serviceProvider));

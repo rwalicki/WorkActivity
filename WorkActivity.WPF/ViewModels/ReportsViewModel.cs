@@ -9,6 +9,8 @@ using WorkActivity.WPF.Commands;
 using WorkActivity.WPF.Services;
 using WorkActivity.WPF.Services.Renderer;
 using WorkActivity.WPF.Stores;
+using WkHtmlToPdfDotNet;
+using System.IO;
 
 namespace WorkActivity.WPF.ViewModels
 {
@@ -90,7 +92,7 @@ namespace WorkActivity.WPF.ViewModels
                 "Id", "Name", "Title", "Date", "Hours"
             };
             var rows = new List<List<string>>();
-            foreach (var work in _works) 
+            foreach (var work in _works)
             {
                 rows.Add(new List<string>()
                 {
@@ -98,14 +100,34 @@ namespace WorkActivity.WPF.ViewModels
                 });
             }
             var builder = new HTMLTableBuilder().WithHeader(header);
-            foreach(var row in rows)
+            foreach (var row in rows)
             {
                 builder = builder.WithRow(row);
             }
             var table = builder.Build();
 
-            var documentBuilder = new HTMLBuilder(_configurationService.GetPDFTemplatePath()).WithElement(table);
+            var documentBuilder = new HTMLBuilder(_configurationService.GetPDFTemplatePath()).WithElement(table).Build();
 
+            var converter = new SynchronizedConverter(new PdfTools());
+            var doc = new HtmlToPdfDocument()
+            {
+                GlobalSettings = {
+                    ColorMode = ColorMode.Color,
+                    Orientation = Orientation.Portrait,
+                    PaperSize = PaperKind.A4,
+                },
+                Objects = {
+                    new ObjectSettings() {
+                        HtmlContent = documentBuilder,
+                        WebSettings = { DefaultEncoding = "utf-8" }
+                    }
+                }
+            };
+
+            byte[] pdf = converter.Convert(doc);
+            FileStream fs = new FileStream(_configurationService.GetPDFTemplatePath()+Path.DirectorySeparatorChar+"t.pdf", FileMode.CreateNew);
+            fs.Write(pdf, 0, pdf.Length);
+            fs.Close();
         }
 
         private async void Load(object sender)
