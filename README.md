@@ -18,4 +18,4 @@ Work Activity is a simple desktop app which provides reporting work time.
 ![Alt text](doc/img/reports.png "Reports")
 
 ## License
-MIT
+GNU General Public License v3.0
