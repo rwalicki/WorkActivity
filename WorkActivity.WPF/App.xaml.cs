@@ -7,6 +7,7 @@ using System.Windows;
 using Work.API.Repositories;
 using Work.Core.Interfaces;
 using Work.Core.Models;
+using WorkActivity.WPF.Adapters;
 using WorkActivity.WPF.Services;
 using WorkActivity.WPF.Services.Renderer;
 using WorkActivity.WPF.Stores;
@@ -24,13 +25,17 @@ namespace WorkActivity.WPF
             _host = Host.CreateDefaultBuilder().ConfigureServices(services =>
             {
                 services.AddSingleton<IConfigurationService, ConfigurationService>();
+                services.AddSingleton<IMenuService, MenuService>();
+
                 services.AddSingleton<TopBarViewModel>();
                 services.AddSingleton<DailyProgressViewModel>();
                 services.AddSingleton<SideBarViewModel>();
-                services.AddSingleton<ITableBuilder, HTMLTableBuilder>();
 
-                services.AddSingleton<IMenuService, MenuService>();
-                services.AddSingleton<IWorkReportService, WorkReportService>();
+                services.AddSingleton<ITableBuilder, HTMLTableBuilder>();
+                services.AddSingleton<IPdfService, PdfService>();
+                services.AddSingleton<IHTMLService, HTMLService>();
+                services.AddSingleton<IWorksToTableAdapter, WorksToTableAdapter>();
+                services.AddSingleton<IPdfGeneratorFacade, PdfGeneratorFacade>();
 
                 services.AddSingleton<ITaskRepository, TaskFileRepository>();
                 services.AddSingleton<IFileService<Work.Core.DTOs.Task>>(s => CreateTaskFileService(s));
@@ -212,7 +217,7 @@ namespace WorkActivity.WPF
 
         private WorkListViewModel CreateWorkListViewModel(IServiceProvider serviceProvider)
         {
-            return new WorkListViewModel(serviceProvider.GetRequiredService<IConfigurationService>(),
+            return new WorkListViewModel(serviceProvider.GetRequiredService<IPdfGeneratorFacade>(),
                 serviceProvider.GetRequiredService<ISnackbarService>(),
                 serviceProvider.GetRequiredService<WorkStore>(),
                 serviceProvider.GetRequiredService<ModalNavigationStore>(),

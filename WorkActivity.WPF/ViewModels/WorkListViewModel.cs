@@ -1,24 +1,20 @@
-﻿using Microsoft.Win32;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
-using WkHtmlToPdfDotNet;
-using Work.Core.Interfaces;
 using WorkActivity.WPF.Commands;
 using WorkActivity.WPF.Services;
-using WorkActivity.WPF.Services.Renderer;
 using WorkActivity.WPF.Stores;
 
 namespace WorkActivity.WPF.ViewModels
 {
     public class WorkListViewModel : ViewModelBase
     {
-        private readonly IConfigurationService _configurationService;
+        private readonly IPdfGeneratorFacade _pdfGeneratorFacade;
         private readonly ISnackbarService _snackbarService;
         private readonly WorkStore _workStore;
         private readonly ModalNavigationStore _modalNavigationStore;
@@ -58,7 +54,7 @@ namespace WorkActivity.WPF.ViewModels
         {
             get => _startDate; set
             {
-                _startDate = value; 
+                _startDate = value;
                 OnPropertyChanged(nameof(StartDate));
                 ItemView.Refresh();
             }
@@ -67,10 +63,10 @@ namespace WorkActivity.WPF.ViewModels
         private DateTime _endDate;
         public DateTime EndDate
         {
-            get => _endDate; 
+            get => _endDate;
             set
             {
-                _endDate = value; 
+                _endDate = value;
                 OnPropertyChanged(nameof(EndDate));
                 ItemView.Refresh();
             }
@@ -84,7 +80,7 @@ namespace WorkActivity.WPF.ViewModels
 
         public ICommand GeneratePDFCommand { get; }
 
-        public WorkListViewModel(IConfigurationService configurationService, 
+        public WorkListViewModel(IPdfGeneratorFacade pdfGeneratorFacade,
             ISnackbarService snackbarService,
             WorkStore workStore,
             ModalNavigationStore modalNavigationStore,
@@ -95,7 +91,7 @@ namespace WorkActivity.WPF.ViewModels
             _filters.Add("Period");
             SelectedFilter = _filters[0];
 
-            _configurationService = configurationService;
+            _pdfGeneratorFacade = pdfGeneratorFacade;
             _snackbarService = snackbarService;
             _workStore = workStore;
             _modalNavigationStore = modalNavigationStore;
@@ -104,7 +100,7 @@ namespace WorkActivity.WPF.ViewModels
             OnLoadCommand = new RelayCommand(Load);
             AddWorkCommand = new RelayCommand(AddWorkNavigate);
             DeleteCommand = new RelayCommand(Delete);
-            GeneratePDFCommand = new RelayCommand(GeneratePDF);
+            GeneratePDFCommand = new RelayCommand(async (obj) => await GeneratePDF(obj));
         }
 
         private bool Filter(object sender)
@@ -127,7 +123,7 @@ namespace WorkActivity.WPF.ViewModels
         {
             await _workStore.Load();
             _works = _workStore.Works.OrderByDescending(x => x.Date).ToList();
-            
+
             ItemView = CollectionViewSource.GetDefaultView(_works);
             ItemView.Filter = Filter;
             ItemView.Refresh();
@@ -162,65 +158,12 @@ namespace WorkActivity.WPF.ViewModels
             }
         }
 
-        private void GeneratePDF(object obj)
+        private async Task GeneratePDF(object obj)
         {
-            var works = new List<Work.Core.Models.Work>();
-            foreach(var item in ItemView)
-            {
-                works.Add(item as Work.Core.Models.Work);
-            }
-            var header = new List<string>()
-            {
-                "No.", "Id", "Name", "Title", "Date", "Hours"
-            };
-            var rows = new List<List<string>>();
-            var i = 1;
-            works = works.OrderBy(x => x.Date).ToList();
-            foreach (var work in works)
-            {
-                rows.Add(new List<string>()
-                {
-                    $"{i++}", work.Id.ToString(), work.Task.Name, work.Task.Title, work.Date.ToString("dd.MM.yyyy"), work.Hours.ToString()
-                });
-            }
-            var builder = new HTMLTableBuilder().WithHeader(header);
-            foreach (var row in rows)
-            {
-                builder = builder.WithRow(row);
-            }
-            var table = builder.Build();
+            var works = ItemView.Cast<Work.Core.Models.Work>();
+            works = works.OrderBy(x => x.Date);
 
-            var documentBuilder = new HTMLBuilder(_configurationService.GetPDFTemplatePath()).WithElement(table).Build();
-
-            var converter = new SynchronizedConverter(new PdfTools());
-            var doc = new HtmlToPdfDocument()
-            {
-                GlobalSettings = {
-                    ColorMode = ColorMode.Color,
-                    Orientation = Orientation.Portrait,
-                    PaperSize = PaperKind.A4,
-                },
-                Objects = {
-                    new ObjectSettings() {
-                        HtmlContent = documentBuilder,
-                        WebSettings = { DefaultEncoding = "utf-8" }
-                    }
-                }
-            };
-
-            byte[] pdf = converter.Convert(doc);
-            var dlg = new SaveFileDialog();
-            dlg.InitialDirectory = _configurationService.GetPDFTemplatePath();
-            dlg.Filter = "PDF|*.pdf";
-            var result = dlg.ShowDialog() ?? false;
-
-            if (result)
-            {
-                string filename = dlg.FileName;
-                FileStream fs = new FileStream(filename, FileMode.CreateNew);
-                fs.Write(pdf, 0, pdf.Length);
-                fs.Close();
-            }
+            await _pdfGeneratorFacade.GeneratePdf(works);
         }
     }
 }
