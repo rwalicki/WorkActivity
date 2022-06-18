@@ -43,21 +43,108 @@
                     Command="{Binding AddWorkCommand}">
                 <controls:PackIcon Kind="Add" />
             </Button>
+
+            <ComboBox Grid.Column="2"
+                      Name="filter"
+                      Width="200"
+                      HorizontalAlignment="Right" 
+                      VerticalAlignment="Center"
+                      ItemsSource="{Binding Filters}"
+                      SelectedItem="{Binding SelectedFilter}">
+            </ComboBox>
         </Grid>
 
-        <Grid Grid.Row="1"
-              Margin="0 20">
-            <StackPanel Orientation="Horizontal">
-                <controls:PackIcon Kind="Search"
-                                   VerticalAlignment="Center"
-                                   Padding="0"
-                                   Width="30"
-                                   Height="30"
-                                   Foreground="{DynamicResource PrimaryHueMidBrush}" />
-                <TextBox Margin="10 0"
-                         Width="300"
-                         Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-            </StackPanel>
+        <Grid Grid.Row="1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0"
+                            Margin="0 20"
+                            Orientation="Horizontal"
+                            VerticalAlignment="Center">
+                    <controls:PackIcon Kind="Search"
+                                       VerticalAlignment="Center"
+                                       Padding="0"
+                                       Width="30"
+                                       Height="30"
+                                       Foreground="{DynamicResource PrimaryHueMidBrush}" />
+                    <TextBox Margin="10 0"
+                             Width="300"
+                             Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                </StackPanel>
+                <StackPanel Grid.Column="1"
+                            Width="200"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center">
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <DatePicker Grid.Column="0"
+                                    Margin="0 0 5 0"
+                                    SelectedDate="{Binding StartDate}">
+                            <DatePicker.Style>
+                                <Style TargetType="{x:Type DatePicker}"
+                                       BasedOn="{StaticResource MaterialDesignDatePicker}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Path=SelectedIndex, ElementName=filter}"
+                                                     Value="0">
+                                            <Setter Property="Visibility"
+                                                    Value="Hidden" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </DatePicker.Style>
+
+                        </DatePicker>
+                        <DatePicker Grid.Column="1"
+                                    Margin="5 0 0 0"
+                                    SelectedDate="{Binding EndDate}">
+                            <DatePicker.Style>
+                                <Style TargetType="{x:Type DatePicker}"
+                                       BasedOn="{StaticResource MaterialDesignDatePicker}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Path=SelectedIndex, ElementName=filter}"
+                                                     Value="0">
+                                            <Setter Property="Visibility"
+                                                    Value="Hidden" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </DatePicker.Style>
+                        </DatePicker>
+                        <Button Grid.Column="2"
+                                HorizontalAlignment="Left"
+                                Margin="5 0 0 0"
+                                Width="32"
+                                Command="{Binding GeneratePDFCommand}">
+                            <Button.Style>
+                                <Style TargetType="Button"
+                                       BasedOn="{StaticResource TopButton}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Path=SelectedIndex, ElementName=filter}"
+                                                     Value="0">
+                                            <Setter Property="Visibility"
+                                                    Value="Hidden" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                            <controls:PackIcon Kind="FilePdfBox"
+                                               Padding="0"
+                                               Margin="0"
+                                               Width="{Binding Width, RelativeSource={RelativeSource AncestorType=Button}}"
+                                               Height="{Binding Height, RelativeSource={RelativeSource AncestorType=Button}}" />
+                        </Button>
+                    </Grid>
+                </StackPanel>
+            </Grid>
         </Grid>
 
         <DataGrid Grid.Row="2"

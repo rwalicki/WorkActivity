@@ -18,6 +18,11 @@ namespace Shared.Services
             _path = path;
             _filePath = _path + Path.DirectorySeparatorChar + $"{typeof(T).Name}.json".ToLower();
 
+            if (!Directory.Exists(_path))
+            {
+                Directory.CreateDirectory(_path);
+            }
+
             if (!File.Exists(_filePath))
             {
                 File.Create(_filePath);
