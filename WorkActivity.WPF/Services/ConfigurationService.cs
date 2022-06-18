@@ -17,7 +17,7 @@ namespace WorkActivity.WPF.Services
             var path = _configuration.GetSection("Database")?["path"]?.ToString() ?? string.Empty;
             if (string.IsNullOrEmpty(path))
             {
-                return System.AppDomain.CurrentDomain.BaseDirectory;
+                return System.AppDomain.CurrentDomain.BaseDirectory + "data";
             }
             return path;
         }
@@ -27,7 +27,7 @@ namespace WorkActivity.WPF.Services
             var path = _configuration.GetSection("PDF")?["templatePath"]?.ToString() ?? string.Empty;
             if (string.IsNullOrEmpty(path))
             {
-                return System.AppDomain.CurrentDomain.BaseDirectory;
+                return System.AppDomain.CurrentDomain.BaseDirectory + "doc\\styles";
             }
             return path;
         }

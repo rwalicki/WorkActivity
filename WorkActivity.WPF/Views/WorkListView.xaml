@@ -48,6 +48,7 @@
                       Name="filter"
                       Width="200"
                       HorizontalAlignment="Right" 
+                      VerticalAlignment="Center"
                       ItemsSource="{Binding Filters}"
                       SelectedItem="{Binding SelectedFilter}">
             </ComboBox>
