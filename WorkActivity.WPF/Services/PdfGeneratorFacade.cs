@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Work.Core.Interfaces;
@@ -30,7 +31,7 @@ namespace WorkActivity.WPF.Services
             var content = _htmlService.GetContent();
 
             var dlg = new SaveFileDialog();
-            dlg.InitialDirectory = _configurationService.GetPDFTemplatePath();
+            dlg.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             dlg.Filter = "PDF|*.pdf";
 
             var result = dlg.ShowDialog() ?? false;
