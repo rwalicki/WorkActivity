@@ -7,6 +7,7 @@ using System.Windows;
 using Work.API.Repositories;
 using Work.Core.Interfaces;
 using Work.Core.Models;
+using Work.Infrastructure.Data;
 using WorkActivity.WPF.Adapters;
 using WorkActivity.WPF.Services;
 using WorkActivity.WPF.Services.Renderer;
@@ -26,6 +27,7 @@ namespace WorkActivity.WPF
             {
                 services.AddSingleton<IConfigurationService, ConfigurationService>();
                 services.AddSingleton<IMenuService, MenuService>();
+                services.AddSingleton<WorkActivityContextFactory>((s) => CreateContextFactory(s));
 
                 services.AddSingleton<TopBarViewModel>();
                 services.AddSingleton<DailyProgressViewModel>();
@@ -286,6 +288,12 @@ namespace WorkActivity.WPF
             var confService = s.GetRequiredService<IConfigurationService>();
             var uri = confService.GetDatabasePath();
             return new FileRepository<Sprint>(uri);
+        }
+
+        private WorkActivityContextFactory CreateContextFactory(IServiceProvider s)
+        {
+            var confService = s.GetRequiredService<IConfigurationService>();
+            return new WorkActivityContextFactory(confService);
         }
     }
 }

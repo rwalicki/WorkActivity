@@ -9,9 +9,9 @@ namespace Work.Infrastructure.Repositories
 {
     public class TaskRepository : ITaskRepository
     {
-        private readonly IDbContextFactory<Data.AppContext> _contextFactory;
+        private readonly IDbContextFactory<Data.WorkActivityContext> _contextFactory;
 
-        public TaskRepository(IDbContextFactory<Data.AppContext> contextFactory)
+        public TaskRepository(IDbContextFactory<Data.WorkActivityContext> contextFactory)
         {
             _contextFactory = contextFactory;
         }
@@ -23,7 +23,7 @@ namespace Work.Infrastructure.Repositories
                 var result = new ServiceResult<IEnumerable<Core.Models.Task>>();
                 try
                 {
-                    result.Data = await context.Tasks.ToListAsync();
+                    result.Data = await context.Tasks.Include(x=>x.Sprints).ToListAsync();
                 }
                 catch (Exception ex)
                 {
@@ -41,7 +41,7 @@ namespace Work.Infrastructure.Repositories
                 var result = new ServiceResult<Core.Models.Task>();
                 try
                 {
-                    var task = await context.Tasks.FirstOrDefaultAsync(x => x.Id == id);
+                    var task = await context.Tasks.Include(x=>x.Sprints).FirstOrDefaultAsync(x => x.Id == id);
                     if (task != null)
                     {
                         result.Data = task;
@@ -68,9 +68,17 @@ namespace Work.Infrastructure.Repositories
                 var result = new ServiceResult<IEnumerable<Core.Models.Task>>();
                 try
                 {
-                    context.Tasks.Add(entity);
-                    await context.SaveChangesAsync();
-                    result.Data = await context.Tasks.ToListAsync();
+                    if (await context.Tasks.AnyAsync(x => x.Name == entity.Name))
+                    {
+                        result.Success = false;
+                        result.Message = "Task already exists.";
+                    }
+                    else
+                    {
+                        context.Tasks.Add(entity);
+                        await context.SaveChangesAsync();
+                        result.Data = await context.Tasks.Include(x => x.Sprints).ToListAsync();
+                    }
                 }
                 catch (Exception ex)
                 {

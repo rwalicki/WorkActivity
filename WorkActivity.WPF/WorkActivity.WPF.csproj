@@ -21,7 +21,7 @@
   <ItemGroup>
     <PackageReference Include="Haukcode.WkHtmlToPdfDotNet" Version="1.5.82" />
     <PackageReference Include="MaterialDesignThemes" Version="4.3.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.2" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
     <PackageReference Include="SimpleModal.WPF" Version="1.0.0" />
@@ -30,6 +30,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Work.API\Work.API.csproj" />
     <ProjectReference Include="..\Work.Core\Work.Core.csproj" />
+    <ProjectReference Include="..\Work.Infrastructure\Work.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

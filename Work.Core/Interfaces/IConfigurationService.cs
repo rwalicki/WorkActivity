@@ -3,6 +3,8 @@
     public interface IConfigurationService
     {
         string GetDatabasePath();
+        string GetConnectionString();
+        bool GetUseDatabase();
         string GetPDFTemplatePath();
     }
 }

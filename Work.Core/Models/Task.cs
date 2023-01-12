@@ -1,9 +1,11 @@
 ﻿using Shared.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Work.Core.Models
 {
+    [Table("Tasks")]
     public class Task : BaseEntity
     {
         public string Name { get; set; }
