@@ -64,6 +64,17 @@ namespace WorkActivity.WPF.ViewModels
             }
         }
 
+        public bool _isOverWork = false;
+        public bool IsOverWork
+        {
+            get { return _isOverWork; }
+            set
+            {
+                _isOverWork = value;
+                OnPropertyChanged(nameof(IsOverWork));
+            }
+        }
+
         public ICommand AddTaskCommand { get; set; }
         public ICommand OnLoadCommand { get; set; }
 
@@ -104,7 +115,7 @@ namespace WorkActivity.WPF.ViewModels
 
         private async void AddWork(object obj)
         {
-            await _workStore.Create(new Work.Core.Models.Work() { Task = Task, Hours = float.Parse(Hours.Replace('.', ',')), Date = Date });
+            await _workStore.Create(new Work.Core.Models.Work() { Task = Task, Hours = float.Parse(Hours.Replace('.', ',')), Date = Date, IsOverWork = IsOverWork });
             _workListNavigationService.Navigate();
         }
     }

@@ -21,7 +21,7 @@ namespace Work.API.Repositories
             var works = await _workRepository.GetAll();
             if (works.Success)
             {
-                foreach (var work in works.Data)
+                foreach (var work in works.Data.Where(x=>!x.IsOverWork))
                 {
                     if (dailyWorks.Exists(x => x.Date == work.Date.Date))
                     {

@@ -72,6 +72,19 @@ namespace WorkActivity.WPF.ViewModels
             }
         }
 
+
+        private bool _isOverWork = false;
+        public bool IsOverWork
+        {
+            get { return _isOverWork; }
+            set
+            {
+                _isOverWork = value;
+                OnPropertyChanged(nameof(IsOverWork));
+                ItemView.Refresh();
+            }
+        }
+
         public ICollectionView ItemView { get; set; }
 
         public ICommand OnLoadCommand { get; set; }
@@ -113,8 +126,9 @@ namespace WorkActivity.WPF.ViewModels
                     work.Task.Name.Contains(SearchText, StringComparison.InvariantCultureIgnoreCase);
 
                 var dateCondition = SelectedFilter == "All" || (work.Date.Date >= StartDate.Date && work.Date.Date <= EndDate.Date);
+                var isOverWork = IsOverWork ? work.IsOverWork ? true : false : true;
 
-                return textCondition && dateCondition;
+                return textCondition && dateCondition && isOverWork;
             }
             return false;
         }

@@ -7,6 +7,7 @@
         Works,
         DailyWork,
         OffWork,
-        Reports
+        Reports,
+        OverWork
     }
 }

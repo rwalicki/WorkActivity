@@ -33,7 +33,8 @@ namespace Work.API.Repositories
                         Id = work.Id,
                         Date = work.Date,
                         Hours = work.Hours,
-                        Task = task
+                        Task = task,
+                        IsOverWork = work.IsOverWork
                     });
                 }
                 result.Data = works;
@@ -58,7 +59,8 @@ namespace Work.API.Repositories
                     Id = work.Id,
                     Date = work.Date,
                     Hours = work.Hours,
-                    Task = task
+                    Task = task,
+                    IsOverWork = work.IsOverWork
                 };
             }
             catch (Exception ex)
@@ -78,7 +80,8 @@ namespace Work.API.Repositories
                 {
                     Date = entity.Date,
                     Hours = entity.Hours,
-                    TaskId = entity.Task.Id
+                    TaskId = entity.Task.Id,
+                    IsOverWork = entity.IsOverWork
                 });
                 result.Data = (await GetAll()).Data;
             }
@@ -101,7 +104,8 @@ namespace Work.API.Repositories
                     Id = entity.Id,
                     Date = entity.Date,
                     Hours = entity.Hours,
-                    TaskId = entity.Task.Id
+                    TaskId = entity.Task.Id,
+                    IsOverWork = entity.IsOverWork
                 });
                 result.Data = (await Get(entity.Id)).Data;
             }
@@ -126,7 +130,8 @@ namespace Work.API.Repositories
                     Id = work.Id,
                     Date = work.Date,
                     Hours = work.Hours,
-                    Task = task
+                    Task = task,
+                    IsOverWork = work.IsOverWork
                 };
             }
             catch (Exception ex)

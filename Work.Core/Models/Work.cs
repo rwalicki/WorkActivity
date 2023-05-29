@@ -8,5 +8,6 @@ namespace Work.Core.Models
         public Task Task { get; set; }
         public float Hours { get; set; }
         public DateTime Date { get; set; }
+        public bool IsOverWork { get; set; }
     }
 }

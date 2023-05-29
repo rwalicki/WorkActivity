@@ -26,6 +26,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <TextBlock Grid.Column="0"
@@ -44,14 +45,25 @@
                 <controls:PackIcon Kind="Add" />
             </Button>
 
-            <ComboBox Grid.Column="2"
+            <StackPanel HorizontalAlignment="Right" Grid.Column="3" Orientation="Horizontal" Margin="0 0 10 0">
+                <TextBlock Style="{DynamicResource MaterialDesignTextBlock}"
+                                        Grid.Column="0"
+                                        Margin="5"
+                                          VerticalAlignment="Center"
+                                         Text="Overwork"
+                                     Foreground="{DynamicResource MaterialDesignBody}" />
+                <CheckBox IsChecked="{Binding IsOverWork}" Margin="0 0 10 0"/>
+
+                <ComboBox Grid.Column="3"
                       Name="filter"
                       Width="200"
                       HorizontalAlignment="Right" 
                       VerticalAlignment="Center"
                       ItemsSource="{Binding Filters}"
                       SelectedItem="{Binding SelectedFilter}">
-            </ComboBox>
+                </ComboBox>
+            </StackPanel>
+
         </Grid>
 
         <Grid Grid.Row="1">
