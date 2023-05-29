@@ -22,6 +22,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}"
@@ -92,7 +93,24 @@
                         Width="100"
                         SelectedDate="{Binding Date}" />
         </Grid>
-        <Grid Grid.Row="4"
+        <Grid Grid.Row="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"
+                                  SharedSizeGroup="A" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Style="{DynamicResource MaterialDesignTextBlock}"
+                       Grid.Column="0"
+                       Margin="5"
+                       VerticalAlignment="Center"
+                       Text="Overwork"
+                       Foreground="{DynamicResource MaterialDesignBody}" />
+            <CheckBox Grid.Column="1"
+                        Margin="5 0"
+                        HorizontalAlignment="Left"
+                        Width="100" IsChecked="{Binding IsOverWork}" />
+        </Grid>
+        <Grid Grid.Row="5"
               Grid.Column="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
